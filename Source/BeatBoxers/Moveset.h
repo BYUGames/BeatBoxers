@@ -25,9 +25,21 @@ public:
 	/** Saves a reference to the fighterstate so it can push requests to start new windows. */
 	void RegisterFighterState(class UObject& FighterState);
 
+	/** Saves a reference to the solo tracker so it can push requests to stat a solo. */
+	void RegisterSoloTracker(class UObject& SoloTracker);
+
 	/** Call to execute whatever move, or move in current combo, comes next according to the given input. */
 	void ReceiveInputToken(EInputToken Token);
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
 	void OnWindowFinished(bool WasInterrupted);
+
+	/** Receives a push from FighterState telling it to begin its solo. */
+	void BeginSolo();
+
+	/** Receives a push from the SoloTracker if it correctly hit the note and with what input. */
+	void OnSoloCorrect(EInputToken Token);
+
+	/** Receives a push from the SoloTracker if it missed or used the wrong input. */
+	void OnSoloIncorrect();
 };

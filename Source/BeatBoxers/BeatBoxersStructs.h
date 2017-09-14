@@ -186,3 +186,12 @@ struct FMove
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EFighterDamageType DamageTypeOverride;
 };
+
+USTRUCT(BlueprintType)
+struct FSoloParameters
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int NumberOfNotes;
+};

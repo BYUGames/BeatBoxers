@@ -31,6 +31,7 @@ struct FStanceFilter
 UENUM(BlueprintType)
 enum class EStance : uint8
 {
+	SE_NA			UMETA(DisplayName = "N/A"),
 	SE_Standing		UMETA(DisplayName = "Standing"),
 	SE_Crouching	UMETA(DisplayName = "Crouching"),
 	SE_Jumping		UMETA(DisplayName = "Jumping")

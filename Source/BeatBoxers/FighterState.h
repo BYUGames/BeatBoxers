@@ -22,6 +22,9 @@ class BEATBOXERS_API IFighterState
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	/** Saves a reference to the FighterWorld so it can push calls to trace etc. */
+	void RegisterFighterWorld(class UObject& FighterWorld);
+
 	/** Saves a reference to the Fighter so it can act as an interface to it. */
 	void RegisterFighter(class UObject& Fighter);
 

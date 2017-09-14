@@ -26,7 +26,7 @@ public:
 	void RegisterFighterState(class UObject& FighterState);
 
 	/** Saves a reference to the opponent. */
-	void RegisterOpponent(class UActor& Opponent);
+	void RegisterOpponent(class AActor& Opponent);
 
 	/** Returns the direction to the opponent. -1 is left, 1 is right. Provided so FighterState can tell if it is attempting to block. */
 	float GetOpponentDirection();

@@ -125,13 +125,25 @@ struct FMoveWindow
 {
 	GENERATED_USTRUCT_BODY()
 
+	/** For convenience, how long this window lasts before enabling its hitbox and starting its duration. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Windup;
+
 	/** How long this window lasts. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Duration;
 
+	/** For convenience, how long this window lasts after its duration has expired and it has disabled its hitbox. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Winddown;
+
 	/** Whether this window, and move, can be interrupted by taking damage during it. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint32 Interruptible : 1;
+
+	/** Whether or not landing a blow during this window starts the character's solo. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint32 BeginsSolo : 1;
 
 	/** Movement applied to the attacker when entering this window. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -164,6 +176,9 @@ struct FMoveWindow
 	/** Whether landing on the ground during this window immediately interrupts the move. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* Animation;
 };
 
 USTRUCT(BlueprintType)

@@ -9,7 +9,7 @@
 UINTERFACE(MinimalAPI)
 class UInputParser : public UInterface
 {
-	GENERATED_BODY()
+	GENERATED_UINTERFACE_BODY()
 };
 
 /**
@@ -17,40 +17,40 @@ class UInputParser : public UInterface
  */
 class BEATBOXERS_API IInputParser
 {
-	GENERATED_BODY()
+	GENERATED_IINTERFACE_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the fighterstate so it can query if input is blocked and send requests to be passed on to the Fighter. */
-	void RegisterFighterState(class UObject& FighterState);
+	virtual void RegisterFighterState(class UObject* FighterState) = 0;
 
 	/** Saves a reference to the movestate so it can push input tokens. */
-	void RegisterMoveset(class UObject& Moveset);
+	virtual void RegisterMoveset(class UObject* Moveset) = 0;
 
 	/** Receives notification from FighterState when control may be input again. Input buffer should send its request after receiving such a signal. */
-	void OnControlReturned();
+	virtual void OnControlReturned() = 0;
 
 	/** Receives controller input for the horizontal axis. */
-	void InputAxisHorizontal(float Amount);
+	virtual void InputAxisHorizontal(float Amount) = 0;
 
 	/** Receives controller input for the vertical axis. */
-	void InputAxisVertical(float Amount);
+	virtual void InputAxisVertical(float Amount) = 0;
 
 	/** Receives events relating to the D-pad left button. */
-	void InputActionDLeft(bool IsUp);
+	virtual void InputActionDLeft(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad right button. */
-	void InputActionDRight(bool IsUp);
+	virtual void InputActionDRight(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad down button. */
-	void InputActionDDown(bool IsUp);
+	virtual void InputActionDDown(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad up button. */
-	void InputActionDUp(bool IsUp);
+	virtual void InputActionDUp(bool IsUp) = 0;
 
 	/** Receives events relating to the punch button. */
-	void InputActionPunch(bool IsUp);
+	virtual void InputActionPunch(bool IsUp) = 0;
 	
 	/** Receives events relating to the kick button. */
-	void InputActionKick(bool IsUp);
+	virtual void InputActionKick(bool IsUp) = 0;
 };

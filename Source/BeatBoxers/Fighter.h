@@ -10,7 +10,7 @@
 UINTERFACE(MinimalAPI)
 class UFighter : public UInterface
 {
-	GENERATED_BODY()
+	GENERATED_UINTERFACE_BODY()
 };
 
 /**
@@ -18,34 +18,34 @@ class UFighter : public UInterface
  */
 class BEATBOXERS_API IFighter
 {
-	GENERATED_BODY()
+	GENERATED_IINTERFACE_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the fighterstate so it can act as a public interface for it. */
-	void RegisterFighterState(class UObject& FighterState);
+	virtual void RegisterFighterState(class UObject* FighterState) = 0;
 
 	/** Saves a reference to the opponent. */
-	void RegisterOpponent(class AActor& Opponent);
+	virtual void RegisterOpponent(class AActor* Opponent) = 0;
 
 	/** Returns the direction to the opponent. -1 is left, 1 is right. Provided so FighterState can tell if it is attempting to block. */
-	float GetOpponentDirection();
+	virtual float GetOpponentDirection() const = 0;
 
 	/** Moves the character... somehow... maybe this should be handled by the FighterState, in which case this would be an interface for it. */
-	void ApplyMovement(FMovement Delta);
+	virtual void ApplyMovement(FMovement Delta) = 0;
 
 	/** Interface for FighterState to see if character is attempting to block. */
-	bool IsBlocking();
+	virtual bool IsBlocking() const = 0;
 
 	/** Returns the current stance. */
-	EStance GetStance();
+	virtual EStance GetStance() const = 0;
 
 	/** Recieves calls from FighterState, gating logic should have been done there. */
-	void SetWantsToCrouch(bool WantsToCrouch);
+	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
 
 	/** Recieves calls from FighterState, gating logic should have been done there. */
-	void SetMoveDirection(float Direction);
+	virtual void SetMoveDirection(float Direction) = 0;
 
 	/** Recieves calls from FighterState, gating logic should have been done there. */
-	void Jump();
+	virtual void Jump() = 0;
 };

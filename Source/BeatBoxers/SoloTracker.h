@@ -10,7 +10,7 @@
 UINTERFACE(MinimalAPI)
 class USoloTracker : public UInterface
 {
-	GENERATED_BODY()
+	GENERATED_UINTERFACE_BODY()
 };
 
 /**
@@ -18,16 +18,16 @@ class USoloTracker : public UInterface
  */
 class BEATBOXERS_API ISoloTracker
 {
-	GENERATED_BODY()
+	GENERATED_IINTERFACE_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the Moveset so results of inputs can be pushed. */
-	void RegisterMoveset(class UObject& Moveset);
+	virtual void RegisterMoveset(class UObject* Moveset) = 0;
 
 	/** Starts a new solo based on the given parameters. */
-	void BeginSolo(FSoloParameters SoloParameters);
+	virtual void BeginSolo(FSoloParameters SoloParameters) = 0;
 
 	/** Receives input from the Moveset and pushes the results to the moveset. */
-	void ReceiveInputToken(EInputToken Input);
+	virtual void ReceiveInputToken(EInputToken Input) = 0;
 };

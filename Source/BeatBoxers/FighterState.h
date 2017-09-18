@@ -10,7 +10,7 @@
 UINTERFACE(MinimalAPI)
 class UFighterState : public UInterface
 {
-	GENERATED_BODY()
+	GENERATED_UINTERFACE_BODY()
 };
 
 /**
@@ -18,40 +18,40 @@ class UFighterState : public UInterface
  */
 class BEATBOXERS_API IFighterState
 {
-	GENERATED_BODY()
+	GENERATED_IINTERFACE_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the FighterWorld so it can push calls to trace etc. */
-	void RegisterFighterWorld(class UObject& FighterWorld);
+	virtual void RegisterFighterWorld(class UObject* FighterWorld) = 0;
 
 	/** Saves a reference to the Fighter so it can act as an interface to it. */
-	void RegisterFighter(class UObject& Fighter);
+	virtual void RegisterFighter(class UObject* Fighter) = 0;
 
 	/** Saves a reference to the Moveset so it can push notifications about when a window ends. */
-	void RegisterMoveset(class UObject& Moveset);
+	virtual void RegisterMoveset(class UObject* Moveset) = 0;
 
 	/** Saves a reference to the InputParser so it can notify it when control is returned. */
-	void RegisterInputParser(class UObject& InputParser);
+	virtual void RegisterInputParser(class UObject* InputParser) = 0;
 
 	/** A check if input is being accepted right now or should be buffered. */
-	bool IsInputBlocked();
+	virtual bool IsInputBlocked() const = 0;
 
 	/** A check to see if the character is currently attempting to block. Relies on opponent direction received from Fighter. */
-	bool IsBlocking();
+	virtual bool IsBlocking() const = 0;
 
 	/** Begins a move window. */
-	void StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence);
+	virtual void StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence) = 0;
 
 	/** Interrupts any ongoing move windows and starts a stun. */
-	void StartStun(float Duration);
+	virtual void StartStun(float Duration) = 0;
 
 	/** Interface to Fighter function, blocks when it sees fit. */
-	void SetMoveDirection(float Direction);
+	virtual void SetMoveDirection(float Direction) = 0;
 
 	/** Interface to Fighter function, blocks when it sees fit. */
-	void SetWantsToCrouch(bool WantsToCrouch);
+	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
 
 	/** Interface to Fighter function, blocks when it sees fit. */
-	void Jump();
+	virtual void Jump() = 0;
 };

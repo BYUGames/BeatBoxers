@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BeatBoxers.h"
-#include "BeatBoxersGameModeBase.h"
 #include "Fighter.h"
 #include "FighterWorld.h"
 #include "FighterState.h"
@@ -33,7 +32,7 @@ public:
 
 protected:
 	IFighterState *MyFighterState;
-	AActor *MyOpponent;
+	TWeakObjectPtr<AActor> MyOpponent;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,12 +52,13 @@ protected:
 
 public:	
 	/** IFighter implementation */
-	virtual void RegisterFighterState(class UObject* NewFighterState) override;
-	virtual void RegisterOpponent(class AActor* Opponent) override;
+	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
+	virtual void RegisterOpponent(TWeakObjectPtr<AActor> Opponent) override;
 	virtual float GetOpponentDirection() const override;
 	virtual void ApplyMovement(FMovement Delta) override;
 	virtual bool IsBlocking() const override;
 	virtual EStance GetStance() const override;
+	virtual TWeakObjectPtr<AController> GetFighterController() const override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void Jump() override;

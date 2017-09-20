@@ -1,6 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #include "BeatBoxersGameModeBase.h"
+#include "FighterCharacter.h"
+#include "BBPlayerController.h"
 
 ABeatBoxersGameModeBase::ABeatBoxersGameModeBase(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -15,8 +17,13 @@ EFighterDamageType ABeatBoxersGameModeBase::GetDamageType(EStance Stance, EFight
 	return DesiredOverride;
 }
 
-struct FHitResult ABeatBoxersGameModeBase::TraceHitbox(FMoveHitbox Hitbox, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TArray<class AActor*>& IgnoreActors, class AActor* Source, class AController* SourceController)
+struct FHitResult ABeatBoxersGameModeBase::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors)
 {
 	//TODO
 	return FHitResult();
+}
+
+void ABeatBoxersGameModeBase::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
+{
+	//TODO
 }

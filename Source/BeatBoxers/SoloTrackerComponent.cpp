@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #include "SoloTrackerComponent.h"
 
@@ -33,18 +33,18 @@ void USoloTrackerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void USoloTrackerComponent::RegisterMoveset(class UObject* Moveset)
+void USoloTrackerComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 {
-	if (Moveset == nullptr)
+	if (!Moveset.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given nullptr to register as Moveset."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given invalid object to register as Moveset."), *GetNameSafe(this));
 	}
 	else
 	{
-		MyMoveset = Cast<IMoveset>(Moveset);
+		MyMoveset = Cast<IMoveset>(Moveset.Get());
 		if (MyMoveset == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset));
+			UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -23,7 +23,7 @@ protected:
 
 public:	
 	/** ISoloTracker implementation */
-	virtual void RegisterMoveset(class UObject* Moveset) override;
+	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void BeginSolo(FSoloParameters SoloParameters) override;
 	virtual void ReceiveInputToken(EInputToken Input) override;
 	/** End ISoloTracker implementation */

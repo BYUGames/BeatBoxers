@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -9,7 +9,6 @@
 #include "Moveset.h"
 #include "FighterState.h"
 #include "InputParserComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser
@@ -24,8 +23,8 @@ protected:
 
 public:	
 	/** IInputParser implementation */
-	virtual void RegisterFighterState(class UObject* FighterState) override;
-	virtual void RegisterMoveset(class UObject* Moveset) override;
+	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;
+	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void OnControlReturned() override;
 	virtual void InputAxisHorizontal(float Amount) override;
 	virtual void InputAxisVertical(float Amount) override;

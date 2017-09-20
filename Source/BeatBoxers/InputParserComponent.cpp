@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #include "InputParserComponent.h"
 
@@ -33,34 +33,34 @@ void UInputParserComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UInputParserComponent::RegisterFighterState(class UObject* FighterState)
+void UInputParserComponent::RegisterFighterState(TWeakObjectPtr<UObject> FighterState)
 {
-	if (FighterState == nullptr)
+	if (!FighterState.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given nullptr to register as FighterState."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}
 	else
 	{
-		MyFighterState = Cast<IFighterState>(FighterState);
+		MyFighterState = Cast<IFighterState>(FighterState.Get());
 		if (MyFighterState == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState));
+			UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState.Get()));
 		}
 	}
 }
 
-void UInputParserComponent::RegisterMoveset(class UObject* Moveset)
+void UInputParserComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 {
-	if (Moveset == nullptr)
+	if (!Moveset.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given nullptr to register as Moveset."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given invalid object to register as Moveset."), *GetNameSafe(this));
 	}
 	else
 	{
-		MyMoveset = Cast<IMoveset>(Moveset);
+		MyMoveset = Cast<IMoveset>(Moveset.Get());
 		if (MyMoveset == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset));
+			UE_LOG(BeatBoxersLog, Error, TEXT("UInputParserComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
 		}
 	}
 }

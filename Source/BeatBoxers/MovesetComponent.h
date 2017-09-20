@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -25,8 +25,8 @@ protected:
 
 public:	
 	/** IMoveset implementation */
-	virtual void RegisterFighterState(class UObject* FighterState) override;
-	virtual void RegisterSoloTracker(class UObject* SoloTracker) override;
+	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;
+	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) override;
 	virtual void ReceiveInputToken(EInputToken Token) override;
 	virtual void OnWindowFinished(bool WasInterrupted) override;
 	virtual void BeginSolo() override;

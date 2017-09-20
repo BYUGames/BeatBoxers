@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -6,9 +6,10 @@
 #include "GameFramework/GameModeBase.h"
 #include "BeatBoxersStructs.h"
 #include "FighterWorld.h"
-#include "BBPlayerController.h"
-#include "FighterCharacter.h"
 #include "BeatBoxersGameModeBase.generated.h"
+
+class AFighterCharacter;
+class ABBPlayerController;
 
 /**
  * 
@@ -21,6 +22,7 @@ class BEATBOXERS_API ABeatBoxersGameModeBase : public AGameModeBase, public IFig
 public:
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
-	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TArray<class AActor*>& IgnoreActors, class AActor* Source, class AController* SourceController) override;
+	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
+	virtual void HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
 	/** End IFighterWorld implementation */
 };

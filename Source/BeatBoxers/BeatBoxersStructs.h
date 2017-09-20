@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -145,6 +145,10 @@ struct FMoveWindow
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint32 BeginsSolo : 1;
 
+	/** If this window does damage other than the type corresponding to the stance the attacker is in, specify that damage type here. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EFighterDamageType DamageTypeOverride;
+
 	/** Movement applied to the attacker when entering this window. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FMovement AttackerMovement;
@@ -178,7 +182,7 @@ struct FMoveWindow
 	uint32 LandingInterrupts : 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UAnimMontage* Animation;
+	class UAnimMontage* Animation;
 };
 
 USTRUCT(BlueprintType)
@@ -196,10 +200,6 @@ struct FMove
 	/** How much special is required and consumed in perfoming this move. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float SpecialCost;
-
-	/** If this move does damage other than the type corresponding to the stance the attacker is in, specify that damage type here. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EFighterDamageType DamageTypeOverride;
 };
 
 USTRUCT(BlueprintType)

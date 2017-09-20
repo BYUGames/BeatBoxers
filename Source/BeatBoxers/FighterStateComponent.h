@@ -1,9 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "BeatBoxers.h"
 #include "FighterState.h"
 #include "Fighter.h"
@@ -24,27 +26,63 @@ protected:
 	IMoveset *MyMoveset;
 	IInputParser *MyInputParser;
 
+	uint32 IsLastWindow : 1;
+	uint32 IsWindowActive : 1;
+	FMoveWindow CurrentWindow;
+	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
+	float MoveDirection;
+
+	FTimerHandle TimerHandle_Window;
+	FTimerHandle TimerHandle_Stun;
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// Sets the window timer to the window's windup time to call OnWindowWindupFinished.
+	void StartCurrentWindowWindup();
+
+	// Calls StartCurrentWindow.
+	void OnCurrentWindowWindupFinished();
+
+	// Sets the window timer to the window's duration to call OnWindowFinished, sets up hitbox.
+	void StartCurrentWindow();
+
+	// Calls StartCurrentWindowWinddown, disables hitbox.
+	void OnCurrentWindowFinished();
+
+	// Sets the window timer to the window's winddown duration to call OnWindowWinddownFinished.
+	void StartCurrentWindowWinddown();
+
+	// Tells Moveset the window has finished.
+	void OnCurrentWindowWinddownFinished();
+
+	// Checks to see if we're mid-window, cleans up if we are and informs Moveset.
+	void InterruptWindow();
+
+	// Requests the FighterWorld perform a scan.
+	void PerformHitboxScan();
+
+	// Tells input parser control has been returned.
+	void OnStunFinished();
+
 public:	
 	/** IFighterState implementation */
-	virtual void RegisterFighterWorld(class UObject* FighterWorld) override;
-	virtual void RegisterFighter(class UObject* Fighter) override;
-	virtual void RegisterMoveset(class UObject* Moveset) override;
-	virtual void RegisterInputParser(class UObject* InputParser) override;
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
+	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
+	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) override;
 	virtual bool IsInputBlocked() const override;
 	virtual bool IsBlocking() const override;
+	virtual bool IsStunned() const override;
+	virtual bool IsMidMove() const override;
 	virtual void StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence) override;
 	virtual void StartStun(float Duration) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void Jump() override;
+	virtual void OnLand() override;
 	/** End IFighterState implmementation */
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
-	
 };

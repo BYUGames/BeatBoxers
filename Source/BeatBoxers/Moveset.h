@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -23,10 +23,10 @@ class BEATBOXERS_API IMoveset
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the fighterstate so it can push requests to start new windows. */
-	virtual void RegisterFighterState(class UObject* FighterState) = 0;
+	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) = 0;
 
 	/** Saves a reference to the solo tracker so it can push requests to stat a solo. */
-	virtual void RegisterSoloTracker(class UObject* SoloTracker) = 0;
+	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) = 0;
 
 	/** Call to execute whatever move, or move in current combo, comes next according to the given input. */
 	virtual void ReceiveInputToken(EInputToken Token) = 0;

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -25,7 +25,10 @@ public:
 	/** Called by FighterStates/Projectiles before performing traces. Allows the game to intercept override requests. */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const = 0;
 
-	/** Request made by FighterStates/Projectiles to attempt to impact/damage the world. Damages and effects will be applied by the world, hit result should be used to add actors to the ignore list. */
-	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TArray<class AActor*>& IgnoreActors, class AActor* Source, class AController* SourceController) = 0;
+	/** Request made by FighterStates/Projectiles to search for targets. */
+	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) = 0;
+
+	/** Request made to apply damage to an actor. */
+	virtual void HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) = 0;
 	
 };

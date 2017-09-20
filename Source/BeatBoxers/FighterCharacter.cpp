@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #include "FighterCharacter.h"
 
@@ -59,7 +59,7 @@ const IFighterWorld* AFighterCharacter::GetFighterWorld() const
 	{
 		if (GetWorld()->GetAuthGameMode() != nullptr)
 		{
-			return Cast<IFighterWorld>(GetWorld()->GetAuthGameMode());
+			return Cast<IFighterWorld>((UObject*)GetWorld()->GetAuthGameMode());
 		}
 		else
 		{
@@ -156,41 +156,41 @@ void AFighterCharacter::PostInitializeComponents()
 
 	if (AllGood)
 	{
-		GetSelfAsFighter()->RegisterFighterState(Cast<UObject>(FighterState));
+		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 
-		GetFighterState()->RegisterFighterWorld(Cast<UObject>(GetFighterWorld()));
-		GetFighterState()->RegisterFighter(Cast<UObject>(this));
-		GetFighterState()->RegisterMoveset(Cast<UObject>(Moveset));
-		GetFighterState()->RegisterInputParser(Cast<UObject>(InputParser));
+		GetFighterState()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
+		GetFighterState()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
+		GetFighterState()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
+		GetFighterState()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
 
-		GetMoveset()->RegisterFighterState(Cast<UObject>(FighterState));
-		GetMoveset()->RegisterSoloTracker(Cast<UObject>(SoloTracker));
+		GetMoveset()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
+		GetMoveset()->RegisterSoloTracker(TWeakObjectPtr<UObject>(Cast<UObject>(SoloTracker)));
 
-		GetSoloTracker()->RegisterMoveset(Cast<UObject>(Moveset));
+		GetSoloTracker()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
 
-		GetInputParser()->RegisterFighterState(Cast<UObject>(FighterState));
-		GetInputParser()->RegisterMoveset(Cast<UObject>(Moveset));
+		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
+		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
 	}
 }
 
-void AFighterCharacter::RegisterFighterState(class UObject* NewFighterState)
+void AFighterCharacter::RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState)
 {
-	if (NewFighterState == nullptr)
+	if (NewFighterState.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given nullptr to register as FighterState."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}
 	else
 	{
-		MyFighterState = Cast<IFighterState>(NewFighterState);
+		MyFighterState = Cast<IFighterState>(NewFighterState.Get());
 
 		if (MyFighterState == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given %s to register as FighterState, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(NewFighterState));
+			UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given %s to register as FighterState, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(NewFighterState.Get()));
 		}
 	}
 }
 
-void AFighterCharacter::RegisterOpponent(class AActor* Opponent)
+void AFighterCharacter::RegisterOpponent(TWeakObjectPtr<AActor> Opponent)
 {
 	MyOpponent = Opponent;
 }
@@ -219,6 +219,11 @@ EStance AFighterCharacter::GetStance() const
 {
 	//TODO
 	return EStance::SE_Standing;
+}
+
+TWeakObjectPtr<AController> AFighterCharacter::GetFighterController() const
+{
+	return GetController();
 }
 
 void AFighterCharacter::SetWantsToCrouch(bool WantsToCrouch)

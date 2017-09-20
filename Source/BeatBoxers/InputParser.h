@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #pragma once
 
@@ -22,10 +22,10 @@ class BEATBOXERS_API IInputParser
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/** Saves a reference to the fighterstate so it can query if input is blocked and send requests to be passed on to the Fighter. */
-	virtual void RegisterFighterState(class UObject* FighterState) = 0;
+	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) = 0;
 
 	/** Saves a reference to the movestate so it can push input tokens. */
-	virtual void RegisterMoveset(class UObject* Moveset) = 0;
+	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) = 0;
 
 	/** Receives notification from FighterState when control may be input again. Input buffer should send its request after receiving such a signal. */
 	virtual void OnControlReturned() = 0;

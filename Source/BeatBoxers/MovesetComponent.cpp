@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright 2017 BYU Animation
 
 #include "MovesetComponent.h"
 
@@ -33,34 +33,34 @@ void UMovesetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	// ...
 }
 
-void UMovesetComponent::RegisterFighterState(class UObject* FighterState)
+void UMovesetComponent::RegisterFighterState(TWeakObjectPtr<UObject> FighterState)
 {
-	if (FighterState == nullptr)
+	if (!FighterState.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given nullptr to register as FighterState."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}
 	else
 	{
-		MyFighterState = Cast<IFighterState>(FighterState);
+		MyFighterState = Cast<IFighterState>(FighterState.Get());
 		if (MyFighterState == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState));
+			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState.Get()));
 		}
 	}
 }
 
-void UMovesetComponent::RegisterSoloTracker(class UObject* SoloTracker)
+void UMovesetComponent::RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker)
 {
-	if (SoloTracker == nullptr)
+	if (!SoloTracker.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given nullptr to register as SoloTracker."), *GetNameSafe(this));
+		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given invalid object to register as SoloTracker."), *GetNameSafe(this));
 	}
 	else
 	{
-		MySoloTracker = Cast<ISoloTracker>(SoloTracker);
+		MySoloTracker = Cast<ISoloTracker>(SoloTracker.Get());
 		if (MySoloTracker == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as SoloTracker, but it doesn't implement ISoloTracker."), *GetNameSafe(this), *GetNameSafe(SoloTracker));
+			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as SoloTracker, but it doesn't implement ISoloTracker."), *GetNameSafe(this), *GetNameSafe(SoloTracker.Get()));
 		}
 	}
 }

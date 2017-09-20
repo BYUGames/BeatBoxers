@@ -14,6 +14,9 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	Moveset = CreateDefaultSubobject<UMovesetComponent>(TEXT("Moveset"));
 	InputParser = CreateDefaultSubobject<UInputParserComponent>(TEXT("InputParser"));
 	SoloTracker = CreateDefaultSubobject<USoloTrackerComponent>(TEXT("SoloTracker"));
+
+	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
 }
 
 // Called when the game starts or when spawned

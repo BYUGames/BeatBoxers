@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "BeatBoxers.h"
 #include "BeatBoxersGameModeBase.h"
 #include "Fighter.h"

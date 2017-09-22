@@ -1,7 +1,9 @@
 // copyright 2017 BYU Animation
 
 #include "FighterStateComponent.h"
-
+#include "GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values for this component's properties
 UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& ObjectInitializer)
@@ -235,6 +237,7 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 
 void UFighterStateComponent::StartCurrentWindow()
 {
+
 	if (CurrentWindow.Duration <= 0)
 	{
 		// Window has no duration.
@@ -268,6 +271,8 @@ void UFighterStateComponent::OnCurrentWindowFinished()
 
 void UFighterStateComponent::StartCurrentWindowWinddown()
 {
+	HasMoveWindowHit = false;
+	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.Winddown <= 0)
 	{
 		// Window has no winddown.
@@ -287,6 +292,10 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 
 void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 {
+	if (HasMoveWindowHit == false)
+	{
+		PlayerAttackerEffects(CurrentWindow.MissSFX);
+	}
 	IsWindowActive = false;
 	if (MyMoveset != nullptr)
 		MyMoveset->OnWindowFinished(false);
@@ -340,7 +349,7 @@ void UFighterStateComponent::PerformHitboxScan()
 				ActorsToIgnore.Add(HitResult.Actor);
 				if (MyFighter != nullptr)
 				{
-					MyFighterWorld->HitActor(
+					EHitResponse Response = MyFighterWorld->HitActor(
 						HitResult.Actor,
 						MyFighterWorld->GetDamageType(
 							MyFighter->GetStance(),
@@ -351,6 +360,58 @@ void UFighterStateComponent::PerformHitboxScan()
 						GetOwner(),
 						(Pawn == nullptr) ? nullptr : Pawn->GetController()
 					);
+
+					FTransform ImpactTransform = FTransform(HitResult.ImpactNormal.Rotation(), HitResult.ImpactPoint, FVector::OneVector);
+					FTransform RelativeTransform;
+					switch (Response)
+					{
+					case EHitResponse::HE_Hit:
+						HasMoveWindowHit = true;
+						//TODO verify this is correct multiplication order
+						RelativeTransform = ImpactTransform * CurrentWindow.DefenderHit.SFX.RelativeTransform;
+						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
+						{
+							UGameplayStatics::SpawnEmitterAtLocation(
+								GetOwner()->GetWorld(),
+								CurrentWindow.DefenderHit.SFX.ParticleSystem,
+								RelativeTransform
+							);
+						}
+						if (CurrentWindow.DefenderHit.SFX.SoundCue != nullptr)
+						{
+							UGameplayStatics::SpawnSoundAtLocation(
+								GetOwner(),
+								CurrentWindow.DefenderHit.SFX.SoundCue,
+								RelativeTransform.GetLocation(),
+								RelativeTransform.GetRotation().Rotator()
+							);
+						}
+						break;
+					case EHitResponse::HE_Blocked:
+						HasMoveWindowHit = true;
+						//TODO verify this is correct multiplication order
+						RelativeTransform = ImpactTransform * CurrentWindow.DefenderBlock.SFX.RelativeTransform;
+						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)
+						{
+							UGameplayStatics::SpawnEmitterAtLocation(
+								GetOwner()->GetWorld(),
+								CurrentWindow.DefenderBlock.SFX.ParticleSystem,
+								RelativeTransform
+							);
+						}
+						if (CurrentWindow.DefenderBlock.SFX.SoundCue != nullptr)
+						{
+							UGameplayStatics::SpawnSoundAtLocation(
+								GetOwner(),
+								CurrentWindow.DefenderBlock.SFX.SoundCue,
+								RelativeTransform.GetLocation(),
+								RelativeTransform.GetRotation().Rotator()
+							);
+						}
+						break;
+					default:
+						break;
+					}
 				}
 			}
 		}
@@ -362,5 +423,54 @@ void UFighterStateComponent::OnStunFinished()
 	if (MyInputParser != nullptr)
 	{
 		MyInputParser->OnControlReturned();
+	}
+}
+
+void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
+{
+	if (Effects.AttachToActor)
+	{
+		if (Effects.ParticleSystem != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAttached(
+				Effects.ParticleSystem,
+				GetOwner()->GetDefaultAttachComponent(),
+				NAME_None,
+				Effects.RelativeTransform.GetTranslation(),
+				Effects.RelativeTransform.GetRotation().Rotator()
+				);
+		}
+		if (Effects.SoundCue != nullptr)
+		{
+			UGameplayStatics::SpawnSoundAttached(
+				Effects.SoundCue,
+				GetOwner()->GetDefaultAttachComponent(),
+				NAME_None,
+				Effects.RelativeTransform.GetTranslation(),
+				Effects.RelativeTransform.GetRotation().Rotator()
+			);
+		}
+	}
+	else
+	{
+		//TODO verify this is correct multiplication order
+		FTransform RelativeTransform = GetOwner()->GetTransform() * Effects.RelativeTransform;
+		if (Effects.ParticleSystem != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetOwner()->GetWorld(),
+				Effects.ParticleSystem,
+				RelativeTransform
+			);
+		}
+		if (Effects.SoundCue != nullptr)
+		{
+			UGameplayStatics::SpawnSoundAtLocation(
+				GetOwner(),
+				Effects.SoundCue,
+				RelativeTransform.GetLocation(),
+				RelativeTransform.GetRotation().Rotator()
+			);
+		}
 	}
 }

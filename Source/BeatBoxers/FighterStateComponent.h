@@ -12,8 +12,10 @@
 #include "FighterWorld.h"
 #include "Moveset.h"
 #include "InputParser.h"
+#include "BBFunctionLibrary.h"
 #include "FighterStateComponent.generated.h"
 
+class AActor;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UFighterStateComponent : public UActorComponent, public IFighterState
@@ -28,6 +30,7 @@ protected:
 
 	uint32 IsLastWindow : 1;
 	uint32 IsWindowActive : 1;
+	uint32 HasMoveWindowHit : 1;
 	FMoveWindow CurrentWindow;
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
@@ -64,6 +67,9 @@ protected:
 
 	// Tells input parser control has been returned.
 	void OnStunFinished();
+
+	// Plays effects relative to the attacker.
+	void PlayerAttackerEffects(FEffects& Effects);
 
 public:	
 	/** IFighterState implementation */

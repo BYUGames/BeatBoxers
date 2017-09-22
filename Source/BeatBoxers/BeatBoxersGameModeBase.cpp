@@ -23,7 +23,8 @@ struct FHitResult ABeatBoxersGameModeBase::TraceHitbox(FMoveHitbox Hitbox, TArra
 	return FHitResult();
 }
 
-void ABeatBoxersGameModeBase::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
+EHitResponse ABeatBoxersGameModeBase::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
 {
 	//TODO
+	return EHitResponse::HE_Hit;
 }

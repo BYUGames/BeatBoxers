@@ -13,6 +13,14 @@ enum class EFilter : uint8
 	FE_Prohibited	UMETA(DisplayName = "Prohibited")
 };
 
+UENUM(BlueprintType)
+enum class EHitResponse : uint8
+{
+	HE_Hit		UMETA(DisplayName = "Hit"),
+	HE_Blocked	UMETA(DisplayName = "Blocked"),
+	HE_Missed	UMETA(DisplayName = "Missed")
+};
+
 USTRUCT(BlueprintType)
 struct FStanceFilter
 {
@@ -69,6 +77,9 @@ struct FEffects
 	class USoundCue* SoundCue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint32 AttachToActor : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTransform RelativeTransform;
 };
 
@@ -77,10 +88,10 @@ struct FMovement
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector Delta;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsRelativeToAttackerFacing : 1;
 };
 
@@ -90,15 +101,15 @@ struct FMoveHitbox
 	GENERATED_USTRUCT_BODY()
 
 	/** Where to begin the trace from, relative to attacker's position and facing. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector Origin;
 
 	/** Where to end the trace, relative to attacker's position and facing. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector End;
 
 	/** Radius to trace. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Radius;
 };
 
@@ -107,16 +118,16 @@ struct FImpactData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMovement ImpartedMovement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Damage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float StunLength;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
 };
 
@@ -126,23 +137,23 @@ struct FMoveWindow
 	GENERATED_USTRUCT_BODY()
 
 	/** For convenience, how long this window lasts before enabling its hitbox and starting its duration. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Windup;
 
 	/** How long this window lasts. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Duration;
 
 	/** For convenience, how long this window lasts after its duration has expired and it has disabled its hitbox. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Winddown;
 
 	/** Whether this window, and move, can be interrupted by taking damage during it. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Interruptible : 1;
 
 	/** Whether or not landing a blow during this window starts the character's solo. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 BeginsSolo : 1;
 
 	/** If this window does damage other than the type corresponding to the stance the attacker is in, specify that damage type here. */
@@ -150,35 +161,39 @@ struct FMoveWindow
 	EFighterDamageType DamageTypeOverride;
 
 	/** Movement applied to the attacker when entering this window. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMovement AttackerMovement;
 
 	/** Whether this window has an active hitbox. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsHitboxActive : 1;
 
 	/** Hitbox used during this window. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMoveHitbox Hitbox;
 
-	/** Impact data used when a defender is hit during this window. Transform relative to the impact point. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/** Impact data used when a defender is hit during this window. Transform relative to the impact point, can't be attached. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefenderHit;
 
-	/** Impact data used when a defender it hit, but successfully blocked, during this window. Transform relative to the impact point. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/** Impact data used when a defender it hit, but successfully blocked, during this window. Transform relative to the impact point, can't be attached. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefenderBlock;
 
-	/** Effects played when entering this window. Transform relative to attacker. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/** Effects played when this window misses. Transform relative to attacker, attaches to attacker. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects MissSFX;
+
+	/** Effects played when entering this window. Transform relative to attacker, attaches to attacker. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
 
 	/** Whether landing on the ground during this window immediately ends it. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingEndsWindow : 1;
 
 	/** Whether landing on the ground during this window immediately interrupts the move. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

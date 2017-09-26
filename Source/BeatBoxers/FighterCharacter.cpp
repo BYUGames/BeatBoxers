@@ -1,6 +1,7 @@
 // copyright 2017 BYU Animation
 
 #include "FighterCharacter.h"
+#include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 
 
 // Sets default values
@@ -17,6 +18,9 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	GetCapsuleComponent()->SetHiddenInGame(false);
 }
 
 // Called when the game starts or when spawned
@@ -38,7 +42,16 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	InputComponent->BindAxis("Horizontal", this, &AFighterCharacter::InputAxisHorizontal);
+	InputComponent->BindAxis("Vertical", this, &AFighterCharacter::InputAxisVertical);
+	InputComponent->BindAction("Up", IE_Pressed, this, &AFighterCharacter::InputActionUp);
+	InputComponent->BindAction("Left", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
+	InputComponent->BindAction("Down", IE_Pressed, this, &AFighterCharacter::InputActionDown);
+	InputComponent->BindAction("Right", IE_Pressed, this, &AFighterCharacter::InputActionRight);
+	InputComponent->BindAction("Punch", IE_Pressed, this, &AFighterCharacter::InputActionPunch);
+	InputComponent->BindAction("Kick", IE_Pressed, this, &AFighterCharacter::InputActionKick);
 }
+
 
 IFighter* AFighterCharacter::GetSelfAsFighter()
 {
@@ -63,13 +76,13 @@ const IFighterWorld* AFighterCharacter::GetFighterWorld() const
 		}
 		else
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s world GetAuthGameMode returned null."), *GetNameSafe(this));
+			UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s world GetAuthGameMode returned null."), *GetNameSafe(this));
 			return nullptr;
 		}
 	}
 	else
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s GetWorld() returned null."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s GetWorld() returned null."), *GetNameSafe(this));
 		return nullptr;
 	}
 }
@@ -126,32 +139,32 @@ void AFighterCharacter::PostInitializeComponents()
 	if (GetSelfAsFighter() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s does not implement IFighter interface... what? How?"), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s does not implement IFighter interface... what? How?"), *GetNameSafe(this));
 	}
 	if (GetFighterWorld() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s GameMode does not implement IFighterWorld interface."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s GameMode does not implement IFighterWorld interface."), *GetNameSafe(this));
 	}
 	if (GetFighterState() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s FighterState does not implement IFighterState interface."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s FighterState does not implement IFighterState interface."), *GetNameSafe(this));
 	}
 	if (GetMoveset() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s Moveset does not implement IMoveset interface."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s Moveset does not implement IMoveset interface."), *GetNameSafe(this));
 	}
 	if (GetInputParser() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s InputParser does not implement IInputParser interface."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s InputParser does not implement IInputParser interface."), *GetNameSafe(this));
 	}
 	if (GetSoloTracker() == nullptr)
 	{
 		AllGood = false;
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s SoloTracker does not implement ISoloTracker interface."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s SoloTracker does not implement ISoloTracker interface."), *GetNameSafe(this));
 	}
 
 	if (AllGood)
@@ -177,7 +190,7 @@ void AFighterCharacter::RegisterFighterState(TWeakObjectPtr<UObject> NewFighterS
 {
 	if (NewFighterState.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given invalid object to register as FighterState."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}
 	else
 	{
@@ -185,7 +198,7 @@ void AFighterCharacter::RegisterFighterState(TWeakObjectPtr<UObject> NewFighterS
 
 		if (MyFighterState == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("FighterCharacter %s given %s to register as FighterState, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(NewFighterState.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s given %s to register as FighterState, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(NewFighterState.Get()));
 		}
 	}
 }
@@ -198,12 +211,21 @@ void AFighterCharacter::RegisterOpponent(TWeakObjectPtr<AActor> Opponent)
 float AFighterCharacter::GetOpponentDirection() const
 {
 	//TODO
-	return 0.f;
+	if (MyOpponent == nullptr)
+		return 0.f;
+
+	FVector MyPosition = GetActorLocation();
+	FVector OpponentPosition = MyOpponent->GetActorLocation();
+
+	return FMath::Sign((OpponentPosition - MyPosition).X);
 }
 
-void AFighterCharacter::ApplyMovement(FMovement Delta)
+void AFighterCharacter::ApplyMovement(FMovement Movement)
 {
-	//TODO
+	if (GetFighterState() != nullptr)
+	{
+		GetFighterState()->ApplyMovement(Movement);
+	}
 }
 
 bool AFighterCharacter::IsBlocking() const
@@ -217,8 +239,21 @@ bool AFighterCharacter::IsBlocking() const
 
 EStance AFighterCharacter::GetStance() const
 {
-	//TODO
-	return EStance::SE_Standing;
+	if (GetCharacterMovement()->IsMovingOnGround())
+	{
+		if (GetCharacterMovement()->IsCrouching())
+		{
+			return EStance::SE_Crouching;
+		}
+		else
+		{
+			return EStance::SE_Standing;
+		}
+	}
+	else
+	{
+		return EStance::SE_Jumping;
+	}
 }
 
 TWeakObjectPtr<AController> AFighterCharacter::GetFighterController() const
@@ -228,15 +263,87 @@ TWeakObjectPtr<AController> AFighterCharacter::GetFighterController() const
 
 void AFighterCharacter::SetWantsToCrouch(bool WantsToCrouch)
 {
-	//TODO
+	if (WantsToCrouch)
+	{
+		Crouch();
+	}
+	else
+	{
+		UnCrouch();
+	}
 }
 
 void AFighterCharacter::SetMoveDirection(float Direction)
 {
-	//TODO
+	GetCharacterMovement()->AddInputVector(FVector(Direction, 0, 0));
 }
 
 void AFighterCharacter::Jump()
 {
-	//TODO
+	ACharacter::Jump();
 }
+
+void AFighterCharacter::InputAxisHorizontal(float amount)
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputAxisHorizontal(amount);
+	}
+}
+
+void AFighterCharacter::InputAxisVertical(float amount)
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputAxisVertical(amount);
+	}
+}
+
+void AFighterCharacter::InputActionUp()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionUp(true);
+	}
+}
+
+void AFighterCharacter::InputActionLeft()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionLeft(true);
+	}
+}
+
+void AFighterCharacter::InputActionDown()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionDown(true);
+	}
+}
+
+void AFighterCharacter::InputActionRight()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionRight(true);
+	}
+}
+
+void AFighterCharacter::InputActionPunch()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionPunch(true);
+	}
+}
+
+void AFighterCharacter::InputActionKick()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionKick(true);
+	}
+}
+

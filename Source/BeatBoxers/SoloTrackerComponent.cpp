@@ -37,14 +37,14 @@ void USoloTrackerComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 {
 	if (!Moveset.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given invalid object to register as Moveset."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("USoloTrackerComponent %s given invalid object to register as Moveset."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyMoveset = Cast<IMoveset>(Moveset.Get());
 		if (MyMoveset == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("USoloTrackerComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("USoloTrackerComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
 		}
 	}
 }

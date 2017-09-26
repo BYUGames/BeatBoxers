@@ -85,6 +85,7 @@ public:
 	virtual void StartStun(float Duration) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
+	virtual void ApplyMovement(FMovement Movement) override;
 	virtual void Jump() override;
 	virtual void OnLand() override;
 	/** End IFighterState implmementation */

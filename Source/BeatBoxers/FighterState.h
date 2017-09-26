@@ -58,6 +58,9 @@ public:
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
 
+	/** Applied movement to character. A new call will override this. */
+	virtual void ApplyMovement(FMovement Movement) = 0;
+
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void Jump() = 0;
 

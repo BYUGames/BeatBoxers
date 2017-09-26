@@ -5,6 +5,17 @@
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.generated.h"
 
+template<typename TEnum>
+static FORCEINLINE FString GetEnumValueToString(const FString& Name, TEnum Value)
+{
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, *Name, true);
+	if (!enumPtr)
+	{
+		return FString("Invalid");
+	}
+	return enumPtr->GetNameByValue((int64)Value).ToString();
+}
+
 UENUM(BlueprintType)
 enum class EFilter : uint8
 {
@@ -90,6 +101,9 @@ struct FMovement
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector Delta;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Duration;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsRelativeToAttackerFacing : 1;

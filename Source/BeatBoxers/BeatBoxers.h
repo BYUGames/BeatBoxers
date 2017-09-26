@@ -4,4 +4,4 @@
 
 #include "CoreMinimal.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(BeatBoxersLog, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogBeatBoxers, Log, All);

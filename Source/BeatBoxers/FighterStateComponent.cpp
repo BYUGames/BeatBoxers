@@ -12,7 +12,6 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	SetComponentTickEnabled(false);
 	
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	IsWindowActive = false;
@@ -24,6 +23,7 @@ void UFighterStateComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetComponentTickEnabled(false);
 	// ...
 	
 }
@@ -41,14 +41,14 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 {
 	if (!FighterWorld.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given invalid object to register as FighterWorld."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as FighterWorld."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyFighterWorld = Cast<IFighterWorld>(FighterWorld.Get());
 		if (MyFighterWorld == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(this), *GetNameSafe(FighterWorld.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(this), *GetNameSafe(FighterWorld.Get()));
 		}
 	}
 }
@@ -57,14 +57,14 @@ void UFighterStateComponent::RegisterFighter(TWeakObjectPtr<UObject> Fighter)
 {
 	if (!Fighter.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given invalid object to register as Fighter."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as Fighter."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyFighter = Cast<IFighter>(Fighter.Get());
 		if (MyFighter == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given %s to register as Fighter, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(Fighter.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as Fighter, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(Fighter.Get()));
 		}
 	}
 }
@@ -73,14 +73,14 @@ void UFighterStateComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 {
 	if (!Moveset.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given invalid Object to register as Moveset."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid Object to register as Moveset."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyMoveset = Cast<IMoveset>(Moveset.Get());
 		if (MyMoveset == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
 		}
 	}
 }
@@ -89,14 +89,14 @@ void UFighterStateComponent::RegisterInputParser(TWeakObjectPtr<UObject> InputPa
 {
 	if (!InputParser.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given invalid object to register as InputParser."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as InputParser."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyInputParser = Cast<IInputParser>(InputParser.Get());
 		if (MyInputParser == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UFighterStateComponent %s given %s to register as InputParser, but it doesn't implement IInputParser."), *GetNameSafe(this), *GetNameSafe(InputParser.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as InputParser, but it doesn't implement IInputParser."), *GetNameSafe(this), *GetNameSafe(InputParser.Get()));
 		}
 	}
 }
@@ -137,7 +137,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, bool IsLastInS
 
 	if (IsStunned())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterStateComponent %s was requested to start a new window despite being stunned."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent %s was requested to start a new window despite being stunned."), *GetNameSafe(this));
 	}
 	else
 	{
@@ -176,6 +176,11 @@ void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 		return;
 	}
 	MyFighter->SetWantsToCrouch(WantsToCrouch);
+}
+
+void UFighterStateComponent::ApplyMovement(FMovement Movement)
+{
+	//TODO
 }
 
 void UFighterStateComponent::Jump()
@@ -322,14 +327,14 @@ void UFighterStateComponent::PerformHitboxScan()
 {
 	if (!IsWindowActive)
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterStateComponent tick is active but current window is not."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent tick is active but current window is not."), *GetNameSafe(this));
 		SetComponentTickEnabled(false);
 		return;
 	}
 
 	if (!CurrentWindow.IsHitboxActive)
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("FighterStateComponent tick is active but current window's hitbox is not active."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent tick is active but current window's hitbox is not active."), *GetNameSafe(this));
 		SetComponentTickEnabled(false);
 		return;
 	}

@@ -37,16 +37,16 @@ public:
 	virtual void InputAxisVertical(float Amount) = 0;
 
 	/** Receives events relating to the D-pad left button. */
-	virtual void InputActionDLeft(bool IsUp) = 0;
+	virtual void InputActionLeft(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad right button. */
-	virtual void InputActionDRight(bool IsUp) = 0;
+	virtual void InputActionRight(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad down button. */
-	virtual void InputActionDDown(bool IsUp) = 0;
+	virtual void InputActionDown(bool IsUp) = 0;
 
 	/** Receives events relating to the D-pad up button. */
-	virtual void InputActionDUp(bool IsUp) = 0;
+	virtual void InputActionUp(bool IsUp) = 0;
 
 	/** Receives events relating to the punch button. */
 	virtual void InputActionPunch(bool IsUp) = 0;

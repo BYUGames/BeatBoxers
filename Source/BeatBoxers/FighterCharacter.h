@@ -50,12 +50,21 @@ protected:
 	IFighterWorld* GetFighterWorld();
 	const IFighterWorld* GetFighterWorld() const;
 
+	void InputAxisHorizontal(float amount);
+	void InputAxisVertical(float amount);
+	void InputActionUp();
+	void InputActionLeft();
+	void InputActionDown();
+	void InputActionRight();
+	void InputActionPunch();
+	void InputActionKick();
+
 public:	
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
 	virtual void RegisterOpponent(TWeakObjectPtr<AActor> Opponent) override;
 	virtual float GetOpponentDirection() const override;
-	virtual void ApplyMovement(FMovement Delta) override;
+	virtual void ApplyMovement(FMovement Movement) override;
 	virtual bool IsBlocking() const override;
 	virtual EStance GetStance() const override;
 	virtual TWeakObjectPtr<AController> GetFighterController() const override;

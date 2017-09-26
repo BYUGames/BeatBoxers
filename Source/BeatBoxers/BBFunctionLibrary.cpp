@@ -13,12 +13,12 @@ FVector UBBFunctionLibrary::GetWorldPosition(AActor* Reference, FVector Relative
 {
 	if (Reference == nullptr)
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("BBFunctionLibrary passed invalid actor reference in GetRelativePosition."));
+		UE_LOG(LogBeatBoxers, Error, TEXT("BBFunctionLibrary passed invalid actor reference in GetRelativePosition."));
 		return RelativePosition;
 	}
 	if (Reference->IsPendingKill())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("BBFunctionLibrary passed actor %s, which is pending kill."), *GetNameSafe(Reference));
+		UE_LOG(LogBeatBoxers, Error, TEXT("BBFunctionLibrary passed actor %s, which is pending kill."), *GetNameSafe(Reference));
 		return RelativePosition;
 	}
 

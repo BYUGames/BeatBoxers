@@ -32,7 +32,7 @@ public:
 	virtual float GetOpponentDirection() const = 0;
 
 	/** Moves the character... somehow... maybe this should be handled by the FighterState, in which case this would be an interface for it. */
-	virtual void ApplyMovement(FMovement Delta) = 0;
+	virtual void ApplyMovement(FMovement Movement) = 0;
 
 	/** Interface for FighterState to see if character is attempting to block. */
 	virtual bool IsBlocking() const = 0;

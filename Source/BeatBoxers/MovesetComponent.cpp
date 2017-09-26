@@ -37,14 +37,14 @@ void UMovesetComponent::RegisterFighterState(TWeakObjectPtr<UObject> FighterStat
 {
 	if (!FighterState.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given invalid object to register as FighterState."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UMovesetComponent %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}
 	else
 	{
 		MyFighterState = Cast<IFighterState>(FighterState.Get());
 		if (MyFighterState == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UMovesetComponent %s given %s to register as FighterState, but it doesn't implement IFighterState."), *GetNameSafe(this), *GetNameSafe(FighterState.Get()));
 		}
 	}
 }
@@ -53,14 +53,14 @@ void UMovesetComponent::RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker)
 {
 	if (!SoloTracker.IsValid())
 	{
-		UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given invalid object to register as SoloTracker."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxers, Error, TEXT("UMovesetComponent %s given invalid object to register as SoloTracker."), *GetNameSafe(this));
 	}
 	else
 	{
 		MySoloTracker = Cast<ISoloTracker>(SoloTracker.Get());
 		if (MySoloTracker == nullptr)
 		{
-			UE_LOG(BeatBoxersLog, Error, TEXT("UMovesetComponent %s given %s to register as SoloTracker, but it doesn't implement ISoloTracker."), *GetNameSafe(this), *GetNameSafe(SoloTracker.Get()));
+			UE_LOG(LogBeatBoxers, Error, TEXT("UMovesetComponent %s given %s to register as SoloTracker, but it doesn't implement ISoloTracker."), *GetNameSafe(this), *GetNameSafe(SoloTracker.Get()));
 		}
 	}
 }
@@ -68,6 +68,7 @@ void UMovesetComponent::RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker)
 void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 {
 	//TODO
+	UE_LOG(LogBeatBoxers, Log, TEXT("%s received input token %s"), *GetNameSafe(this), *GetEnumValueToString<EInputToken>("EInputToken", Token));
 }
 
 void UMovesetComponent::OnWindowFinished(bool WasInterrupted)

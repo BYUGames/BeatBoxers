@@ -3,26 +3,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "BeatBoxersStructs.h"
 #include "FighterWorld.h"
-#include "BeatBoxersGameModeBase.generated.h"
+#include "BBGameMode.generated.h"
 
 class AFighterCharacter;
 class ABBPlayerController;
+class ABBGameState;
 
 /**
- * 
+ *
  */
 UCLASS()
-class BEATBOXERS_API ABeatBoxersGameModeBase : public AGameModeBase, public IFighterWorld
+class BEATBOXERS_API ABBGameMode : public AGameMode, public IFighterWorld
 {
 	GENERATED_UCLASS_BODY()
-	
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector InitialCameraLocation;
+	FVector InitialCameraLookAtLocation;
+
 public:
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
 	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
 	/** End IFighterWorld implementation */
+
+	virtual void StartMatch() override;
+
+	ABBGameState* GetBBGameState();
 };

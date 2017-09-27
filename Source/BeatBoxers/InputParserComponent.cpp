@@ -14,6 +14,8 @@ UInputParserComponent::UInputParserComponent(const class FObjectInitializer& Obj
 
 	InputBufferLength = 0.2f;
 	ComplexInputWindow = 0.2f;
+
+	CurrentState = TSharedPtr<FInputParserState>(new FDefaultState(this));
 }
 
 
@@ -56,7 +58,10 @@ void UInputParserComponent::StartComboTimer()
 
 void UInputParserComponent::OnComboTimer()
 {
-	LastDashInput = 0;
+	if (CurrentState.IsValid())
+	{
+		CurrentState.Get()->ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(this)));
+	}
 }
 
 void UInputParserComponent::PushInputToken(EInputToken NewToken)
@@ -157,54 +162,179 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
-	if (MyMoveset != nullptr)
+	if (CurrentState.IsValid())
 	{
-		if (LastDashInput < 0)
-		{
-			LastDashInput = 0;
-			PushInputToken(EInputToken::IE_DashLeft);
-		}
-		else
-		{
-			LastDashInput = -1;
-			StartComboTimer();
-		}
+		CurrentState.Get()->InputActionLeft();
 	}
 }
 
 void UInputParserComponent::InputActionRight(bool IsUp)
 {
-	if (MyMoveset != nullptr)
+	if (CurrentState.IsValid())
 	{
-		if (LastDashInput > 0)
-		{
-			LastDashInput = 0;
-			PushInputToken(EInputToken::IE_DashRight);
-		}
-		else
-		{
-			LastDashInput = 1;
-			StartComboTimer();
-		}
+		CurrentState.Get()->InputActionRight();
 	}
 }
 
 void UInputParserComponent::InputActionDown(bool IsUp)
 {
-	//nop
+	if (CurrentState.IsValid())
+	{
+		CurrentState.Get()->InputActionDown();
+	}
 }
 
 void UInputParserComponent::InputActionUp(bool IsUp)
 {
-	//nop
+	if (CurrentState.IsValid())
+	{
+		CurrentState.Get()->InputActionUp();
+	}
 }
 
 void UInputParserComponent::InputActionPunch(bool IsUp)
 {
-	PushInputToken(EInputToken::IE_Punch);
+	if (CurrentState.IsValid())
+	{
+		CurrentState.Get()->InputActionPunch();
+	}
 }
 
 void UInputParserComponent::InputActionKick(bool IsUp)
 {
-	PushInputToken(EInputToken::IE_Kick);
+	if (CurrentState.IsValid())
+	{
+		CurrentState.Get()->InputActionKick();
+	}
+}
+
+UInputParserComponent::FInputParserState::FInputParserState(UInputParserComponent *Parent)
+{
+	UInputParserComponent::FInputParserState::Parent = Parent;
+}
+
+void UInputParserComponent::FInputParserState::ChangeState(TSharedPtr<FInputParserState> NewState)
+{
+	if (Parent != nullptr)
+	{
+		TSharedPtr<FInputParserState> temp = Parent->CurrentState;
+		Parent->CurrentState = NewState;
+		if (IsComplex())
+		{
+			Parent->StartComboTimer();
+		}
+		if (temp.IsValid())
+		{
+			temp.Reset();
+		}
+	}
+}
+
+bool UInputParserComponent::FInputParserState::IsComplex() { return false; }
+
+void UInputParserComponent::FInputParserState::InputActionLeft() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionLeft()")); }
+void UInputParserComponent::FInputParserState::InputActionRight() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionRight()")); }
+void UInputParserComponent::FInputParserState::InputActionDown() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionDown()")); }
+void UInputParserComponent::FInputParserState::InputActionUp() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionUp()")); }
+void UInputParserComponent::FInputParserState::InputActionPunch() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionPunch()")); }
+void UInputParserComponent::FInputParserState::InputActionKick() { UE_LOG(LogBeatBoxers, Log, TEXT("FInputParserState::InputActionKick()")); }
+
+void UInputParserComponent::FDefaultState::InputActionLeft()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FDefaultState::InputActionLeft()"));
+	if (Parent != nullptr)
+	{
+		ChangeState(TSharedPtr<FInputParserState>(new FPreLeftDashState(Parent)));
+	}
+}
+
+void UInputParserComponent::FDefaultState::InputActionRight()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FDefaultState::InputActionRight()"));
+	if (Parent != nullptr)
+	{
+		ChangeState(TSharedPtr<FInputParserState>(new FPreRightDashState(Parent)));
+	}
+}
+
+void UInputParserComponent::FDefaultState::InputActionPunch()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FDefaultState::InputActionPunch()"));
+	if (Parent != nullptr)
+	{
+		Parent->PushInputToken(EInputToken::IE_Punch);
+	}
+}
+
+void UInputParserComponent::FDefaultState::InputActionKick()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FDefaultState::InputActionKick()"));
+	if (Parent != nullptr)
+	{
+		Parent->PushInputToken(EInputToken::IE_Kick);
+	}
+}
+
+bool UInputParserComponent::FPreLeftDashState::IsComplex() { return true; }
+
+void UInputParserComponent::FPreLeftDashState::InputActionLeft()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreLeftDashState::InputActionLeft()"));
+	if (Parent != nullptr)
+	{
+		Parent->PushInputToken(EInputToken::IE_DashLeft);
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
+}
+
+void UInputParserComponent::FPreLeftDashState::InputActionPunch()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreLeftDashState::InputActionPunch()"));
+	if (Parent != nullptr)
+	{
+		FDefaultState::InputActionPunch();
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
+}
+
+void UInputParserComponent::FPreLeftDashState::InputActionKick()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreLeftDashState::InputActionKick()"));
+	if (Parent != nullptr)
+	{
+		FDefaultState::InputActionKick();
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
+}
+
+bool UInputParserComponent::FPreRightDashState::IsComplex() { return true; }
+
+void UInputParserComponent::FPreRightDashState::InputActionRight()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreRightDashState::InputActionRight()"));
+	if (Parent != nullptr)
+	{
+		Parent->PushInputToken(EInputToken::IE_DashRight);
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
+}
+
+void UInputParserComponent::FPreRightDashState::InputActionPunch()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreRightDashState::InputActionPunch()"));
+	if (Parent != nullptr)
+	{
+		FDefaultState::InputActionPunch();
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
+}
+
+void UInputParserComponent::FPreRightDashState::InputActionKick()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("FPreRightDashState::InputActionKick()"));
+	if (Parent != nullptr)
+	{
+		FDefaultState::InputActionKick();
+		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+	}
 }

@@ -11,6 +11,8 @@
 #include "InputParserComponent.generated.h"
 
 class AActor;
+class UInputParserComponent;
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser
@@ -18,6 +20,57 @@ class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInp
 	GENERATED_UCLASS_BODY()
 
 protected:
+	class FInputParserState
+	{
+	protected:
+		UInputParserComponent *Parent;
+
+	public:
+		FInputParserState(UInputParserComponent *Parent);
+		void ChangeState(TSharedPtr<FInputParserState> NewState);
+
+		virtual bool IsComplex();
+		virtual void InputActionLeft();
+		virtual void InputActionRight();
+		virtual void InputActionDown();
+		virtual void InputActionUp();
+		virtual void InputActionPunch();
+		virtual void InputActionKick();
+	};
+
+	class FDefaultState : public FInputParserState
+	{
+	public:
+		FDefaultState(UInputParserComponent *Parent) : FInputParserState(Parent) {}
+
+		virtual void InputActionLeft() override;
+		virtual void InputActionRight() override;
+		virtual void InputActionPunch() override;
+		virtual void InputActionKick() override;
+	};
+
+	class FPreLeftDashState : public FDefaultState
+	{
+	public:
+		FPreLeftDashState(UInputParserComponent *Parent) : FDefaultState(Parent) {}
+
+		virtual bool IsComplex() override;
+		virtual void InputActionLeft() override;
+		virtual void InputActionPunch() override;
+		virtual void InputActionKick() override;
+	};
+
+	class FPreRightDashState : public FDefaultState
+	{
+	public:
+		FPreRightDashState(UInputParserComponent *Parent) : FDefaultState(Parent) {}
+
+		virtual bool IsComplex() override;
+		virtual void InputActionRight() override;
+		virtual void InputActionPunch() override;
+		virtual void InputActionKick() override;
+	};
+
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float InputBufferLength;
@@ -26,14 +79,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ComplexInputWindow;
 
-	// TODO replace this with a state machine.
-	int LastDashInput;
-
 	IFighterState *MyFighterState;
 	IMoveset *MyMoveset;
 	FTimerHandle TimerHandle_InputBuffer;
 	EInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
+
+	TSharedPtr<FInputParserState> CurrentState;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -63,4 +115,6 @@ public:
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };
+

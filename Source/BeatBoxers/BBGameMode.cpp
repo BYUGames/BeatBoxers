@@ -61,3 +61,32 @@ ABBGameState* ABBGameMode::GetBBGameState()
 {
 	return Cast<ABBGameState>(GameState);
 }
+
+void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement)
+{
+	if (!Movement.IsValid())
+	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode asked to apply invalid movement to actor."));
+		return;
+	}
+
+	if (!Target.IsValid())
+	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
+		return;
+	}
+
+	FMovement NonrelativeMovement = Movement;
+	if (Movement.IsRelativeToAttackerFacing && Source.IsValid())
+	{
+		FTransform Transform = Source.Get()->GetActorTransform();
+		Transform.SetScale3D(FVector::OneVector);
+		NonrelativeMovement.Delta = Transform.TransformVector(NonrelativeMovement.Delta) / NonrelativeMovement.Duration;
+	}
+
+	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
+	if (TargetFighter != nullptr)
+	{
+		TargetFighter->ApplyMovement(NonrelativeMovement);
+	}
+}

@@ -31,12 +31,15 @@ protected:
 	uint32 IsLastWindow : 1;
 	uint32 IsWindowActive : 1;
 	uint32 HasMoveWindowHit : 1;
+	uint32 IsBeingMoved : 1;
+	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
 
 	FTimerHandle TimerHandle_Window;
 	FTimerHandle TimerHandle_Stun;
+	FTimerHandle TimerHandle_Movement;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -71,6 +74,12 @@ protected:
 	// Plays effects relative to the attacker.
 	void PlayerAttackerEffects(FEffects& Effects);
 
+	// Attempts to disable tick.
+	void TryDisableTick();
+
+	// Called when the movement timer expires.
+	void OnMovementTimer();
+
 public:	
 	/** IFighterState implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
@@ -89,6 +98,8 @@ public:
 	virtual void Jump() override;
 	virtual void OnLand() override;
 	/** End IFighterState implmementation */
+
+	AController* GetOwnerController() const;
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

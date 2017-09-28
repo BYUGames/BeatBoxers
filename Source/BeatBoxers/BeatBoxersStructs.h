@@ -107,6 +107,10 @@ struct FMovement
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsRelativeToAttackerFacing : 1;
+
+	bool IsValid() const;
+
+	operator bool() const{ return IsValid(); }
 };
 
 USTRUCT(BlueprintType)

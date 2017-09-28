@@ -34,7 +34,21 @@ void UFighterStateComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	PerformHitboxScan();
+	bool action = false;
+	if (IsWindowActive && CurrentWindow.IsHitboxActive)
+	{
+		action = true;
+		PerformHitboxScan();
+	}
+	if (IsBeingMoved)
+	{
+		action = true;
+		GetOwner()->SetActorRelativeLocation(CurrentMovement.Delta, true);
+	}
+	if (!action)
+	{
+		SetComponentTickEnabled(false);
+	}
 }
 
 void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld)
@@ -180,7 +194,21 @@ void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 
 void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
-	//TODO
+	if (!Movement.IsValid())
+	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("FighterStateComponent %s asked to apply invalid movement."), *GetNameSafe(this));
+		return;
+	}
+	IsBeingMoved = true;
+	CurrentMovement = Movement;
+	SetComponentTickEnabled(true);
+	GetOwner()->GetWorldTimerManager().SetTimer(
+		TimerHandle_Movement,
+		this,
+		&UFighterStateComponent::OnMovementTimer,
+		CurrentMovement.Duration,
+		false
+	);
 }
 
 void UFighterStateComponent::Jump()
@@ -242,7 +270,13 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 
 void UFighterStateComponent::StartCurrentWindow()
 {
-
+	if (CurrentWindow.AttackerMovement)
+	{
+		if (MyFighterWorld != nullptr)
+		{
+			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
+		}
+	}
 	if (CurrentWindow.Duration <= 0)
 	{
 		// Window has no duration.
@@ -270,7 +304,7 @@ void UFighterStateComponent::StartCurrentWindow()
 
 void UFighterStateComponent::OnCurrentWindowFinished()
 {
-	SetComponentTickEnabled(false);
+	TryDisableTick();
 	StartCurrentWindowWinddown();
 }
 
@@ -325,19 +359,6 @@ void UFighterStateComponent::InterruptWindow()
 
 void UFighterStateComponent::PerformHitboxScan()
 {
-	if (!IsWindowActive)
-	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent tick is active but current window is not."), *GetNameSafe(this));
-		SetComponentTickEnabled(false);
-		return;
-	}
-
-	if (!CurrentWindow.IsHitboxActive)
-	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent tick is active but current window's hitbox is not active."), *GetNameSafe(this));
-		SetComponentTickEnabled(false);
-		return;
-	}
 
 	if (MyFighterWorld != nullptr)
 	{
@@ -372,6 +393,10 @@ void UFighterStateComponent::PerformHitboxScan()
 					{
 					case EHitResponse::HE_Hit:
 						HasMoveWindowHit = true;
+						if (CurrentWindow.DefenderHit.ImpartedMovement)
+						{
+							MyFighterWorld->ApplyMovementToActor(HitResult.Actor, GetOwner(), GetOwnerController(), CurrentWindow.DefenderHit.ImpartedMovement);
+						}
 						//TODO verify this is correct multiplication order
 						RelativeTransform = ImpactTransform * CurrentWindow.DefenderHit.SFX.RelativeTransform;
 						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
@@ -394,6 +419,10 @@ void UFighterStateComponent::PerformHitboxScan()
 						break;
 					case EHitResponse::HE_Blocked:
 						HasMoveWindowHit = true;
+						if (CurrentWindow.DefenderBlock.ImpartedMovement)
+						{
+							MyFighterWorld->ApplyMovementToActor(HitResult.Actor, GetOwner(), GetOwnerController(), CurrentWindow.DefenderBlock.ImpartedMovement);
+						}
 						//TODO verify this is correct multiplication order
 						RelativeTransform = ImpactTransform * CurrentWindow.DefenderBlock.SFX.RelativeTransform;
 						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)
@@ -478,4 +507,25 @@ void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
 			);
 		}
 	}
+}
+
+void UFighterStateComponent::TryDisableTick()
+{
+	if ((!IsWindowActive || !CurrentWindow.IsHitboxActive) && !IsBeingMoved)
+	{
+		SetComponentTickEnabled(false);
+	}
+}
+
+void UFighterStateComponent::OnMovementTimer()
+{
+	IsBeingMoved = false;
+	TryDisableTick();
+}
+
+AController* UFighterStateComponent::GetOwnerController() const
+{
+	APawn *PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner != nullptr) return PawnOwner->Controller;
+	return nullptr;
 }

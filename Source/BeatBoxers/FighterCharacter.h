@@ -34,6 +34,9 @@ protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AMoveState> DefaultMoveState;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -71,6 +74,7 @@ public:
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void Jump() override;
+	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
 	/** End IFighter implementation */
 
 	// Called every frame
@@ -80,5 +84,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
+
+	virtual void Landed(const FHitResult& Result) override;
 	
 };

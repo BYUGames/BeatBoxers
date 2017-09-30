@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "BeatBoxersStructs.generated.h"
 
 template<typename TEnum>
@@ -32,6 +33,15 @@ enum class EHitResponse : uint8
 	HE_Missed	UMETA(DisplayName = "Missed")
 };
 
+UENUM(BlueprintType)
+enum class EStance : uint8
+{
+	SE_NA			UMETA(DisplayName = "N/A"),
+	SE_Standing		UMETA(DisplayName = "Standing"),
+	SE_Crouching	UMETA(DisplayName = "Crouching"),
+	SE_Jumping		UMETA(DisplayName = "Jumping")
+};
+
 USTRUCT(BlueprintType)
 struct FStanceFilter
 {
@@ -45,15 +55,17 @@ struct FStanceFilter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EFilter Jumping;
+
+	bool FilterStance(EStance Stance) const;
 };
 
 UENUM(BlueprintType)
-enum class EStance : uint8
+enum class EWindowEnd : uint8
 {
-	SE_NA			UMETA(DisplayName = "N/A"),
-	SE_Standing		UMETA(DisplayName = "Standing"),
-	SE_Crouching	UMETA(DisplayName = "Crouching"),
-	SE_Jumping		UMETA(DisplayName = "Jumping")
+	WE_Finished		UMETA(DisplayName = "Finished Normally"),
+	WE_Stunned		UMETA(DisplayName = "Interrupted by Stun"),
+	WE_LandInt		UMETA(DisplayName = "Interrupted by Landing"),
+	WE_LandSkip		UMETA(DisplayName = "Ended Early by Landing")
 };
 
 UENUM(BlueprintType)
@@ -74,6 +86,33 @@ enum class EInputToken : uint8
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashLeft		UMETA(DisplayName = "DashLeft"),
 	IE_DashRight	UMETA(DisplayName = "DashRight")
+};
+
+USTRUCT(BlueprintType)
+struct FInputTokenBools
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Overrides all other options. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Any;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Punch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Kick;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Jump;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DashLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DashRight;
+
+	bool FilterInputToken(EInputToken Token) const;
 };
 
 USTRUCT(BlueprintType)
@@ -213,26 +252,6 @@ struct FMoveWindow
 	/** Whether landing on the ground during this window immediately interrupts the move. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAnimMontage* Animation;
-};
-
-USTRUCT(BlueprintType)
-struct FMove
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FMoveWindow> Windows;
-
-	/** Stance required to perform this move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FStanceFilter Stance;
-
-	/** How much special is required and consumed in perfoming this move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float SpecialCost;
 };
 
 USTRUCT(BlueprintType)
@@ -242,4 +261,40 @@ struct FSoloParameters
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int NumberOfNotes;
+};
+
+UCLASS(Abstract, MinimalAPI, Blueprintable)
+class AMoveState : public AActor
+{
+	GENERATED_UCLASS_BODY()
+
+protected:
+	int CurrentWindowIndex = 0;
+
+public:
+	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FInputTokenBools AllowedInputs;
+
+	/** This is what allows or prevents this move in certain stances, like standing or crouching. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FStanceFilter StanceFilter;
+
+	/** Amount of special required, and consumed, to use the move. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpecialCost;
+
+	/** Amount of time after finishing last window that the MovesetComponent will remain in this state until reverting to its default state. Negative means it stays in the state indefinitely. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MaxDuration;
+
+	/** This defines the actual things done in this move. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FMoveWindow> MoveWindows;
+
+	/** Possible moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray< TSubclassOf<AMoveState> > PossibleTransitions;
+
+	FMoveWindow* GetNextWindow();
 };

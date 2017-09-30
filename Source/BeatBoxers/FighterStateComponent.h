@@ -15,7 +15,6 @@
 #include "BBFunctionLibrary.h"
 #include "FighterStateComponent.generated.h"
 
-class AActor;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UFighterStateComponent : public UActorComponent, public IFighterState
@@ -28,7 +27,8 @@ protected:
 	IMoveset *MyMoveset;
 	IInputParser *MyInputParser;
 
-	uint32 IsLastWindow : 1;
+	float Special;
+
 	uint32 IsWindowActive : 1;
 	uint32 HasMoveWindowHit : 1;
 	uint32 IsBeingMoved : 1;
@@ -63,7 +63,7 @@ protected:
 	void OnCurrentWindowWinddownFinished();
 
 	// Checks to see if we're mid-window, cleans up if we are and informs Moveset.
-	void InterruptWindow();
+	void EndWindow(EWindowEnd WindowEnd);
 
 	// Requests the FighterWorld perform a scan.
 	void PerformHitboxScan();
@@ -90,13 +90,18 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual bool IsStunned() const override;
 	virtual bool IsMidMove() const override;
-	virtual void StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence) override;
+	virtual void StartMoveWindow(FMoveWindow& Window) override;
 	virtual void StartStun(float Duration) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual void Jump() override;
 	virtual void OnLand() override;
+	virtual float GetSpecialAmount() const override;
+	virtual void AddSpecial(float Amount) override;
+	virtual bool UseSpecial(float Amount) override;
+	virtual EStance GetStance() const override;
+	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

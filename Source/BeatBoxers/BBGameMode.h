@@ -11,6 +11,7 @@
 class AFighterCharacter;
 class ABBPlayerController;
 class ABBGameState;
+class IFighter;
 
 /**
  *
@@ -33,7 +34,10 @@ public:
 	virtual void ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement);
 	/** End IFighterWorld implementation */
 
+	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
+
 	virtual void StartMatch() override;
 
+	/** Returns gamestate cast to BBGameState, can return null if cast fails.*/
 	ABBGameState* GetBBGameState();
 };

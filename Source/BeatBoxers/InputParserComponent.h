@@ -10,9 +10,6 @@
 #include "FighterState.h"
 #include "InputParserComponent.generated.h"
 
-class AActor;
-class UInputParserComponent;
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser

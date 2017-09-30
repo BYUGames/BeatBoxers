@@ -16,9 +16,13 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	InputParser = CreateDefaultSubobject<UInputParserComponent>(TEXT("InputParser"));
 	SoloTracker = CreateDefaultSubobject<USoloTrackerComponent>(TEXT("SoloTracker"));
 
+	bUseControllerRotationYaw = false;
+
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate.Yaw = -1.f;
 
 	GetCapsuleComponent()->SetHiddenInGame(false);
 }
@@ -347,3 +351,17 @@ void AFighterCharacter::InputActionKick()
 	}
 }
 
+void AFighterCharacter::Landed(const FHitResult& Result)
+{
+	ACharacter::Landed(Result);
+
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->OnLand();
+	}
+}
+
+TSubclassOf<AMoveState> AFighterCharacter::GetDefaultMoveState()
+{
+	return DefaultMoveState;
+}

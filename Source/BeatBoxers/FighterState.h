@@ -31,7 +31,7 @@ public:
 	/** Saves a reference to the Moveset so it can push notifications about when a window ends. */
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) = 0;
 
-	/** Saves a reference to the InputParser so it can notify it when control is returned. */
+	/** Saves a reference to the InputParser so it can notify it when control is returned after a stun. */
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) = 0;
 
 	/** A check if input is being accepted right now or should be buffered. */
@@ -47,7 +47,7 @@ public:
 	virtual bool IsMidMove() const = 0;
 
 	/** Begins a move window. */
-	virtual void StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence) = 0;
+	virtual void StartMoveWindow(FMoveWindow& Window) = 0;
 
 	/** Interrupts any ongoing move windows and starts a stun. */
 	virtual void StartStun(float Duration) = 0;
@@ -66,4 +66,19 @@ public:
 
 	/** Receives pushed notifications from Fighter when landing on the ground. */
 	virtual void OnLand() = 0;
+
+	/** Returns the amount of "special" the fighter has. */
+	virtual float GetSpecialAmount() const = 0;
+
+	/** Adds an amount to the fighter's special. */
+	virtual void AddSpecial(float Amount) = 0;
+
+	/** Uses an amount of the fighter's special. Returns false and does not modify special if there is not that much available, otherwise subtracts special amount and returns true. */
+	virtual bool UseSpecial(float Amount) = 0;
+
+	/** An interface to the Fighter's GetStance function. */
+	virtual EStance GetStance() const = 0;
+
+	/** Interface to get DefaultMoveState from the Fighter. */
+	virtual TSubclassOf<AMoveState> GetDefaultMoveState() = 0;
 };

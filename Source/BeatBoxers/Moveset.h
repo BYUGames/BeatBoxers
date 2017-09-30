@@ -25,6 +25,9 @@ public:
 	/** Saves a reference to the fighterstate so it can push requests to start new windows. */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) = 0;
 
+	/** Saves a reference to the input parser so it can push notifications of when the current move has finished. */
+	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) = 0;
+
 	/** Saves a reference to the solo tracker so it can push requests to stat a solo. */
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) = 0;
 
@@ -32,7 +35,7 @@ public:
 	virtual void ReceiveInputToken(EInputToken Token) = 0;
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
-	virtual void OnWindowFinished(bool WasInterrupted) = 0;
+	virtual void OnWindowFinished(EWindowEnd WindowEnd) = 0;
 
 	/** Receives a push from FighterState telling it to begin its solo. */
 	virtual void BeginSolo() = 0;

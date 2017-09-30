@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
+
 // Sets default values for this component's properties
 UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -13,6 +14,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
+	Special = 0.f;
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	IsWindowActive = false;
 }
@@ -55,14 +57,14 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 {
 	if (!FighterWorld.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as FighterWorld."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid object to register as FighterWorld."), *GetNameSafe(GetOwner()));
 	}
 	else
 	{
 		MyFighterWorld = Cast<IFighterWorld>(FighterWorld.Get());
 		if (MyFighterWorld == nullptr)
 		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(this), *GetNameSafe(FighterWorld.Get()));
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(GetOwner()), *GetNameSafe(FighterWorld.Get()));
 		}
 	}
 }
@@ -71,14 +73,14 @@ void UFighterStateComponent::RegisterFighter(TWeakObjectPtr<UObject> Fighter)
 {
 	if (!Fighter.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as Fighter."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid object to register as Fighter."), *GetNameSafe(GetOwner()));
 	}
 	else
 	{
 		MyFighter = Cast<IFighter>(Fighter.Get());
 		if (MyFighter == nullptr)
 		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as Fighter, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(Fighter.Get()));
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as Fighter, but it doesn't implement IFighter."), *GetNameSafe(GetOwner()), *GetNameSafe(Fighter.Get()));
 		}
 	}
 }
@@ -87,14 +89,14 @@ void UFighterStateComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 {
 	if (!Moveset.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid Object to register as Moveset."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid Object to register as Moveset."), *GetNameSafe(GetOwner()));
 	}
 	else
 	{
 		MyMoveset = Cast<IMoveset>(Moveset.Get());
 		if (MyMoveset == nullptr)
 		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(this), *GetNameSafe(Moveset.Get()));
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(GetOwner()), *GetNameSafe(Moveset.Get()));
 		}
 	}
 }
@@ -103,14 +105,14 @@ void UFighterStateComponent::RegisterInputParser(TWeakObjectPtr<UObject> InputPa
 {
 	if (!InputParser.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given invalid object to register as InputParser."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid object to register as InputParser."), *GetNameSafe(GetOwner()));
 	}
 	else
 	{
 		MyInputParser = Cast<IInputParser>(InputParser.Get());
 		if (MyInputParser == nullptr)
 		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("UFighterStateComponent %s given %s to register as InputParser, but it doesn't implement IInputParser."), *GetNameSafe(this), *GetNameSafe(InputParser.Get()));
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as InputParser, but it doesn't implement IInputParser."), *GetNameSafe(GetOwner()), *GetNameSafe(InputParser.Get()));
 		}
 	}
 }
@@ -144,14 +146,14 @@ bool UFighterStateComponent::IsMidMove() const
 	return IsWindowActive;
 }
 
-void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, bool IsLastInSequence)
+void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window)
 {
+	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
-	IsLastWindow = IsLastInSequence;
 
 	if (IsStunned())
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("FighterStateComponent %s was requested to start a new window despite being stunned."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent was requested to start a new window despite being stunned."), *GetNameSafe(GetOwner()));
 	}
 	else
 	{
@@ -161,7 +163,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, bool IsLastInS
 
 void UFighterStateComponent::StartStun(float Duration)
 {
-	InterruptWindow();
+	EndWindow(EWindowEnd::WE_Stunned);
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_Stun,
 		this,
@@ -196,7 +198,7 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
 	if (!Movement.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Warning, TEXT("FighterStateComponent %s asked to apply invalid movement."), *GetNameSafe(this));
+		UE_LOG(LogUFighterState, Warning, TEXT("%s UFighterStateComponent asked to apply invalid movement."), *GetNameSafe(GetOwner()));
 		return;
 	}
 	IsBeingMoved = true;
@@ -224,18 +226,11 @@ void UFighterStateComponent::OnLand()
 	{
 		if (CurrentWindow.LandingInterrupts)
 		{
-			InterruptWindow();
+			EndWindow(EWindowEnd::WE_LandInt);
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
-			if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
-			{
-				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
-			}
-			if (MyMoveset != nullptr)
-			{
-				MyMoveset->OnWindowFinished(false);
-			}
+			EndWindow(EWindowEnd::WE_LandSkip);
 		}
 	}
 }
@@ -335,24 +330,21 @@ void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 	{
 		PlayerAttackerEffects(CurrentWindow.MissSFX);
 	}
-	IsWindowActive = false;
-	if (MyMoveset != nullptr)
-		MyMoveset->OnWindowFinished(false);
-	if (IsLastWindow && MyInputParser != nullptr)
-	{
-		MyInputParser->OnControlReturned();
-	}
+	EndWindow(EWindowEnd::WE_Finished);
 }
 
-void UFighterStateComponent::InterruptWindow()
+void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 {
-	IsWindowActive = false;
-	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+	if (IsWindowActive)
 	{
-		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+		IsWindowActive = false;
+		if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+		{
+			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+		}
 		if (MyMoveset != nullptr)
 		{
-			MyMoveset->OnWindowFinished(true);
+			MyMoveset->OnWindowFinished(WindowEnd);
 		}
 	}
 }
@@ -362,8 +354,14 @@ void UFighterStateComponent::PerformHitboxScan()
 
 	if (MyFighterWorld != nullptr)
 	{
+		FMoveHitbox WorldHitbox;
+		WorldHitbox.Radius = CurrentWindow.Hitbox.Radius;
+		FTransform Transform = GetOwner()->GetActorTransform();
+		WorldHitbox.Origin = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.Origin);
+		WorldHitbox.End = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.End);
+
 		FHitResult HitResult = MyFighterWorld->TraceHitbox(
-			CurrentWindow.Hitbox,
+			WorldHitbox,
 			ActorsToIgnore
 		);
 
@@ -528,4 +526,42 @@ AController* UFighterStateComponent::GetOwnerController() const
 	APawn *PawnOwner = Cast<APawn>(GetOwner());
 	if (PawnOwner != nullptr) return PawnOwner->Controller;
 	return nullptr;
+}
+
+float UFighterStateComponent::GetSpecialAmount() const
+{
+	return Special;
+}
+
+void UFighterStateComponent::AddSpecial(float Amount)
+{
+	Special += Amount;
+}
+
+bool UFighterStateComponent::UseSpecial(float Amount)
+{
+	if (Special >= Amount)
+	{
+		Special -= Amount;
+		return true;
+	}
+	return false;
+}
+
+EStance UFighterStateComponent::GetStance() const
+{
+	if (MyFighter == nullptr)
+	{
+		return EStance::SE_NA;
+	}
+	return MyFighter->GetStance();
+}
+
+TSubclassOf<AMoveState> UFighterStateComponent::GetDefaultMoveState()
+{
+	if (MyFighter == nullptr)
+	{
+		return TSubclassOf<AMoveState>(AMoveState::StaticClass());
+	}
+	return MyFighter->GetDefaultMoveState();
 }

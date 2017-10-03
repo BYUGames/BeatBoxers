@@ -222,6 +222,7 @@ void UInputParserComponent::FInputParserState::ChangeState(TSharedPtr<FInputPars
 	{
 		TSharedPtr<FInputParserState> temp = Parent->CurrentState;
 		Parent->CurrentState = NewState;
+		UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::ChangeState current state IsComplex() is %s."), (IsComplex()) ? TEXT("TRUE") : TEXT("FALSE"));
 		if (IsComplex())
 		{
 			Parent->StartComboTimer();

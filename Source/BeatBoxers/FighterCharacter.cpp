@@ -32,6 +32,11 @@ void AFighterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	if (MyFighterState == nullptr)
+	{
+		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
+	}
 }
 
 // Called every frame
@@ -173,8 +178,6 @@ void AFighterCharacter::PostInitializeComponents()
 
 	if (AllGood)
 	{
-		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
-
 		GetFighterState()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
 		GetFighterState()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetFighterState()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));

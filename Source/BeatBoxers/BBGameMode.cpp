@@ -156,15 +156,17 @@ void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjec
 {
 	if (!Movement.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode asked to apply invalid movement to actor."));
+		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply invalid movement to actor."));
 		return;
 	}
 
 	if (!Target.IsValid())
 	{
-		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
+		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
 		return;
 	}
+
+	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s, %f) to actor %s."), *Movement.Delta.ToString(), Movement.Duration, *GetNameSafe(Target.Get()));
 
 	FMovement NonrelativeMovement = Movement;
 	if (Movement.IsRelativeToAttackerFacing && Source.IsValid())

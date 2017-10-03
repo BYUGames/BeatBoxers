@@ -196,6 +196,7 @@ void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 
 void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
+	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s, %f)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.Delta.ToString(), Movement.Duration)
 	if (!Movement.IsValid())
 	{
 		UE_LOG(LogUFighterState, Warning, TEXT("%s UFighterStateComponent asked to apply invalid movement."), *GetNameSafe(GetOwner()));

@@ -2,6 +2,7 @@
 
 #include "FighterStateComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -17,6 +18,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	Special = 0.f;
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	IsWindowActive = false;
+	IsHitboxActive = false;
 }
 
 
@@ -37,20 +39,38 @@ void UFighterStateComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	bool action = false;
-	if (IsWindowActive && CurrentWindow.IsHitboxActive)
+	if (IsWindowActive && CurrentWindow.IsHitboxActive && IsHitboxActive)
 	{
 		action = true;
 		PerformHitboxScan();
 	}
-	if (IsBeingMoved)
-	{
-		action = true;
-		GetOwner()->SetActorRelativeLocation(CurrentMovement.Delta, true);
-	}
+	// Don't swap the order or short circuit evaluation might result in the call not being made
+	action = MovementStep(DeltaTime) || action;
 	if (!action)
 	{
 		SetComponentTickEnabled(false);
 	}
+}
+
+bool UFighterStateComponent::MovementStep(float DeltaTime)
+{
+	FVector LastSpot = GetOwner()->GetActorLocation();
+
+	if (IsBeingMoved)
+	{
+		UActorComponent *Component;
+		if ((Component = GetOwner()->GetComponentByClass(UCharacterMovementComponent::StaticClass())) != nullptr)
+		{
+			UCharacterMovementComponent *CharacterMovement = Cast<UCharacterMovementComponent>(Component);
+			CharacterMovement->AddImpulse(CurrentMovement.Delta, true);
+		}
+		else
+		{
+			GetOwner()->SetActorRelativeLocation(CurrentMovement.Delta * DeltaTime, true);
+		}
+		return true;
+	}
+	return false;
 }
 
 void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld)
@@ -196,22 +216,32 @@ void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 
 void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
-	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s, %f)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.Delta.ToString(), Movement.Duration)
 	if (!Movement.IsValid())
 	{
 		UE_LOG(LogUFighterState, Warning, TEXT("%s UFighterStateComponent asked to apply invalid movement."), *GetNameSafe(GetOwner()));
 		return;
 	}
+
+	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.ToString());
+
 	IsBeingMoved = true;
 	CurrentMovement = Movement;
-	SetComponentTickEnabled(true);
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		TimerHandle_Movement,
-		this,
-		&UFighterStateComponent::OnMovementTimer,
-		CurrentMovement.Duration,
-		false
-	);
+	if (Movement.Duration == 0)
+	{
+		MovementStep(1.f);
+		IsBeingMoved = false;
+	}
+	else
+	{
+		SetComponentTickEnabled(true);
+		GetOwner()->GetWorldTimerManager().SetTimer(
+			TimerHandle_Movement,
+			this,
+			&UFighterStateComponent::OnMovementTimer,
+			CurrentMovement.Duration,
+			false
+		);
+	}
 }
 
 void UFighterStateComponent::Jump()
@@ -227,10 +257,12 @@ void UFighterStateComponent::OnLand()
 	{
 		if (CurrentWindow.LandingInterrupts)
 		{
+			OnMovementTimer();
 			EndWindow(EWindowEnd::WE_LandInt);
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
+			OnMovementTimer();
 			EndWindow(EWindowEnd::WE_LandSkip);
 		}
 	}
@@ -286,6 +318,7 @@ void UFighterStateComponent::StartCurrentWindow()
 	{
 		if (CurrentWindow.IsHitboxActive)
 		{
+			IsHitboxActive = true;
 			SetComponentTickEnabled(true);
 		}
 		GetOwner()->GetWorldTimerManager().SetTimer(
@@ -300,6 +333,7 @@ void UFighterStateComponent::StartCurrentWindow()
 
 void UFighterStateComponent::OnCurrentWindowFinished()
 {
+	IsHitboxActive = false;
 	TryDisableTick();
 	StartCurrentWindowWinddown();
 }
@@ -510,7 +544,7 @@ void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
 
 void UFighterStateComponent::TryDisableTick()
 {
-	if ((!IsWindowActive || !CurrentWindow.IsHitboxActive) && !IsBeingMoved)
+	if ((!IsWindowActive || !CurrentWindow.IsHitboxActive || !IsHitboxActive) && !IsBeingMoved)
 	{
 		SetComponentTickEnabled(false);
 	}

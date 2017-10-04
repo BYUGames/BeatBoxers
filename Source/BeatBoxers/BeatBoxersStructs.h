@@ -150,6 +150,8 @@ struct FMovement
 	bool IsValid() const;
 
 	operator bool() const{ return IsValid(); }
+
+	FString ToString() const;
 };
 
 USTRUCT(BlueprintType)

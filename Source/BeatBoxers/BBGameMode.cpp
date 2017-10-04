@@ -6,6 +6,7 @@
 #include "BBPlayerController.h"
 #include "BBGameState.h"
 #include "EngineUtils.h"
+#include "DrawDebugHelpers.h"
 
 ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -30,7 +31,6 @@ struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObje
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActors(IgnoreActors);
-	Params.TraceTag = GetWorld()->DebugDrawTraceTag;
 
 	GetWorld()->SweepSingleByObjectType(
 		Result,
@@ -42,6 +42,16 @@ struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObje
 		Params
 	);
 
+	DrawDebugLine(
+		GetWorld(),
+		Hitbox.Origin,
+		Hitbox.End,
+		FColor::Red,
+		false,
+		-1.f,
+		(uint8)'\000',
+		Hitbox.Radius
+	);
 	return Result;
 }
 
@@ -166,14 +176,15 @@ void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjec
 		return;
 	}
 
-	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s, %f) to actor %s."), *Movement.Delta.ToString(), Movement.Duration, *GetNameSafe(Target.Get()));
+	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s) to actor %s."), *Movement.ToString(), *GetNameSafe(Target.Get()));
 
 	FMovement NonrelativeMovement = Movement;
 	if (Movement.IsRelativeToAttackerFacing && Source.IsValid())
 	{
 		FTransform Transform = Source.Get()->GetActorTransform();
 		FRotator Rotator = Source.Get()->GetActorRotation();
-		NonrelativeMovement.Delta = Rotator.RotateVector(NonrelativeMovement.Delta) / NonrelativeMovement.Duration;
+		NonrelativeMovement.Delta = Rotator.RotateVector(NonrelativeMovement.Delta);
+		NonrelativeMovement.IsRelativeToAttackerFacing = false;
 	}
 
 	IFighter *TargetFighter = Cast<IFighter>(Target.Get());

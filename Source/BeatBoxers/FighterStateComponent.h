@@ -30,6 +30,7 @@ protected:
 	float Special;
 
 	uint32 IsWindowActive : 1;
+	uint32 IsHitboxActive : 1;
 	uint32 HasMoveWindowHit : 1;
 	uint32 IsBeingMoved : 1;
 	FMovement CurrentMovement;
@@ -79,6 +80,8 @@ protected:
 
 	// Called when the movement timer expires.
 	void OnMovementTimer();
+
+	bool MovementStep(float DeltaTime);
 
 public:	
 	/** IFighterState implementation */

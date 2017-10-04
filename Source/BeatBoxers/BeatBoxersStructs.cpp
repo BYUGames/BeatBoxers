@@ -4,7 +4,7 @@
 
 bool FMovement::IsValid() const
 {
-	return Duration > 0 && (Delta.X != 0 || Delta.Y != 0 || Delta.Z != 0);
+	return Duration >= 0 && (Delta.X != 0 || Delta.Y != 0 || Delta.Z != 0);
 }
 
 bool FStanceFilter::FilterStance(EStance Stance) const
@@ -104,4 +104,9 @@ FMoveWindow* AMoveState::GetNextWindow()
 		return nullptr;
 	}
 	return &MoveWindows[CurrentWindowIndex++];
+}
+
+FString FMovement::ToString() const
+{
+	return FString::Printf(TEXT("Delta={%s} Duration=%f IsRelative=%s"), *Delta.ToString(), Duration, (IsRelativeToAttackerFacing) ? TEXT("TRUE") : TEXT("FALSE"));
 }

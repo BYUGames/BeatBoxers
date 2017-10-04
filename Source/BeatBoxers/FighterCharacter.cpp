@@ -23,6 +23,10 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate.Yaw = -1.f;
+	GetCharacterMovement()->GravityScale = 2.f;
+	GetCharacterMovement()->JumpZVelocity = 840.f;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 0.f;
+	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
 
 	GetCapsuleComponent()->SetHiddenInGame(false);
 }
@@ -32,11 +36,6 @@ void AFighterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
-	if (MyFighterState == nullptr)
-	{
-		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
-	}
 }
 
 // Called every frame
@@ -178,6 +177,7 @@ void AFighterCharacter::PostInitializeComponents()
 
 	if (AllGood)
 	{
+
 		GetFighterState()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
 		GetFighterState()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetFighterState()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
@@ -190,12 +190,14 @@ void AFighterCharacter::PostInitializeComponents()
 
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
+
+		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 	}
 }
 
 void AFighterCharacter::RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState)
 {
-	if (NewFighterState.IsValid())
+	if (!NewFighterState.IsValid())
 	{
 		UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s given invalid object to register as FighterState."), *GetNameSafe(this));
 	}

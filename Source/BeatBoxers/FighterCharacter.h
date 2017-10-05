@@ -33,6 +33,7 @@ public:
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;
+	float Facing;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AMoveState> DefaultMoveState;
@@ -70,6 +71,7 @@ public:
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual bool IsBlocking() const override;
 	virtual EStance GetStance() const override;
+	virtual void SetFacing(float Sign) override;
 	virtual TWeakObjectPtr<AController> GetFighterController() const override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
@@ -86,5 +88,9 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	virtual void Landed(const FHitResult& Result) override;
+
+	/** Gets the sign of the actor's facing in the X axis. */
+	UFUNCTION(BlueprintPure)
+	virtual float GetFacing() const;
 	
 };

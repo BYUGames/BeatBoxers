@@ -40,6 +40,9 @@ public:
 	/** Returns the current stance. */
 	virtual EStance GetStance() const = 0;
 
+	/** Set the fighter's facing. */
+	virtual void SetFacing(float Sign) = 0;
+
 	/** Get the figher's controller. */
 	virtual TWeakObjectPtr<AController> GetFighterController() const = 0;
 

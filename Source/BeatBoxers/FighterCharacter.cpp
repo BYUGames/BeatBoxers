@@ -21,7 +21,6 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate.Yaw = -1.f;
 	GetCharacterMovement()->GravityScale = 2.f;
 	GetCharacterMovement()->JumpZVelocity = 840.f;
@@ -29,6 +28,8 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
 
 	GetCapsuleComponent()->SetHiddenInGame(false);
+
+	Facing = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -369,4 +370,21 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 TSubclassOf<AMoveState> AFighterCharacter::GetDefaultMoveState()
 {
 	return DefaultMoveState;
+}
+
+void AFighterCharacter::SetFacing(float Sign)
+{
+	Sign = FMath::Sign(Sign);
+	if (Sign != 0.f && Sign != Facing)
+	{
+		Facing = Sign;
+		SetActorRotation(
+			FQuat(FVector(0, 0, 1), (Sign == 1.f) ? 0.f : PI)
+		);
+	}
+}
+
+float AFighterCharacter::GetFacing() const
+{
+	return Facing;
 }

@@ -29,11 +29,13 @@ void UInputParserComponent::BeginPlay()
 
 void UInputParserComponent::OnInputBufferTimer()
 {
+	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
 	InputBuffer = EInputToken::IE_None;
 }
 
 void UInputParserComponent::SetInputBuffer(EInputToken NewToken)
 {
+	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), InputBufferLength);
 	InputBuffer = NewToken;
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
@@ -46,6 +48,7 @@ void UInputParserComponent::SetInputBuffer(EInputToken NewToken)
 
 void UInputParserComponent::StartComboTimer()
 {
+	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent setting combo timer to %f."), *GetNameSafe(GetOwner()), ComplexInputWindow);
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_Combo,
 		this,
@@ -57,6 +60,7 @@ void UInputParserComponent::StartComboTimer()
 
 void UInputParserComponent::OnComboTimer()
 {
+	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent combo timer expired."), *GetNameSafe(GetOwner()));
 	if (CurrentState.IsValid())
 	{
 		CurrentState.Get()->ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(this)));
@@ -122,7 +126,7 @@ void UInputParserComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 
 void UInputParserComponent::OnControlReturned()
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned."), *GetNameSafe(GetOwner()));
+	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned, input buffer = %s."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), InputBuffer));
 	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_InputBuffer))
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_InputBuffer);
@@ -220,17 +224,28 @@ void UInputParserComponent::FInputParserState::ChangeState(TSharedPtr<FInputPars
 {
 	if (Parent != nullptr)
 	{
-		TSharedPtr<FInputParserState> temp = Parent->CurrentState;
-		Parent->CurrentState = NewState;
-		UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::ChangeState current state IsComplex() is %s."), (IsComplex()) ? TEXT("TRUE") : TEXT("FALSE"));
-		if (IsComplex())
+		if (!NewState.IsValid())
 		{
-			Parent->StartComboTimer();
-		}
-		if (temp.IsValid())
-		{
+			UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent FInputParserState requested a change to an invalid state."), *GetNameSafe(Parent->GetOwner()));
+			TSharedPtr<FInputParserState> temp = Parent->CurrentState;
+			Parent->CurrentState = TSharedPtr<FInputParserState>(new FDefaultState(Parent));
 			temp.Reset();
 		}
+		else
+		{
+			TSharedPtr<FInputParserState> temp = Parent->CurrentState;
+			Parent->CurrentState = NewState;
+			UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::ChangeState current state IsComplex() is %s."), (IsComplex()) ? TEXT("TRUE") : TEXT("FALSE"));
+			if (NewState.Get()->IsComplex())
+			{
+				Parent->StartComboTimer();
+			}
+			temp.Reset();
+		}
+	}
+	else
+	{
+		UE_LOG(LogUInputParser, Error, TEXT("UInputParserComponent a FInputParserState without a valid pointer to its parent is requested to change state."));
 	}
 }
 

@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "Moveset.h"
+#include "IMoveset.h"
 
 UMoveset::UMoveset(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

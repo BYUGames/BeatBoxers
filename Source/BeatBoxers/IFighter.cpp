@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "Fighter.h"
+#include "IFighter.h"
 
 UFighter::UFighter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

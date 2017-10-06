@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
 #include "BeatBoxersStructs.h"
-#include "FighterWorld.h"
+#include "IFighterWorld.h"
 #include "BBGameMode.generated.h"
 
 class AFighterCharacter;
@@ -27,11 +27,24 @@ protected:
 	FVector InitialCameraLookAtLocation;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FSoloStartEvent SoloStartEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FSoloEndEvent SoloEndEvent;
+
+	/** This actor must implement the IMusicBox interface. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AActor> DefaultMusicBoxClass;
+
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
 	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
 	virtual void ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement);
+	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
+	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
+	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
 	/** End IFighterWorld implementation */
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;

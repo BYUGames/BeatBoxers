@@ -92,18 +92,8 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 AMoveState::AMoveState(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	CurrentWindowIndex = 0;
 	MoveWindows = TArray<FMoveWindow>();
 	PossibleTransitions = TArray< TSubclassOf<AMoveState> >();
-}
-
-FMoveWindow* AMoveState::GetNextWindow()
-{
-	if (CurrentWindowIndex >= MoveWindows.Num())
-	{
-		return nullptr;
-	}
-	return &MoveWindows[CurrentWindowIndex++];
 }
 
 FString FMovement::ToString() const

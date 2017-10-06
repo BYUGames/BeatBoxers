@@ -6,12 +6,12 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BeatBoxers.h"
-#include "Fighter.h"
-#include "FighterWorld.h"
-#include "FighterState.h"
-#include "Moveset.h"
-#include "InputParser.h"
-#include "SoloTracker.h"
+#include "IFighter.h"
+#include "IFighterWorld.h"
+#include "IFighterState.h"
+#include "IMoveset.h"
+#include "IInputParser.h"
+#include "ISoloTracker.h"
 #include "FighterStateComponent.h"
 #include "MovesetComponent.h"
 #include "InputParserComponent.h"
@@ -64,6 +64,12 @@ protected:
 	void InputActionKick();
 
 public:	
+	UPROPERTY(BlueprintAssignable)
+	FStartJumpEvent StartJumpEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FLandEvent LandEvent;
+
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
 	virtual void RegisterOpponent(TWeakObjectPtr<AActor> Opponent) override;
@@ -77,6 +83,8 @@ public:
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void Jump() override;
 	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
+	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
+	virtual FLandEvent& GetOnLandEvent() override;
 	/** End IFighter implementation */
 
 	// Called every frame

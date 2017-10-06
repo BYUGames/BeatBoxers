@@ -5,8 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "SoloTracker.h"
-#include "Moveset.h"
+#include "ISoloTracker.h"
 #include "SoloTrackerComponent.generated.h"
 
 
@@ -16,16 +15,13 @@ class BEATBOXERS_API USoloTrackerComponent : public UActorComponent, public ISol
 	GENERATED_UCLASS_BODY()
 
 protected:
-	IMoveset *MyMoveset;
-
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
 	/** ISoloTracker implementation */
-	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void BeginSolo(FSoloParameters SoloParameters) override;
-	virtual void ReceiveInputToken(EInputToken Input) override;
+	virtual void EndSolo() override;
 	/** End ISoloTracker implementation */
 
 	// Called every frame

@@ -33,28 +33,12 @@ void USoloTrackerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void USoloTrackerComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
-{
-	if (!Moveset.IsValid())
-	{
-		UE_LOG(LogUSoloTracker, Error, TEXT("%s USoloTrackerComponent given invalid object to register as Moveset."), *GetNameSafe(GetOwner()));
-	}
-	else
-	{
-		MyMoveset = Cast<IMoveset>(Moveset.Get());
-		if (MyMoveset == nullptr)
-		{
-			UE_LOG(LogUSoloTracker, Error, TEXT("%s USoloTrackerComponent given %s to register as Moveset, but it doesn't implement IMoveset."), *GetNameSafe(GetOwner()), *GetNameSafe(Moveset.Get()));
-		}
-	}
-}
-
 void USoloTrackerComponent::BeginSolo(FSoloParameters SoloParameters)
 {
 	//TODO
 }
 
-void USoloTrackerComponent::ReceiveInputToken(EInputToken Input)
+void USoloTrackerComponent::EndSolo()
 {
 	//TODO
 }

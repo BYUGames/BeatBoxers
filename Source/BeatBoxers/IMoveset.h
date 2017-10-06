@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
-#include "Moveset.generated.h"
+#include "IMoveset.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
 class UMoveset : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()
@@ -36,13 +36,4 @@ public:
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) = 0;
-
-	/** Receives a push from FighterState telling it to begin its solo. */
-	virtual void BeginSolo() = 0;
-
-	/** Receives a push from the SoloTracker if it correctly hit the note and with what input. */
-	virtual void OnSoloCorrect(EInputToken Token) = 0;
-
-	/** Receives a push from the SoloTracker if it missed or used the wrong input. */
-	virtual void OnSoloIncorrect() = 0;
 };

@@ -1,10 +1,11 @@
 // copyright 2017 BYU Animation
 
 #include "BBGameMode.h"
-#include "Fighter.h"
+#include "IFighter.h"
 #include "FighterCharacter.h"
 #include "BBPlayerController.h"
 #include "BBGameState.h"
+#include "BasicMusicBox.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 
@@ -14,6 +15,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultPawnClass = AFighterCharacter::StaticClass();
 	PlayerControllerClass = ABBPlayerController::StaticClass();
 	GameStateClass = ABBGameState::StaticClass();
+	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
 	InitialCameraLocation = FVector(0, 500, 180);
 	InitialCameraLookAtLocation = FVector(0, 0, 180);
@@ -140,21 +142,46 @@ void ABBGameMode::StartMatch()
 	Super::StartMatch();
 
 	UE_LOG(LogBeatBoxers, Log, TEXT("Starting new match."));
-	ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
 	
 	if (GetBBGameState() != nullptr)
 	{
+		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
 		GetBBGameState()->MainCamera = Cast<ACameraActor>(Camera);
-	}
-
-	for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		APlayerController *PC = *ActorItr;
-		if (PC != nullptr)
+		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
-			PC->SetViewTarget(Camera);
+			APlayerController *PC = *ActorItr;
+			if (PC != nullptr)
+			{
+				PC->SetViewTarget(Camera);
+			}
+		}
+
+		if (DefaultMusicBoxClass.Get() != nullptr)
+		{
+			AActor *Actor = GetWorld()->SpawnActorDeferred<AActor>(DefaultMusicBoxClass.Get(), FTransform::Identity);
+			if (Actor != nullptr)
+			{
+				IMusicBox *WorldMusicBox = Cast<IMusicBox>(Actor);
+				if (WorldMusicBox != nullptr)
+				{
+					GetBBGameState()->WorldMusicBox = WorldMusicBox;
+				}
+				else
+				{
+					UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
+				}
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass is not set to a valid class."), *GetNameSafe(this));
 		}
 	}
+
 }
 
 ABBGameState* ABBGameMode::GetBBGameState()
@@ -192,4 +219,22 @@ void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjec
 	{
 		TargetFighter->ApplyMovement(NonrelativeMovement);
 	}
+}
+
+void ABBGameMode::StartSolo(TWeakObjectPtr<AActor> OneSoloing)
+{
+	if (OneSoloing.IsValid() && SoloStartEvent.IsBound())
+	{
+		SoloStartEvent.Broadcast(OneSoloing.Get());
+	}
+}
+
+FSoloStartEvent& ABBGameMode::GetOnSoloStartEvent()
+{
+	return SoloStartEvent;
+}
+
+FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
+{
+	return SoloEndEvent;
 }

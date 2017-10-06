@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
-#include "Fighter.generated.h"
+#include "IFighter.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartJumpEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLandEvent);
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
 class UFighter : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()
@@ -57,4 +60,8 @@ public:
 
 	/** Gets the DefaultMoveState, which is only here so that a blueprint implementing IFighter can change it. */
 	virtual TSubclassOf<AMoveState> GetDefaultMoveState() = 0;
+
+	virtual FStartJumpEvent& GetOnStartJumpEvent() = 0;
+
+	virtual FLandEvent& GetOnLandEvent() = 0;
 };

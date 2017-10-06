@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
-#include "FighterWorld.generated.h"
+#include "IFighterWorld.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoloStartEvent, AActor*, ActorSoloing);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSoloEndEvent);
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
 class UFighterWorld : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()
@@ -33,5 +36,10 @@ public:
 
 	/** Attempts to move the actor. */
 	virtual void ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement) = 0;
-	
+
+	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) = 0;
+
+	virtual FSoloStartEvent& GetOnSoloStartEvent() = 0;
+
+	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;
 };

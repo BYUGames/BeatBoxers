@@ -187,8 +187,6 @@ void AFighterCharacter::PostInitializeComponents()
 		GetMoveset()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetMoveset()->RegisterSoloTracker(TWeakObjectPtr<UObject>(Cast<UObject>(SoloTracker)));
 
-		GetSoloTracker()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
-
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
 
@@ -291,6 +289,10 @@ void AFighterCharacter::SetMoveDirection(float Direction)
 void AFighterCharacter::Jump()
 {
 	ACharacter::Jump();
+	if (StartJumpEvent.IsBound())
+	{
+		StartJumpEvent.Broadcast();
+	}
 }
 
 void AFighterCharacter::InputAxisHorizontal(float amount)
@@ -365,6 +367,10 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	{
 		MyFighterState->OnLand();
 	}
+	if (LandEvent.IsBound())
+	{
+		LandEvent.Broadcast();
+	}
 }
 
 TSubclassOf<AMoveState> AFighterCharacter::GetDefaultMoveState()
@@ -387,4 +393,14 @@ void AFighterCharacter::SetFacing(float Sign)
 float AFighterCharacter::GetFacing() const
 {
 	return Facing;
+}
+
+FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
+{
+	return StartJumpEvent;
+}
+
+FLandEvent& AFighterCharacter::GetOnLandEvent()
+{
+	return LandEvent;
 }

@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "FighterState.h"
+#include "IFighterState.h"
 
 UFighterState::UFighterState(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 #include "Camera/CameraActor.h"
+#include "IMusicBox.h"
 #include "BBGameState.generated.h"
 
 /**
@@ -16,7 +17,8 @@ class BEATBOXERS_API ABBGameState : public AGameState
 	GENERATED_UCLASS_BODY()
 	
 public:
-	ACameraActor* MainCamera;
+	IMusicBox *WorldMusicBox;
+	ACameraActor *MainCamera;
 	TMap<AController*, float> Scores;
 
 	UFUNCTION(BlueprintCallable)

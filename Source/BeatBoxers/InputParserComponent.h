@@ -5,11 +5,65 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "InputParser.h"
-#include "Moveset.h"
-#include "FighterState.h"
+#include "IInputParser.h"
+#include "IMoveset.h"
+#include "IFighterState.h"
 #include "InputParserComponent.generated.h"
 
+class UInputParserComponent;
+
+UCLASS()
+class UInputParserState : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	void ChangeState(UInputParserComponent *Parser, TSubclassOf<UInputParserState> NewState);
+
+	virtual bool IsComplex();
+	virtual void InputActionLeft(UInputParserComponent *Parser);
+	virtual void InputActionRight(UInputParserComponent *Parser);
+	virtual void InputActionDown(UInputParserComponent *Parser);
+	virtual void InputActionUp(UInputParserComponent *Parser);
+	virtual void InputActionPunch(UInputParserComponent *Parser);
+	virtual void InputActionKick(UInputParserComponent *Parser);
+};
+
+UCLASS()
+class UInputParserDefaultState : public UInputParserState
+{
+	GENERATED_BODY()
+
+public:
+	virtual void InputActionLeft(UInputParserComponent *Parser) override;
+	virtual void InputActionRight(UInputParserComponent *Parser) override;
+	virtual void InputActionPunch(UInputParserComponent *Parser) override;
+	virtual void InputActionKick(UInputParserComponent *Parser) override;
+};
+
+UCLASS()
+class UPreLeftDashState : public UInputParserDefaultState
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool IsComplex() override;
+	virtual void InputActionLeft(UInputParserComponent *Parser) override;
+	virtual void InputActionPunch(UInputParserComponent *Parser) override;
+	virtual void InputActionKick(UInputParserComponent *Parser) override;
+};
+
+UCLASS()
+class UPreRightDashState : public UInputParserDefaultState
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool IsComplex() override;
+	virtual void InputActionRight(UInputParserComponent *Parser) override;
+	virtual void InputActionPunch(UInputParserComponent *Parser) override;
+	virtual void InputActionKick(UInputParserComponent *Parser) override;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser
@@ -17,57 +71,6 @@ class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInp
 	GENERATED_UCLASS_BODY()
 
 protected:
-	class FInputParserState
-	{
-	protected:
-		UInputParserComponent *Parent;
-
-	public:
-		FInputParserState(UInputParserComponent *Parent);
-		void ChangeState(TSharedPtr<FInputParserState> NewState);
-
-		virtual bool IsComplex();
-		virtual void InputActionLeft();
-		virtual void InputActionRight();
-		virtual void InputActionDown();
-		virtual void InputActionUp();
-		virtual void InputActionPunch();
-		virtual void InputActionKick();
-	};
-
-	class FDefaultState : public FInputParserState
-	{
-	public:
-		FDefaultState(UInputParserComponent *Parent) : FInputParserState(Parent) {}
-
-		virtual void InputActionLeft() override;
-		virtual void InputActionRight() override;
-		virtual void InputActionPunch() override;
-		virtual void InputActionKick() override;
-	};
-
-	class FPreLeftDashState : public FDefaultState
-	{
-	public:
-		FPreLeftDashState(UInputParserComponent *Parent) : FDefaultState(Parent) {}
-
-		virtual bool IsComplex() override;
-		virtual void InputActionLeft() override;
-		virtual void InputActionPunch() override;
-		virtual void InputActionKick() override;
-	};
-
-	class FPreRightDashState : public FDefaultState
-	{
-	public:
-		FPreRightDashState(UInputParserComponent *Parent) : FDefaultState(Parent) {}
-
-		virtual bool IsComplex() override;
-		virtual void InputActionRight() override;
-		virtual void InputActionPunch() override;
-		virtual void InputActionKick() override;
-	};
-
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float InputBufferLength;
@@ -82,20 +85,17 @@ protected:
 	EInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
 
-	TSharedPtr<FInputParserState> CurrentState;
-
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
 	void OnInputBufferTimer();
 	void SetInputBuffer(EInputToken NewToken);
 
-	void StartComboTimer();
 	void OnComboTimer();
 
-	void PushInputToken(EInputToken NewToken);
-
 public:	
+	TSubclassOf<UInputParserState> CurrentStateClass;
+
 	/** IInputParser implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
@@ -109,6 +109,9 @@ public:
 	virtual void InputActionPunch(bool IsUp) override;
 	virtual void InputActionKick(bool IsUp) override;
 	/** End IInputParser implementation */
+
+	void PushInputToken(EInputToken NewToken);
+	void StartComboTimer();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

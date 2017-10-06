@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "Moveset.h"
-#include "FighterState.h"
-#include "InputParser.h"
-#include "SoloTracker.h"
+#include "IMoveset.h"
+#include "IFighterState.h"
+#include "IInputParser.h"
+#include "ISoloTracker.h"
 #include "MovesetComponent.generated.h"
 
 
@@ -18,7 +18,8 @@ class BEATBOXERS_API UMovesetComponent : public UActorComponent, public IMoveset
 	GENERATED_UCLASS_BODY()
 
 private:
-	TSubclassOf<AMoveState> DefaultState;
+	TSubclassOf<AMoveState> DefaultStateClass;
+	int CurrentWindowInState;
 
 	// Don't call this. It does no checking.
 	void SetState(TSubclassOf<AMoveState> State);
@@ -28,14 +29,11 @@ protected:
 	IInputParser *MyInputParser;
 	ISoloTracker *MySoloTracker;
 
-	AMoveState* CurrentState;
+	TSubclassOf<AMoveState> CurrentStateClass;
 	FTimerHandle TimerHandle_PostWait;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	/** Gets the current state or resets it to default if it can't be found. */
-	AMoveState* GetCurrentState();
 
 	/** Called when MaxDuration has been reached after finishing a move. */
 	void OnPostWaitExpired();
@@ -57,8 +55,5 @@ public:
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) override;
 	virtual void ReceiveInputToken(EInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
-	virtual void BeginSolo() override;
-	virtual void OnSoloCorrect(EInputToken Token) override;
-	virtual void OnSoloIncorrect() override;
 	/** End IMovesetImplementation */
 };

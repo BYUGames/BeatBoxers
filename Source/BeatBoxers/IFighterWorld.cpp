@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "FighterWorld.h"
+#include "IFighterWorld.h"
 
 UFighterWorld::UFighterWorld(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

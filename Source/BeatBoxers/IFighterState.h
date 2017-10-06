@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
-#include "FighterState.generated.h"
+#include "IFighterState.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
 class UFighterState : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()

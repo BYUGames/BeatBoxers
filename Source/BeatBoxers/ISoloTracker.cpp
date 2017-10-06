@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "SoloTracker.h"
+#include "ISoloTracker.h"
 
 USoloTracker::USoloTracker(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

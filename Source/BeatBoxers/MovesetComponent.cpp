@@ -8,7 +8,7 @@
 UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	DefaultState = AMoveState::StaticClass();
+	DefaultStateClass = AMoveState::StaticClass();
 }
 
 
@@ -16,25 +16,15 @@ UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectIniti
 void UMovesetComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (MyFighterState == nullptr)
+	if (MyFighterState != nullptr)
 	{
-		DefaultState = TSubclassOf<AMoveState>(AMoveState::StaticClass());
+		DefaultStateClass = MyFighterState->GetDefaultMoveState();
 	}
 	else
 	{
-		DefaultState = MyFighterState->GetDefaultMoveState();
+		DefaultStateClass = TSubclassOf<AMoveState>(AMoveState::StaticClass());
 	}
 	GotoDefaultState();
-}
-
-AMoveState* UMovesetComponent::GetCurrentState()
-{
-	if (CurrentState == nullptr)
-	{
-		GotoState(DefaultState.Get());
-	}
-
-	return CurrentState;
 }
 
 void UMovesetComponent::OnPostWaitExpired()
@@ -44,12 +34,12 @@ void UMovesetComponent::OnPostWaitExpired()
 
 void UMovesetComponent::GotoDefaultState()
 {
-	if (DefaultState.Get() == nullptr)
+	if (DefaultStateClass.Get() == nullptr)
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid default class!"), *GetNameSafe(GetOwner()));
 		return;
 	}
-	SetState(DefaultState);
+	SetState(DefaultStateClass);
 }
 
 void UMovesetComponent::SetState(TSubclassOf<AMoveState> State)
@@ -59,11 +49,8 @@ void UMovesetComponent::SetState(TSubclassOf<AMoveState> State)
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait);
 	}
-	if (CurrentState != nullptr && !CurrentState->IsPendingKill())
-	{
-		CurrentState->MarkPendingKill();
-	}
-	CurrentState = Cast<AMoveState>(GetWorld()->SpawnActor(State.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, FActorSpawnParameters()));
+	CurrentStateClass = State;
+	CurrentWindowInState = 0;
 }
 
 void UMovesetComponent::GotoState(TSubclassOf<AMoveState> NewState)
@@ -75,37 +62,32 @@ void UMovesetComponent::GotoState(TSubclassOf<AMoveState> NewState)
 	}
 	else
 	{
-		if (!NewState.Get()->IsChildOf(AMoveState::StaticClass()))
-		{
-			UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent passed a class reference that does not inherit from AMoveState."), *GetNameSafe(GetOwner()));
-			GotoDefaultState();
-		}
-		else
-		{
-			SetState(NewState);
-			StartNextWindow();
-		}
+		SetState(NewState);
+		StartNextWindow();
 	}
 }
 
 void UMovesetComponent::StartNextWindow()
 {
-	if (CurrentState == nullptr || CurrentState->IsPendingKill())
+	if (CurrentStateClass.Get() == nullptr)
 	{
-		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent CurrentState invalid when trying to start next window."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent CurrentStateClass invalid when trying to start next window."), *GetNameSafe(GetOwner()));
 		return;
 	}
-	FMoveWindow *NextWindow = CurrentState->GetNextWindow();
+	FMoveWindow *NextWindow =
+		(CurrentStateClass.GetDefaultObject()->MoveWindows.Num() > CurrentWindowInState) ?
+		&CurrentStateClass.GetDefaultObject()->MoveWindows[CurrentWindowInState++] :
+		nullptr;
 
 	if (NextWindow == nullptr)
 	{
 		// We've reached the end of this window list for this state.
-		if (CurrentState->MaxDuration == 0)
+		if (CurrentStateClass.GetDefaultObject()->MaxDuration == 0)
 		{
 			// End this state immediately.
 			GotoDefaultState();
 		}
-		else if (CurrentState->MaxDuration > 0)
+		else if (CurrentStateClass.GetDefaultObject()->MaxDuration > 0)
 		{
 			GetOwner()->GetWorldTimerManager().SetTimer(
 				TimerHandle_PostWait,
@@ -184,24 +166,24 @@ void UMovesetComponent::RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker)
 
 void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 {
-	UE_LOG(LogUMoveset, Log, TEXT("%s UMovesetComponent received input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token));
-	if (CurrentState == nullptr)
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token));
+	if (CurrentStateClass.Get() == nullptr)
 	{
 		GotoDefaultState();
 		return ReceiveInputToken(Token);
 	}
 
-	for (int i = 0; i < CurrentState->PossibleTransitions.Num(); i++)
+	for (int i = 0; i < CurrentStateClass.GetDefaultObject()->PossibleTransitions.Num(); i++)
 	{
-		AMoveState *PossibleMove = CurrentState->PossibleTransitions[i].GetDefaultObject();
-		if (PossibleMove->AllowedInputs.FilterInputToken(Token))
+		TSubclassOf<AMoveState> PossibleMove = CurrentStateClass.GetDefaultObject()->PossibleTransitions[i];
+		if (PossibleMove.GetDefaultObject()->AllowedInputs.FilterInputToken(Token))
 		{
-			if (MyFighterState != nullptr && PossibleMove->StanceFilter.FilterStance(MyFighterState->GetStance()))
+			if (MyFighterState != nullptr && PossibleMove.GetDefaultObject()->StanceFilter.FilterStance(MyFighterState->GetStance()))
 			{
-				if (MyFighterState->UseSpecial(PossibleMove->SpecialCost))
+				if (MyFighterState->UseSpecial(PossibleMove.GetDefaultObject()->SpecialCost))
 				{
 					// Found a state that we can enter.
-					GotoState(CurrentState->PossibleTransitions[i]);
+					GotoState(CurrentStateClass.GetDefaultObject()->PossibleTransitions[i]);
 					return;
 				}
 			}
@@ -209,7 +191,7 @@ void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 	}
 	// We weren't able to use any of the possible transitions or there were none to begin with.
 
-	if (CurrentState->GetClass() != DefaultState.Get())
+	if (CurrentStateClass != DefaultStateClass)
 	{
 		// Reached the end of this combo, return to default and try this input again.
 		GotoDefaultState();
@@ -238,19 +220,4 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 	default:
 		break;
 	}
-}
-
-void UMovesetComponent::BeginSolo()
-{
-	//TODO
-}
-
-void UMovesetComponent::OnSoloCorrect(EInputToken Token)
-{
-	//TODO
-}
-
-void UMovesetComponent::OnSoloIncorrect()
-{
-	//TODO
 }

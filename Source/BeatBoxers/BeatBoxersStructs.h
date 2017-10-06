@@ -270,9 +270,6 @@ class AMoveState : public AActor
 {
 	GENERATED_UCLASS_BODY()
 
-protected:
-	int CurrentWindowIndex = 0;
-
 public:
 	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -297,6 +294,39 @@ public:
 	/** Possible moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray< TSubclassOf<AMoveState> > PossibleTransitions;
+};
 
-	FMoveWindow* GetNextWindow();
+UENUM(BlueprintType)
+enum class ENoteType : uint8
+{
+	NE_None		UMETA(DisplayName = "None")
+};
+
+/** Results returned to the moveset from the fretboard. */
+USTRUCT(BlueprintType)
+struct FFretboardInputResult
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Was the input correct. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint32 WasCorrect : 1;
+
+	/** Positive means they were late, negative means early. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeDifference;
+};
+
+/** Representation of notes sent to the fretboard. */
+USTRUCT(BlueprintType)
+struct FNoteData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ENoteType NoteType;
+
+	/** Time until this note passes. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeLeft;
 };

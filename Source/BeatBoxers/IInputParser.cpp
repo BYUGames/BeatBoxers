@@ -1,6 +1,6 @@
 // copyright 2017 BYU Animation
 
-#include "InputParser.h"
+#include "IInputParser.h"
 
 UInputParser::UInputParser(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

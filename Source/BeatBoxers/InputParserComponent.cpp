@@ -14,7 +14,7 @@ UInputParserComponent::UInputParserComponent(const class FObjectInitializer& Obj
 	InputBufferLength = 0.2f;
 	ComplexInputWindow = 0.2f;
 
-	CurrentState = TSharedPtr<FInputParserState>(new FDefaultState(this));
+	CurrentStateClass = UInputParserDefaultState::StaticClass();
 }
 
 
@@ -61,9 +61,9 @@ void UInputParserComponent::StartComboTimer()
 void UInputParserComponent::OnComboTimer()
 {
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent combo timer expired."), *GetNameSafe(GetOwner()));
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(this)));
+		CurrentStateClass.GetDefaultObject()->ChangeState(this, UInputParserDefaultState::StaticClass());
 	}
 }
 
@@ -169,191 +169,182 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionLeft();
+		CurrentStateClass.GetDefaultObject()->InputActionLeft(this);
 	}
 }
 
 void UInputParserComponent::InputActionRight(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionRight();
+		CurrentStateClass.GetDefaultObject()->InputActionRight(this);
 	}
 }
 
 void UInputParserComponent::InputActionDown(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionDown();
+		CurrentStateClass.GetDefaultObject()->InputActionDown(this);
 	}
 }
 
 void UInputParserComponent::InputActionUp(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionUp();
+		CurrentStateClass.GetDefaultObject()->InputActionUp(this);
 	}
 }
 
 void UInputParserComponent::InputActionPunch(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionPunch();
+		CurrentStateClass.GetDefaultObject()->InputActionPunch(this);
 	}
 }
 
 void UInputParserComponent::InputActionKick(bool IsUp)
 {
-	if (CurrentState.IsValid())
+	if (CurrentStateClass.Get() != nullptr)
 	{
-		CurrentState.Get()->InputActionKick();
+		CurrentStateClass.GetDefaultObject()->InputActionKick(this);
 	}
 }
 
-UInputParserComponent::FInputParserState::FInputParserState(UInputParserComponent *Parent)
+void UInputParserState::ChangeState(UInputParserComponent *Parser, TSubclassOf<UInputParserState> NewState)
 {
-	UInputParserComponent::FInputParserState::Parent = Parent;
-}
-
-void UInputParserComponent::FInputParserState::ChangeState(TSharedPtr<FInputParserState> NewState)
-{
-	if (Parent != nullptr)
+	if (Parser != nullptr)
 	{
-		if (!NewState.IsValid())
+		if (NewState.Get() == nullptr)
 		{
-			UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent FInputParserState requested a change to an invalid state."), *GetNameSafe(Parent->GetOwner()));
-			TSharedPtr<FInputParserState> temp = Parent->CurrentState;
-			Parent->CurrentState = TSharedPtr<FInputParserState>(new FDefaultState(Parent));
-			temp.Reset();
+			UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent FInputParserState requested a change to an invalid state."), *GetNameSafe(Parser->GetOwner()));
+			Parser->CurrentStateClass = UInputParserDefaultState::StaticClass();
 		}
 		else
 		{
-			TSharedPtr<FInputParserState> temp = Parent->CurrentState;
-			Parent->CurrentState = NewState;
+			Parser->CurrentStateClass = NewState;
 			UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::ChangeState current state IsComplex() is %s."), (IsComplex()) ? TEXT("TRUE") : TEXT("FALSE"));
-			if (NewState.Get()->IsComplex())
+			if (NewState.GetDefaultObject()->IsComplex())
 			{
-				Parent->StartComboTimer();
+				Parser->StartComboTimer();
 			}
-			temp.Reset();
 		}
 	}
 	else
 	{
-		UE_LOG(LogUInputParser, Error, TEXT("UInputParserComponent a FInputParserState without a valid pointer to its parent is requested to change state."));
+		UE_LOG(LogUInputParser, Error, TEXT("An UInputParserState was requested to change state without a pointer to a valid UInputParserComponent."));
 	}
 }
 
-bool UInputParserComponent::FInputParserState::IsComplex() { return false; }
+bool UInputParserState::IsComplex() { return false; }
 
-void UInputParserComponent::FInputParserState::InputActionLeft() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionLeft()")); }
-void UInputParserComponent::FInputParserState::InputActionRight() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionRight()")); }
-void UInputParserComponent::FInputParserState::InputActionDown() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionDown()")); }
-void UInputParserComponent::FInputParserState::InputActionUp() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionUp()")); }
-void UInputParserComponent::FInputParserState::InputActionPunch() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionPunch()")); }
-void UInputParserComponent::FInputParserState::InputActionKick() { UE_LOG(LogUInputParser, Verbose, TEXT("FInputParserState::InputActionKick()")); }
+void UInputParserState::InputActionLeft(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionLeft()")); }
+void UInputParserState::InputActionRight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionRight()")); }
+void UInputParserState::InputActionDown(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDown()")); }
+void UInputParserState::InputActionUp(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionUp()")); }
+void UInputParserState::InputActionPunch(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionPunch()")); }
+void UInputParserState::InputActionKick(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionKick()")); }
 
-void UInputParserComponent::FDefaultState::InputActionLeft()
+void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FDefaultState::InputActionLeft()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLeft()"));
+	if (Parser != nullptr)
 	{
-		ChangeState(TSharedPtr<FInputParserState>(new FPreLeftDashState(Parent)));
+		ChangeState(Parser, UPreLeftDashState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FDefaultState::InputActionRight()
+void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FDefaultState::InputActionRight()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
+	if (Parser != nullptr)
 	{
-		ChangeState(TSharedPtr<FInputParserState>(new FPreRightDashState(Parent)));
+		ChangeState(Parser, UPreRightDashState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FDefaultState::InputActionPunch()
+void UInputParserDefaultState::InputActionPunch(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FDefaultState::InputActionPunch()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionPunch()"));
+	if (Parser != nullptr)
 	{
-		Parent->PushInputToken(EInputToken::IE_Punch);
+		Parser->PushInputToken(EInputToken::IE_Punch);
 	}
 }
 
-void UInputParserComponent::FDefaultState::InputActionKick()
+void UInputParserDefaultState::InputActionKick(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FDefaultState::InputActionKick()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionKick()"));
+	if (Parser != nullptr)
 	{
-		Parent->PushInputToken(EInputToken::IE_Kick);
+		Parser->PushInputToken(EInputToken::IE_Kick);
 	}
 }
 
-bool UInputParserComponent::FPreLeftDashState::IsComplex() { return true; }
+bool UPreLeftDashState::IsComplex() { return true; }
 
-void UInputParserComponent::FPreLeftDashState::InputActionLeft()
+void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreLeftDashState::InputActionLeft()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
+	if (Parser != nullptr)
 	{
-		Parent->PushInputToken(EInputToken::IE_DashLeft);
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		Parser->PushInputToken(EInputToken::IE_DashLeft);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FPreLeftDashState::InputActionPunch()
+void UPreLeftDashState::InputActionPunch(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreLeftDashState::InputActionPunch()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionPunch()"));
+	if (Parser != nullptr)
 	{
-		FDefaultState::InputActionPunch();
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		UInputParserDefaultState::InputActionPunch(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FPreLeftDashState::InputActionKick()
+void UPreLeftDashState::InputActionKick(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreLeftDashState::InputActionKick()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionKick()"));
+	if (Parser != nullptr)
 	{
-		FDefaultState::InputActionKick();
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		UInputParserDefaultState::InputActionKick(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
 
-bool UInputParserComponent::FPreRightDashState::IsComplex() { return true; }
+bool UPreRightDashState::IsComplex() { return true; }
 
-void UInputParserComponent::FPreRightDashState::InputActionRight()
+void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreRightDashState::InputActionRight()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
+	if (Parser != nullptr)
 	{
-		Parent->PushInputToken(EInputToken::IE_DashRight);
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		Parser->PushInputToken(EInputToken::IE_DashRight);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FPreRightDashState::InputActionPunch()
+void UPreRightDashState::InputActionPunch(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreRightDashState::InputActionPunch()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionPunch()"));
+	if (Parser != nullptr)
 	{
-		FDefaultState::InputActionPunch();
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		UInputParserDefaultState::InputActionPunch(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
 
-void UInputParserComponent::FPreRightDashState::InputActionKick()
+void UPreRightDashState::InputActionKick(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("FPreRightDashState::InputActionKick()"));
-	if (Parent != nullptr)
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionKick()"));
+	if (Parser != nullptr)
 	{
-		FDefaultState::InputActionKick();
-		ChangeState(TSharedPtr<FInputParserState>(new FDefaultState(Parent)));
+		UInputParserDefaultState::InputActionKick(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }

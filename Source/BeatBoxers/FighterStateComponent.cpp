@@ -170,6 +170,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window)
 {
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
+	CurrentWindowEnd = EWindowEnd::WE_Finished;
 
 	if (IsStunned())
 	{
@@ -258,12 +259,14 @@ void UFighterStateComponent::OnLand()
 		if (CurrentWindow.LandingInterrupts)
 		{
 			OnMovementTimer();
-			EndWindow(EWindowEnd::WE_LandInt);
+			CurrentWindowEnd = EWindowEnd::WE_LandInt;
+			OnCurrentWindowFinished();
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
 			OnMovementTimer();
-			EndWindow(EWindowEnd::WE_LandSkip);
+			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
+			OnCurrentWindowFinished();
 		}
 	}
 }
@@ -361,11 +364,12 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 
 void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 {
-	if (HasMoveWindowHit == false)
+	if (HasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Finished)
 	{
 		PlayerAttackerEffects(CurrentWindow.MissSFX);
 	}
-	EndWindow(EWindowEnd::WE_Finished);
+	//Uses CurrentWindowEnd so landing interrutps can still play winddown.
+	EndWindow(CurrentWindowEnd);
 }
 
 void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
@@ -426,10 +430,6 @@ void UFighterStateComponent::PerformHitboxScan()
 					{
 					case EHitResponse::HE_Hit:
 						HasMoveWindowHit = true;
-						if (CurrentWindow.DefenderHit.ImpartedMovement)
-						{
-							MyFighterWorld->ApplyMovementToActor(HitResult.Actor, GetOwner(), GetOwnerController(), CurrentWindow.DefenderHit.ImpartedMovement);
-						}
 						//TODO verify this is correct multiplication order
 						RelativeTransform = ImpactTransform * CurrentWindow.DefenderHit.SFX.RelativeTransform;
 						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
@@ -452,10 +452,6 @@ void UFighterStateComponent::PerformHitboxScan()
 						break;
 					case EHitResponse::HE_Blocked:
 						HasMoveWindowHit = true;
-						if (CurrentWindow.DefenderBlock.ImpartedMovement)
-						{
-							MyFighterWorld->ApplyMovementToActor(HitResult.Actor, GetOwner(), GetOwnerController(), CurrentWindow.DefenderBlock.ImpartedMovement);
-						}
 						//TODO verify this is correct multiplication order
 						RelativeTransform = ImpactTransform * CurrentWindow.DefenderBlock.SFX.RelativeTransform;
 						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)

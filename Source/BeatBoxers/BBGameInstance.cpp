@@ -5,5 +5,4 @@
 UBBGameInstance::UBBGameInstance(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	NewGameData.IsSecondPlayerHuman = true;
 }

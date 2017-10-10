@@ -33,6 +33,7 @@ protected:
 	uint32 IsHitboxActive : 1;
 	uint32 HasMoveWindowHit : 1;
 	uint32 IsBeingMoved : 1;
+	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;

@@ -151,6 +151,10 @@ struct FMovement
 
 	operator bool() const{ return IsValid(); }
 
+	FMovement operator-();
+
+	FMovement operator*(float f);
+
 	FString ToString() const;
 };
 
@@ -247,11 +251,11 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
 
-	/** Whether landing on the ground during this window immediately ends it. */
+	/** Whether landing on the ground during this window immediately ends it, still plays winddown. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingEndsWindow : 1;
 
-	/** Whether landing on the ground during this window immediately interrupts the move. */
+	/** Whether landing on the ground during this window immediately interrupts the move (combo), still plays winddown. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
 };
@@ -341,7 +345,4 @@ struct FNewGameData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> Player1Class;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint32 IsSecondPlayerHuman : 1;
 };

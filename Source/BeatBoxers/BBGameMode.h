@@ -42,7 +42,7 @@ public:
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
 	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
-	virtual void ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement);
+	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement);
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
@@ -54,11 +54,6 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
-	virtual AActor* ABBGameMode::ChoosePlayerStart_Implementation(AController* Player) override;
-
-	/** Returns gamestate cast to BBGameState, can return null if cast fails.*/
-	ABBGameState* GetBBGameState();
-
-	/** Returns gameinstance cast to BBGameInstance, can return null if cast fails.*/
-	UBBGameInstance* GetBBGameInstance();
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 };

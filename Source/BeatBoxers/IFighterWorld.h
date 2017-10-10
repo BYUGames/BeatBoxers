@@ -34,8 +34,8 @@ public:
 	/** Request made to apply damage to an actor. */
 	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) = 0;
 
-	/** Attempts to move the actor. */
-	virtual void ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement) = 0;
+	/** Attempts to move the actor. Returns -1 on error, 1 if actor was pressed against a wall, 0 otherwise. */
+	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement) = 0;
 
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) = 0;
 

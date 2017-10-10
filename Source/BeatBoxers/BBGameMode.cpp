@@ -7,6 +7,7 @@
 #include "BBGameState.h"
 #include "BBGameInstance.h"
 #include "BBPlayerStart.h"
+#include "BBPlayerState.h"
 #include "BasicMusicBox.h"
 #include "GameFramework/PlayerState.h"
 #include "EngineUtils.h"
@@ -18,10 +19,11 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 {
 	DefaultPawnClass = AFighterCharacter::StaticClass();
 	PlayerControllerClass = ABBPlayerController::StaticClass();
+	PlayerStateClass = ABBPlayerState::StaticClass();
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
-	InitialCameraLocation = FVector(0, 500, 180);
+	InitialCameraLocation = FVector(0, 800, 180);
 	InitialCameraLookAtLocation = FVector(0, 0, 180);
 }
 
@@ -76,7 +78,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	if (Fighter == nullptr)
 	{
 		//Behavior not defined for non-fighters.
-		UE_LOG(LogBeatBoxers, Error, TEXT("GameMode asked to hit a non-fighter actor %s by source %s controller %s"),
+		UE_LOG(LogBeatBoxers, Error, TEXT("GameMode asked to hit a non-fighter actor %s by source %s cont%s"),
 			*GetNameSafe(Actor.Get()),
 			(Source.IsValid()) ? *GetNameSafe(Source.Get()) : TEXT("INVALID SOURCE"),
 			(SourceController.IsValid()) ? *GetNameSafe(SourceController.Get()) : TEXT("INVALID CONTROLLER")
@@ -87,11 +89,20 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
-	ApplyMovementToActor(Actor, Source, SourceController, ImpactData->ImpartedMovement);
-
-	if (GetBBGameState() != nullptr && SourceController.IsValid())
+	if (ApplyMovementToActor(Actor, Source, SourceController, ImpactData->ImpartedMovement) == 1)
 	{
-		GetBBGameState()->AddScore(SourceController.Get(), ImpactData->Damage);
+		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
+		//The target is already pushed up against a wall, push back the source instead.
+		if (Source.IsValid() && SourceController.IsValid() && Source.Get() == SourceController.Get()->GetPawn())
+		{
+			//Don't do this for projectiles.
+			ApplyMovementToActor(Source, Source, SourceController, -ImpactData->ImpartedMovement);
+		}
+	}
+
+	if (GetGameState<ABBGameState>() != nullptr && SourceController.IsValid())
+	{
+		GetGameState<ABBGameState>()->AddScore(SourceController.Get(), ImpactData->Damage);
 	}
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
@@ -145,12 +156,25 @@ void ABBGameMode::StartMatch()
 {
 	Super::StartMatch();
 
-	UE_LOG(LogBeatBoxers, Log, TEXT("Starting new match."));
+	UE_LOG(LogABBGameMode, Log, TEXT("Starting new match."));
 
-	if (GetBBGameState() != nullptr)
+	UE_LOG(LogABBGameMode, Verbose, TEXT("\t%d players."), GameState->PlayerArray.Num());
+	for (int32 PlayerIndex = 0; PlayerIndex < GameState->PlayerArray.Num(); PlayerIndex++)
+	{
+		if (GameState->PlayerArray[PlayerIndex] != nullptr)
+		{
+			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d]->PlayerId = %d"), PlayerIndex, GameState->PlayerArray[PlayerIndex]->PlayerId);
+		}
+		else
+		{
+			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d] = nullptr"), PlayerIndex);
+		}
+	}
+
+	if (GetGameState<ABBGameState>() != nullptr)
 	{
 		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
-		GetBBGameState()->MainCamera = Cast<ACameraActor>(Camera);
+		GetGameState<ABBGameState>()->MainCamera = Cast<ACameraActor>(Camera);
 		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
 			APlayerController *PC = *ActorItr;
@@ -168,7 +192,7 @@ void ABBGameMode::StartMatch()
 				IMusicBox *WorldMusicBox = Cast<IMusicBox>(Actor);
 				if (WorldMusicBox != nullptr)
 				{
-					GetBBGameState()->WorldMusicBox = WorldMusicBox;
+					GetGameState<ABBGameState>()->WorldMusicBox = WorldMusicBox;
 				}
 				else
 				{
@@ -190,14 +214,10 @@ void ABBGameMode::StartMatch()
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s unable to get gamestate as ABBGameState."), *GetNameSafe(this));
 	}
 
-	if (GetBBGameInstance() != nullptr)
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
 	{
-		FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
-		if (!NewGameData.IsSecondPlayerHuman)
-		{
-			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s GameInstance requests second player be AI, this is unimplemented."), *GetNameSafe(this));
-		}
-		else
+		FNewGameData NewGameData = GetWorld()->GetGameInstance<UBBGameInstance>()->NewGameData;
+		if (NumPlayers + NumBots < 2)
 		{
 			//Create second local player.
 			UGameplayStatics::CreatePlayer(GetWorld(), -1, true);
@@ -207,30 +227,63 @@ void ABBGameMode::StartMatch()
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("GameMode unable to get gameinstance as UBBGameInstance."));
 	}
+
+	if (GameState != nullptr)
+	{
+		AActor *P1Char = nullptr, *P2Char = nullptr;
+		ABBPlayerState *BBPlayerState = nullptr;
+		if (GameState->PlayerArray.Num() >= 2)
+		{
+			if (GameState->PlayerArray[0] != nullptr)
+			{
+				BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
+				if (BBPlayerState != nullptr)
+				{
+					P1Char = BBPlayerState->MyPawn;
+				}
+			}
+			if (GameState->PlayerArray[1] != nullptr)
+			{
+				BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
+				if (BBPlayerState != nullptr)
+				{
+					P2Char = BBPlayerState->MyPawn;
+				}
+			}
+
+			if (P1Char != nullptr && P2Char != nullptr)
+			{
+				AFighterCharacter *Fighter = Cast<AFighterCharacter>(P1Char);
+				if (Fighter != nullptr)
+				{
+					Fighter->SetOpponent(P2Char);
+				}
+				Fighter = Cast<AFighterCharacter>(P2Char);
+				if (Fighter != nullptr)
+				{
+					Fighter->SetOpponent(P1Char);
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("GameMode can't find at least two players."));
+		}
+	}
 }
 
-ABBGameState* ABBGameMode::GetBBGameState()
-{
-	return Cast<ABBGameState>(GameState);
-}
-
-UBBGameInstance* ABBGameMode::GetBBGameInstance()
-{
-	return Cast<UBBGameInstance>(GetWorld()->GetGameInstance());
-}
-
-void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement)
+int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
 {
 	if (!Movement.IsValid())
 	{
 		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply invalid movement to actor."));
-		return;
+		return -1;
 	}
 
 	if (!Target.IsValid())
 	{
 		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
-		return;
+		return -1;
 	}
 
 	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s) to actor %s."), *Movement.ToString(), *GetNameSafe(Target.Get()));
@@ -244,11 +297,22 @@ void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjec
 		NonrelativeMovement.IsRelativeToAttackerFacing = false;
 	}
 
+	FHitResult Result;
+	GetWorld()->LineTraceSingleByObjectType(
+		Result,
+		Target.Get()->GetActorLocation(),
+		Target.Get()->GetActorLocation() + NonrelativeMovement.Delta.GetSafeNormal() * 50.f, //This number needs to be greater than the fighter's radius.
+		FCollisionObjectQueryParams::AllStaticObjects,
+		FCollisionQueryParams::DefaultQueryParam
+	);
+
 	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
 	if (TargetFighter != nullptr)
 	{
 		TargetFighter->ApplyMovement(NonrelativeMovement);
 	}
+
+	return Result.bBlockingHit;
 }
 
 void ABBGameMode::StartSolo(TWeakObjectPtr<AActor> OneSoloing)
@@ -282,21 +346,27 @@ UClass* ABBGameMode::GetDefaultPawnClassForController_Implementation(AController
 		return DefaultPawnClass;
 	}
 	UE_LOG(LogABBGameMode, Verbose, TEXT("%s::GetDefaultPawnClassForController(%s) called."), *GetNameSafe(this), *GetNameSafe(InController));
-	if (GetBBGameInstance() != nullptr)
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
 	{
-		FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
+		FNewGameData NewGameData = GetWorld()->GetGameInstance<UBBGameInstance>()->NewGameData;
 		int32 PlayerID = InController->PlayerState->PlayerId;
-		switch (PlayerID)
+		for (int32 PlayerIndex = 0; PlayerIndex < GameState->PlayerArray.Num(); PlayerIndex++)
 		{
-		case 256:
-			return (NewGameData.Player0Class != nullptr) ? NewGameData.Player0Class : DefaultPawnClass;
-			break;
-		case 257:
-			return (NewGameData.Player1Class != nullptr) ? NewGameData.Player1Class : DefaultPawnClass;
-			break;
-		default:
-			UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), PlayerID %d unexpected value, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController), PlayerID);
-			break;
+			if (PlayerID == GameState->PlayerArray[PlayerIndex]->PlayerId)
+			{
+				switch (PlayerIndex)
+				{
+				case 0:
+					return (NewGameData.Player0Class != nullptr) ? NewGameData.Player0Class : DefaultPawnClass;
+					break;
+				case 1:
+					return (NewGameData.Player1Class != nullptr) ? NewGameData.Player1Class : DefaultPawnClass;
+					break;
+				default:
+					UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), PlayerIndex %d unexpected value, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController), PlayerIndex);
+					break;
+				}
+			}
 		}
 	}
 	return DefaultPawnClass;
@@ -305,22 +375,47 @@ UClass* ABBGameMode::GetDefaultPawnClassForController_Implementation(AController
 AActor* ABBGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
 	int32 PlayerID = Player->PlayerState->PlayerId;
+	int32 PlayerIndex;
+	AActor *Backup = nullptr;
 	for (TActorIterator<ABBPlayerStart> It(GetWorld()); It; ++It)
 	{
 		ABBPlayerStart* PlayerStart = *It;
-		if (PlayerStart->GetPlayerID() == PlayerID)
+		PlayerIndex = PlayerStart->PlayerIndex;
+		if (PlayerIndex < 0)
 		{
-			return PlayerStart;
+			if (Backup == nullptr)
+			{
+				Backup = PlayerStart;
+			}
+		}
+		else if (GameState->PlayerArray.Num() > PlayerIndex)
+		{
+			if (GameState->PlayerArray[PlayerIndex] != nullptr)
+			{
+				if (PlayerID == GameState->PlayerArray[PlayerIndex]->PlayerId)
+				{
+					return PlayerStart;
+				}
+			}
 		}
 	}
 	UE_LOG(LogABBGameMode, Warning, TEXT("%s::ChoosePlayerStart(%s) was unable to find a PlayerStart specifically designated for player %d."), *GetNameSafe(this), *GetNameSafe(Player), PlayerID);
-	for (TActorIterator<ABBPlayerStart> It(GetWorld()); It; ++It)
+	if (Backup != nullptr)
 	{
-		ABBPlayerStart* PlayerStart = *It;
-		if (PlayerStart->GetPlayerID() < 0)
-		{
-			return PlayerStart;
-		}
+		return Backup;
 	}
 	return AGameMode::ChoosePlayerStart_Implementation(Player);
+}
+
+APawn* ABBGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
+{
+	APawn *Pawn = AGameModeBase::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+
+	ABBPlayerState *BBPlayerState = Cast<ABBPlayerState>(NewPlayer->PlayerState);
+	if (BBPlayerState != nullptr)
+	{
+		BBPlayerState->MyPawn = Pawn;
+	}
+
+	return Pawn;
 }

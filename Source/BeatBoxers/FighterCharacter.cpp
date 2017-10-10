@@ -44,6 +44,16 @@ void AFighterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (MyOpponent != nullptr)
+	{
+		FVector Diff = MyOpponent->GetActorLocation() - GetActorLocation();
+		float NewFacing = FMath::Sign(Diff.X);
+		if (NewFacing != 0 && NewFacing != Facing)
+		{
+			Facing = NewFacing;
+			SetActorRotation(FRotator(0, (Facing > 0) ? 0 : PI, 0));
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -403,4 +413,12 @@ FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
 FLandEvent& AFighterCharacter::GetOnLandEvent()
 {
 	return LandEvent;
+}
+
+void AFighterCharacter::SetOpponent(TWeakObjectPtr<AActor> NewOpponent)
+{
+	if (NewOpponent.IsValid())
+	{
+		MyOpponent = NewOpponent;
+	}
 }

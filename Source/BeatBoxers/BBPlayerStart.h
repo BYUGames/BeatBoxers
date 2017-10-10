@@ -14,11 +14,8 @@ class BEATBOXERS_API ABBPlayerStart : public APlayerStart
 {
 	GENERATED_UCLASS_BODY()
 	
-protected:
-	/** The ID of the player that is allowed to spawn here. 0, 1, or -1 for either. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 PlayerID;
-
 public:
-	int32 GetPlayerID();
+	/** The index of the player that is allowed to spawn here. 0, 1, or -1 for either. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 PlayerIndex;
 };

@@ -100,5 +100,7 @@ public:
 	/** Gets the sign of the actor's facing in the X axis. */
 	UFUNCTION(BlueprintPure)
 	virtual float GetFacing() const;
+
+	void SetOpponent(TWeakObjectPtr<AActor> NewOpponent);
 	
 };

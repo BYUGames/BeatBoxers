@@ -100,3 +100,17 @@ FString FMovement::ToString() const
 {
 	return FString::Printf(TEXT("Delta={%s} Duration=%f IsRelative=%s"), *Delta.ToString(), Duration, (IsRelativeToAttackerFacing) ? TEXT("TRUE") : TEXT("FALSE"));
 }
+
+FMovement FMovement::operator-()
+{
+	FMovement Result = *this;
+	Result.Delta = -Delta;
+	return Result;
+}
+
+FMovement FMovement::operator*(float f)
+{
+	FMovement Result = *this;
+	Result.Delta *= f;
+	return Result;
+}

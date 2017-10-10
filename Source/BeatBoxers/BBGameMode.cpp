@@ -6,7 +6,9 @@
 #include "BBPlayerController.h"
 #include "BBGameState.h"
 #include "BBGameInstance.h"
+#include "BBPlayerStart.h"
 #include "BasicMusicBox.h"
+#include "GameFramework/PlayerState.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -280,29 +282,45 @@ UClass* ABBGameMode::GetDefaultPawnClassForController_Implementation(AController
 		return DefaultPawnClass;
 	}
 	UE_LOG(LogABBGameMode, Verbose, TEXT("%s::GetDefaultPawnClassForController(%s) called."), *GetNameSafe(this), *GetNameSafe(InController));
-	APlayerController *PlayerController = Cast<APlayerController>(InController);
-	if (PlayerController != nullptr)
+	if (GetBBGameInstance() != nullptr)
 	{
-		if (GetBBGameInstance() != nullptr)
+		FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
+		int32 PlayerID = InController->PlayerState->PlayerId;
+		switch (PlayerID)
 		{
-			FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
-			switch (UGameplayStatics::GetPlayerControllerID(PlayerController))
-			{
-			case 0:
-				return (NewGameData.Player0Class != nullptr) ? NewGameData.Player0Class : DefaultPawnClass;
-				break;
-			case 1:
-				return (NewGameData.Player1Class != nullptr) ? NewGameData.Player1Class : DefaultPawnClass;
-				break;
-			default:
-				UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), controller ID is neither 0 nor 1, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController));
-				break;
-			}
+		case 256:
+			return (NewGameData.Player0Class != nullptr) ? NewGameData.Player0Class : DefaultPawnClass;
+			break;
+		case 257:
+			return (NewGameData.Player1Class != nullptr) ? NewGameData.Player1Class : DefaultPawnClass;
+			break;
+		default:
+			UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), PlayerID %d unexpected value, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController), PlayerID);
+			break;
 		}
 	}
-	else
-	{
-		UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), controller is not a player controller, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController));
-	}
 	return DefaultPawnClass;
+}
+
+AActor* ABBGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	int32 PlayerID = Player->PlayerState->PlayerId;
+	for (TActorIterator<ABBPlayerStart> It(GetWorld()); It; ++It)
+	{
+		ABBPlayerStart* PlayerStart = *It;
+		if (PlayerStart->GetPlayerID() == PlayerID)
+		{
+			return PlayerStart;
+		}
+	}
+	UE_LOG(LogABBGameMode, Warning, TEXT("%s::ChoosePlayerStart(%s) was unable to find a PlayerStart specifically designated for player %d."), *GetNameSafe(this), *GetNameSafe(Player), PlayerID);
+	for (TActorIterator<ABBPlayerStart> It(GetWorld()); It; ++It)
+	{
+		ABBPlayerStart* PlayerStart = *It;
+		if (PlayerStart->GetPlayerID() < 0)
+		{
+			return PlayerStart;
+		}
+	}
+	return AGameMode::ChoosePlayerStart_Implementation(Player);
 }

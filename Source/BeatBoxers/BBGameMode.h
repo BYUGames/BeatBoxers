@@ -54,6 +54,7 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	virtual AActor* ABBGameMode::ChoosePlayerStart_Implementation(AController* Player) override;
 
 	/** Returns gamestate cast to BBGameState, can return null if cast fails.*/
 	ABBGameState* GetBBGameState();

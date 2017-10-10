@@ -42,3 +42,13 @@ void USoloTrackerComponent::EndSolo()
 {
 	//TODO
 }
+
+TArray<FNoteData> USoloTrackerComponent::GetExistingNotes_Implementation()
+{
+	return TArray<FNoteData>();
+}
+
+FNewNoteEvent & USoloTrackerComponent::GetOnNewNoteEvent()
+{
+	return NewNoteEvent;
+}

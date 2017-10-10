@@ -11,6 +11,7 @@
 class AFighterCharacter;
 class ABBPlayerController;
 class ABBGameState;
+class UBBGameInstance;
 class IFighter;
 
 /**
@@ -51,6 +52,12 @@ public:
 
 	virtual void StartMatch() override;
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
 	/** Returns gamestate cast to BBGameState, can return null if cast fails.*/
 	ABBGameState* GetBBGameState();
+
+	/** Returns gameinstance cast to BBGameInstance, can return null if cast fails.*/
+	UBBGameInstance* GetBBGameInstance();
 };

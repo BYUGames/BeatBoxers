@@ -330,3 +330,18 @@ struct FNoteData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TimeLeft;
 };
+
+USTRUCT(BlueprintType)
+struct FNewGameData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> Player0Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> Player1Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint32 IsSecondPlayerHuman : 1;
+};

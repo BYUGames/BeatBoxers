@@ -5,9 +5,11 @@
 #include "FighterCharacter.h"
 #include "BBPlayerController.h"
 #include "BBGameState.h"
+#include "BBGameInstance.h"
 #include "BasicMusicBox.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -142,7 +144,7 @@ void ABBGameMode::StartMatch()
 	Super::StartMatch();
 
 	UE_LOG(LogBeatBoxers, Log, TEXT("Starting new match."));
-	
+
 	if (GetBBGameState() != nullptr)
 	{
 		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
@@ -181,12 +183,38 @@ void ABBGameMode::StartMatch()
 			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass is not set to a valid class."), *GetNameSafe(this));
 		}
 	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s unable to get gamestate as ABBGameState."), *GetNameSafe(this));
+	}
 
+	if (GetBBGameInstance() != nullptr)
+	{
+		FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
+		if (!NewGameData.IsSecondPlayerHuman)
+		{
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s GameInstance requests second player be AI, this is unimplemented."), *GetNameSafe(this));
+		}
+		else
+		{
+			//Create second local player.
+			UGameplayStatics::CreatePlayer(GetWorld(), -1, true);
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("GameMode unable to get gameinstance as UBBGameInstance."));
+	}
 }
 
 ABBGameState* ABBGameMode::GetBBGameState()
 {
 	return Cast<ABBGameState>(GameState);
+}
+
+UBBGameInstance* ABBGameMode::GetBBGameInstance()
+{
+	return Cast<UBBGameInstance>(GetWorld()->GetGameInstance());
 }
 
 void ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement& Movement)
@@ -237,4 +265,44 @@ FSoloStartEvent& ABBGameMode::GetOnSoloStartEvent()
 FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
 {
 	return SoloEndEvent;
+}
+
+void ABBGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	AGameMode::InitGame(MapName, Options, ErrorMessage);
+}
+
+UClass* ABBGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (InController == nullptr)
+	{
+		UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(nullptr), should not be nullptr."), *GetNameSafe(this));
+		return DefaultPawnClass;
+	}
+	UE_LOG(LogABBGameMode, Verbose, TEXT("%s::GetDefaultPawnClassForController(%s) called."), *GetNameSafe(this), *GetNameSafe(InController));
+	APlayerController *PlayerController = Cast<APlayerController>(InController);
+	if (PlayerController != nullptr)
+	{
+		if (GetBBGameInstance() != nullptr)
+		{
+			FNewGameData NewGameData = GetBBGameInstance()->NewGameData;
+			switch (UGameplayStatics::GetPlayerControllerID(PlayerController))
+			{
+			case 0:
+				return (NewGameData.Player0Class != nullptr) ? NewGameData.Player0Class : DefaultPawnClass;
+				break;
+			case 1:
+				return (NewGameData.Player1Class != nullptr) ? NewGameData.Player1Class : DefaultPawnClass;
+				break;
+			default:
+				UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), controller ID is neither 0 nor 1, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController));
+				break;
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogABBGameMode, Error, TEXT("%s::GetDefaultPawnClassForController(%s), controller is not a player controller, unimplemented."), *GetNameSafe(this), *GetNameSafe(InController));
+	}
+	return DefaultPawnClass;
 }

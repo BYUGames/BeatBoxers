@@ -42,4 +42,7 @@ public:
 	virtual FSoloStartEvent& GetOnSoloStartEvent() = 0;
 
 	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;
+
+	/** Hook for grid positioning to be enforced. Called when movement ends. */
+	virtual void AdjustLocation(AActor* ActorToAdjust) = 0;
 };

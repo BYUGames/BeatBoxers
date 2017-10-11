@@ -39,6 +39,12 @@ protected:
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
 
+	UPROPERTY(EditDefaultsOnly)
+	FEffects DefaultHitEffects;
+
+	UPROPERTY(EditDefaultsOnly)
+	FEffects DefaultBlockEffects;
+
 	FTimerHandle TimerHandle_Window;
 	FTimerHandle TimerHandle_Stun;
 	FTimerHandle TimerHandle_Movement;

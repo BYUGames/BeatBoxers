@@ -46,12 +46,11 @@ void AFighterCharacter::Tick(float DeltaTime)
 
 	if (MyOpponent != nullptr)
 	{
-		FVector Diff = MyOpponent->GetActorLocation() - GetActorLocation();
-		float NewFacing = FMath::Sign(Diff.X);
+		float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);
 		if (NewFacing != 0 && NewFacing != Facing)
 		{
 			Facing = NewFacing;
-			SetActorRotation(FRotator(0, (Facing > 0) ? 0 : PI, 0));
+			SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
 		}
 	}
 }
@@ -419,6 +418,7 @@ void AFighterCharacter::SetOpponent(TWeakObjectPtr<AActor> NewOpponent)
 {
 	if (NewOpponent.IsValid())
 	{
+		UE_LOG(LogAFighterCharacter, Verbose, TEXT("%s setting opponent to %s"), *GetNameSafe(this), *GetNameSafe(NewOpponent.Get()));
 		MyOpponent = NewOpponent;
 	}
 }

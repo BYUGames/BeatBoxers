@@ -230,6 +230,7 @@ void ABBGameMode::StartMatch()
 
 	if (GameState != nullptr)
 	{
+		UE_LOG(LogABBGameMode, Verbose, TEXT("Begin attaching opponents."));
 		AActor *P1Char = nullptr, *P2Char = nullptr;
 		ABBPlayerState *BBPlayerState = nullptr;
 		if (GameState->PlayerArray.Num() >= 2)
@@ -241,6 +242,10 @@ void ABBGameMode::StartMatch()
 				{
 					P1Char = BBPlayerState->MyPawn;
 				}
+				else
+				{
+					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate0 to BBPlayerstate"));
+				}
 			}
 			if (GameState->PlayerArray[1] != nullptr)
 			{
@@ -248,6 +253,10 @@ void ABBGameMode::StartMatch()
 				if (BBPlayerState != nullptr)
 				{
 					P2Char = BBPlayerState->MyPawn;
+				}
+				else
+				{
+					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate1 to BBPlayerstate"));
 				}
 			}
 
@@ -258,10 +267,18 @@ void ABBGameMode::StartMatch()
 				{
 					Fighter->SetOpponent(P2Char);
 				}
+				else
+				{
+					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player0 to Fighter"));
+				}
 				Fighter = Cast<AFighterCharacter>(P2Char);
 				if (Fighter != nullptr)
 				{
 					Fighter->SetOpponent(P1Char);
+				}
+				else
+				{
+					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player1 to Fighter"));
 				}
 			}
 		}
@@ -269,6 +286,7 @@ void ABBGameMode::StartMatch()
 		{
 			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("GameMode can't find at least two players."));
 		}
+		UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
 	}
 }
 
@@ -418,4 +436,14 @@ APawn* ABBGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, A
 	}
 
 	return Pawn;
+}
+
+void ABBGameMode::AdjustLocation(AActor *ActorToAdjust)
+{
+	BPAdjustLocation(ActorToAdjust);
+}
+
+void ABBGameMode::BPAdjustLocation_Implementation(AActor *ActorToAdjust)
+{
+	//nop
 }

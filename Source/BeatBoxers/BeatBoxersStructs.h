@@ -147,6 +147,9 @@ struct FMovement
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsRelativeToAttackerFacing : 1;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 UseDeltaAsSpeed : 1;
+
 	bool IsValid() const;
 
 	operator bool() const{ return IsValid(); }

@@ -58,16 +58,19 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 
 	if (IsBeingMoved)
 	{
-		UActorComponent *Component;
-		if ((Component = GetOwner()->GetComponentByClass(UCharacterMovementComponent::StaticClass())) != nullptr)
+		FVector TargetLocation = GetOwner()->GetActorLocation();
+		if (CurrentMovement.UseDeltaAsSpeed)
 		{
-			UCharacterMovementComponent *CharacterMovement = Cast<UCharacterMovementComponent>(Component);
-			CharacterMovement->AddImpulse(CurrentMovement.Delta, true);
+			TargetLocation += CurrentMovement.Delta * DeltaTime;
 		}
 		else
 		{
-			GetOwner()->SetActorRelativeLocation(CurrentMovement.Delta * DeltaTime, true);
+			TargetLocation += CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime;
 		}
+		GetOwner()->SetActorLocation(
+			GetOwner()->GetActorLocation() + CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime,
+			true
+		);
 		return true;
 	}
 	return false;
@@ -268,6 +271,14 @@ void UFighterStateComponent::OnLand()
 			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
 			OnCurrentWindowFinished();
 		}
+		else
+		{
+			MyFighterWorld->AdjustLocation(GetOwner());
+		}
+	}
+	else
+	{
+		MyFighterWorld->AdjustLocation(GetOwner());
 	}
 }
 
@@ -550,6 +561,7 @@ void UFighterStateComponent::OnMovementTimer()
 {
 	IsBeingMoved = false;
 	TryDisableTick();
+	MyFighterWorld->AdjustLocation(GetOwner());
 }
 
 AController* UFighterStateComponent::GetOwnerController() const

@@ -46,6 +46,7 @@ public:
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
+	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	/** End IFighterWorld implementation */
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
@@ -56,4 +57,7 @@ public:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+
+	UFUNCTION(BlueprintNativeEvent, meta=(DisplayName = AdjustLocation))
+	void BPAdjustLocation(AActor *ActorToAdjust);
 };

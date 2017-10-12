@@ -42,6 +42,9 @@ public:
 	/** Allows objects to query when the next beat will happen. Returns -beat interval if the beat is not currently... beating. */
 	virtual float GetTimeToNextBeat() = 0;
 
+	/** Allows objects to query when the Song will end. */
+	virtual float GetTimeToSongEnd() = 0;
+
 	/** Returns a reference to an event that occurs with every beat. */
 	virtual FBeatEvent& GetOnBeatEvent() = 0;
 

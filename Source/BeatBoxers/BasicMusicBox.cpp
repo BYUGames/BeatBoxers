@@ -75,9 +75,20 @@ void ABasicMusicBox::StopMusic()
 	K2_StopMusic();
 }
 
+float ABasicMusicBox::GetTimeToSongEnd()
+{
+	return K2_GetTimeToSongEnd();
+}
+
 float ABasicMusicBox::GetTimeToNextBeat()
 {
 	return K2_GetTimeToNextBeat();
+}
+
+float ABasicMusicBox::K2_GetTimeToSongEnd_Implementation() const
+{
+	//NOP
+	return 0.f;
 }
 
 float ABasicMusicBox::K2_GetTimeToNextBeat_Implementation() const

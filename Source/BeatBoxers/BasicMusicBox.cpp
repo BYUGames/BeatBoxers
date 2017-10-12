@@ -9,7 +9,6 @@ ABasicMusicBox::ABasicMusicBox(const class FObjectInitializer& ObjectInitializer
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	TimeBetweenBeats = 1.f;
 }
 
 FBeatEvent& ABasicMusicBox::GetOnBeatEvent()
@@ -27,6 +26,27 @@ FNewNoteEvent& ABasicMusicBox::GetOnNewNoteEvent()
 	return NewNoteEvent;
 }
 
+FMusicEndEvent& ABasicMusicBox::GetMusicEndEvent()
+{
+	return MusicEndEvent;
+}
+
+void ABasicMusicBox::OnNewNote(FNoteData data)
+{
+	if (NewNoteEvent.IsBound())
+	{
+		NewNoteEvent.Broadcast(data);
+	}
+}
+
+void ABasicMusicBox::EndMusic()
+{
+	if (MusicEndEvent.IsBound()) 
+	{
+		MusicEndEvent.Broadcast();
+	}
+}
+
 void ABasicMusicBox::DropBeat()
 {
 	if (BeatEvent.IsBound())
@@ -37,35 +57,51 @@ void ABasicMusicBox::DropBeat()
 
 void ABasicMusicBox::StartMusic()
 {
-	GetWorldTimerManager().SetTimer(
-		TimerHandle_Beat,
-		this,
-		&ABasicMusicBox::DropBeat,
-		TimeBetweenBeats,
-		true
-	);
+	K2_StartMusic();
 }
 
 void ABasicMusicBox::PauseMusic()
 {
-	GetWorldTimerManager().PauseTimer(TimerHandle_Beat);
+	K2_PauseMusic();
 }
 
 void ABasicMusicBox::ResumeMusic()
 {
-	GetWorldTimerManager().UnPauseTimer(TimerHandle_Beat);
+	K2_ResumeMusic();
 }
 
 void ABasicMusicBox::StopMusic()
 {
-	GetWorldTimerManager().ClearTimer(TimerHandle_Beat);
+	K2_StopMusic();
 }
 
 float ABasicMusicBox::GetTimeToNextBeat()
 {
-	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Beat))
-	{
-		return GetWorldTimerManager().GetTimerRemaining(TimerHandle_Beat);
-	}
-	return -TimeBetweenBeats;
+	return K2_GetTimeToNextBeat();
+}
+
+float ABasicMusicBox::K2_GetTimeToNextBeat_Implementation() const
+{
+	//NOP
+	return 0.f;
+}
+
+void ABasicMusicBox::K2_StartMusic_Implementation() const
+{
+	//NOP
+}
+
+void ABasicMusicBox::K2_StopMusic_Implementation() const
+{
+	//NOP
+}
+
+void ABasicMusicBox::K2_PauseMusic_Implementation() const
+{
+	//NOP
+}
+
+void ABasicMusicBox::K2_ResumeMusic_Implementation() const
+{
+	//NOP
 }

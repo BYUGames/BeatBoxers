@@ -8,6 +8,7 @@
 #include "IMusicBox.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBeatEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMusicEndEvent);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
@@ -43,4 +44,7 @@ public:
 
 	/** Returns a reference to an event that occurs with every beat. */
 	virtual FBeatEvent& GetOnBeatEvent() = 0;
+
+	/** Returns a reference to an event that occurs at the end of the song. */
+	virtual FMusicEndEvent& GetMusicEndEvent() = 0;
 };

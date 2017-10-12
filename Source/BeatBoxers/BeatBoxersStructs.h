@@ -81,8 +81,9 @@ UENUM(BlueprintType)
 enum class EInputToken : uint8
 {
 	IE_None			UMETA(DisplayName = "None"),
-	IE_Punch		UMETA(DisplayName = "Punch"),
-	IE_Kick			UMETA(DisplayName = "Kick"),
+	IE_Light		UMETA(DisplayName = "Light"),
+	IE_Medium		UMETA(DisplayName = "Medium"),
+	IE_Heavy		UMETA(DisplayName = "Heavy"),
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashLeft		UMETA(DisplayName = "DashLeft"),
 	IE_DashRight	UMETA(DisplayName = "DashRight")
@@ -98,10 +99,13 @@ struct FInputTokenBools
 	bool Any;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Punch;
+	bool Light;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Kick;
+	bool Medium;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Heavy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Jump;
@@ -131,6 +135,8 @@ struct FEffects
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTransform RelativeTransform;
+
+	bool IsValid() const;
 };
 
 USTRUCT(BlueprintType)
@@ -261,6 +267,10 @@ struct FMoveWindow
 	/** Whether landing on the ground during this window immediately interrupts the move (combo), still plays winddown. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
+
+	/** The animation montage to play in conjuction with this window. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UAnimMontage *AnimMontage;
 };
 
 USTRUCT(BlueprintType)
@@ -292,7 +302,7 @@ public:
 
 	/** Amount of time after finishing last window that the MovesetComponent will remain in this state until reverting to its default state. Negative means it stays in the state indefinitely. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float MaxDuration;
+	float MaxPostWait;
 
 	/** This defines the actual things done in this move. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

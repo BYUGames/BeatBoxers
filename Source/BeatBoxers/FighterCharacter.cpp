@@ -2,6 +2,8 @@
 
 #include "FighterCharacter.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
+#include "Sound/SoundCue.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -29,7 +31,12 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 
 	GetCapsuleComponent()->SetHiddenInGame(false);
 
+	JumpDelay = 0.2f;
+
 	Facing = 1.f;
+
+	InputBufferLength = 0.5f;
+	ComplexInputWindow = 0.5f;
 }
 
 // Called when the game starts or when spawned
@@ -66,8 +73,9 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Left", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
 	InputComponent->BindAction("Down", IE_Pressed, this, &AFighterCharacter::InputActionDown);
 	InputComponent->BindAction("Right", IE_Pressed, this, &AFighterCharacter::InputActionRight);
-	InputComponent->BindAction("Punch", IE_Pressed, this, &AFighterCharacter::InputActionPunch);
-	InputComponent->BindAction("Kick", IE_Pressed, this, &AFighterCharacter::InputActionKick);
+	InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
+	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
+	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
 }
 
 
@@ -194,6 +202,7 @@ void AFighterCharacter::PostInitializeComponents()
 		GetFighterState()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
 
 		GetMoveset()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
+		GetMoveset()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
 		GetMoveset()->RegisterSoloTracker(TWeakObjectPtr<UObject>(Cast<UObject>(SoloTracker)));
 
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
@@ -258,6 +267,10 @@ EStance AFighterCharacter::GetStance() const
 {
 	if (GetCharacterMovement()->IsMovingOnGround())
 	{
+		if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump))
+		{
+			return EStance::SE_Jumping;
+		}
 		if (GetCharacterMovement()->IsCrouching())
 		{
 			return EStance::SE_Crouching;
@@ -297,11 +310,45 @@ void AFighterCharacter::SetMoveDirection(float Direction)
 
 void AFighterCharacter::Jump()
 {
-	ACharacter::Jump();
-	if (StartJumpEvent.IsBound())
+	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
+		&& GetCharacterMovement()->IsMovingOnGround()
+		&& !IsJumpProvidingForce())
 	{
-		StartJumpEvent.Broadcast();
+		if (StartJumpEvent.IsBound())
+		{
+			StartJumpEvent.Broadcast();
+		}
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_Jump,
+			this,
+			&AFighterCharacter::OnJumpTimer,
+			JumpDelay,
+			false
+		);
 	}
+}
+
+void AFighterCharacter::OnJumpTimer()
+{
+	FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();
+	if (JumpEffects.ParticleSystem != nullptr)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetOwner()->GetWorld(),
+			JumpEffects.ParticleSystem,
+			RelativeTransform
+		);
+	}
+	if (JumpEffects.SoundCue != nullptr)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(
+			GetOwner(),
+			JumpEffects.SoundCue,
+			RelativeTransform.GetLocation(),
+			RelativeTransform.GetRotation().Rotator()
+		);
+	}
+	ACharacter::Jump();
 }
 
 void AFighterCharacter::InputAxisHorizontal(float amount)
@@ -352,19 +399,27 @@ void AFighterCharacter::InputActionRight()
 	}
 }
 
-void AFighterCharacter::InputActionPunch()
+void AFighterCharacter::InputActionLight()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionPunch(true);
+		GetInputParser()->InputActionLight(true);
 	}
 }
 
-void AFighterCharacter::InputActionKick()
+void AFighterCharacter::InputActionMedium()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionKick(true);
+		GetInputParser()->InputActionMedium(true);
+	}
+}
+
+void AFighterCharacter::InputActionHeavy()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionHeavy(true);
 	}
 }
 
@@ -404,6 +459,11 @@ float AFighterCharacter::GetFacing() const
 	return Facing;
 }
 
+bool AFighterCharacter::K2_IsBlocking() const
+{
+	return IsBlocking();
+}
+
 FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
 {
 	return StartJumpEvent;
@@ -421,4 +481,13 @@ void AFighterCharacter::SetOpponent(TWeakObjectPtr<AActor> NewOpponent)
 		UE_LOG(LogAFighterCharacter, Verbose, TEXT("%s setting opponent to %s"), *GetNameSafe(this), *GetNameSafe(NewOpponent.Get()));
 		MyOpponent = NewOpponent;
 	}
+}
+
+float AFighterCharacter::GetHorizontalMovement() const
+{
+	if (GetFighterState() != nullptr)
+	{
+		return GetFighterState()->GetCurrentHorizontalMovement();
+	}
+	return 0.f;
 }

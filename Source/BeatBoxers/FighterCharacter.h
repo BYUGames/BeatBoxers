@@ -38,6 +38,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AMoveState> DefaultMoveState;
 
+	/** Windup for a jump. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float JumpDelay;
+
+	FTimerHandle TimerHandle_Jump;
+
+	void OnJumpTimer();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -60,8 +68,9 @@ protected:
 	void InputActionLeft();
 	void InputActionDown();
 	void InputActionRight();
-	void InputActionPunch();
-	void InputActionKick();
+	void InputActionLight();
+	void InputActionMedium();
+	void InputActionHeavy();
 
 public:	
 	UPROPERTY(BlueprintAssignable)
@@ -69,6 +78,21 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FLandEvent LandEvent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects DefaultHitEffects;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects DefaultBlockEffects;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects JumpEffects;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float InputBufferLength;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float ComplexInputWindow;
 
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
@@ -98,9 +122,14 @@ public:
 	virtual void Landed(const FHitResult& Result) override;
 
 	/** Gets the sign of the actor's facing in the X axis. */
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
 	virtual float GetFacing() const;
 
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Blocking"))
+	virtual bool K2_IsBlocking() const;
+
+	UFUNCTION(BlueprintPure)
+	virtual float GetHorizontalMovement() const;
+
 	void SetOpponent(TWeakObjectPtr<AActor> NewOpponent);
-	
 };

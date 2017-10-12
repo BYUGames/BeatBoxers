@@ -25,8 +25,9 @@ public:
 	virtual void InputActionRight(UInputParserComponent *Parser);
 	virtual void InputActionDown(UInputParserComponent *Parser);
 	virtual void InputActionUp(UInputParserComponent *Parser);
-	virtual void InputActionPunch(UInputParserComponent *Parser);
-	virtual void InputActionKick(UInputParserComponent *Parser);
+	virtual void InputActionLight(UInputParserComponent *Parser);
+	virtual void InputActionMedium(UInputParserComponent *Parser);
+	virtual void InputActionHeavy(UInputParserComponent *Parser);
 };
 
 UCLASS()
@@ -37,8 +38,9 @@ class UInputParserDefaultState : public UInputParserState
 public:
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
-	virtual void InputActionPunch(UInputParserComponent *Parser) override;
-	virtual void InputActionKick(UInputParserComponent *Parser) override;
+	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -49,8 +51,9 @@ class UPreLeftDashState : public UInputParserDefaultState
 public:
 	virtual bool IsComplex() override;
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
-	virtual void InputActionPunch(UInputParserComponent *Parser) override;
-	virtual void InputActionKick(UInputParserComponent *Parser) override;
+	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -61,8 +64,9 @@ class UPreRightDashState : public UInputParserDefaultState
 public:
 	virtual bool IsComplex() override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
-	virtual void InputActionPunch(UInputParserComponent *Parser) override;
-	virtual void InputActionKick(UInputParserComponent *Parser) override;
+	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -106,8 +110,9 @@ public:
 	virtual void InputActionRight(bool IsUp) override;
 	virtual void InputActionDown(bool IsUp) override;
 	virtual void InputActionUp(bool IsUp) override;
-	virtual void InputActionPunch(bool IsUp) override;
-	virtual void InputActionKick(bool IsUp) override;
+	virtual void InputActionLight(bool IsUp) override;
+	virtual void InputActionMedium(bool IsUp) override;
+	virtual void InputActionHeavy(bool IsUp) override;
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);

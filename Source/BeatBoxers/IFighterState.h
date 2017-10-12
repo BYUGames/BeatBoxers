@@ -50,7 +50,7 @@ public:
 	virtual void StartMoveWindow(FMoveWindow& Window) = 0;
 
 	/** Interrupts any ongoing move windows and starts a stun. */
-	virtual void StartStun(float Duration) = 0;
+	virtual void StartStun(float Duration, bool WasBlocked) = 0;
 
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void SetMoveDirection(float Direction) = 0;
@@ -81,4 +81,7 @@ public:
 
 	/** Interface to get DefaultMoveState from the Fighter. */
 	virtual TSubclassOf<AMoveState> GetDefaultMoveState() = 0;
+
+	/** Get horizontal movement to expose to animation blueprint. */
+	virtual float GetCurrentHorizontalMovement() const = 0;
 };

@@ -48,9 +48,12 @@ public:
 	/** Receives events relating to the D-pad up button. */
 	virtual void InputActionUp(bool IsUp) = 0;
 
-	/** Receives events relating to the punch button. */
-	virtual void InputActionPunch(bool IsUp) = 0;
+	/** Receives events relating to the light attack button. */
+	virtual void InputActionLight(bool IsUp) = 0;
+
+	/** Receives events relating to the medium attack button. */
+	virtual void InputActionMedium(bool IsUp) = 0;
 	
-	/** Receives events relating to the kick button. */
-	virtual void InputActionKick(bool IsUp) = 0;
+	/** Receives events relating to the heavy attack button. */
+	virtual void InputActionHeavy(bool IsUp) = 0;
 };

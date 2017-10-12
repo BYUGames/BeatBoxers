@@ -14,9 +14,25 @@ class BEATBOXERS_API ABasicMusicBox : public AActor, public IMusicBox, public IF
 	GENERATED_UCLASS_BODY()
 	
 protected:
+	//TODO replace this with actual music stuff
+	FTimerHandle TimerHandle_Beat;
 
 public:	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TimeBetweenBeats;
+
+	UPROPERTY(BlueprintAssignable)
+	FNewNoteEvent NewNoteEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FBeatEvent BeatEvent;
+
 	/** Implementation of IMusicBox */
+	virtual void StartMusic() override;
+	virtual void PauseMusic() override;
+	virtual void ResumeMusic() override;
+	virtual void StopMusic() override;
+	virtual float GetTimeToNextBeat() override;
 	virtual FBeatEvent& GetOnBeatEvent() override;
 	/** End Implementation of IMusicBox */
 
@@ -26,9 +42,6 @@ public:
 	virtual FNewNoteEvent& GetOnNewNoteEvent() override;
 	/** End Implementation of IFretboardFeed */
 
-	UPROPERTY(BlueprintAssignable)
-	FNewNoteEvent NewNoteEvent;
-
-	UPROPERTY(BlueprintAssignable)
-	FBeatEvent BeatEvent;
+	UFUNCTION(BlueprintCallable)
+	void DropBeat();
 };

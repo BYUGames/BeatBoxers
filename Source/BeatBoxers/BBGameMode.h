@@ -22,12 +22,17 @@ class BEATBOXERS_API ABBGameMode : public AGameMode, public IFighterWorld
 {
 	GENERATED_UCLASS_BODY()
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector InitialCameraLocation;
-	FVector InitialCameraLookAtLocation;
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector InitialCameraLocation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector InitialCameraLookAtLocation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bDrawDebugTraces;
+
 	UPROPERTY(BlueprintAssignable)
 	FSoloStartEvent SoloStartEvent;
 

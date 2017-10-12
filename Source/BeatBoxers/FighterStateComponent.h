@@ -33,6 +33,8 @@ protected:
 	uint32 IsHitboxActive : 1;
 	uint32 HasMoveWindowHit : 1;
 	uint32 IsBeingMoved : 1;
+	uint32 IsCurrentStunBlock : 1; 
+
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
@@ -101,7 +103,7 @@ public:
 	virtual bool IsStunned() const override;
 	virtual bool IsMidMove() const override;
 	virtual void StartMoveWindow(FMoveWindow& Window) override;
-	virtual void StartStun(float Duration) override;
+	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void ApplyMovement(FMovement Movement) override;
@@ -112,6 +114,7 @@ public:
 	virtual bool UseSpecial(float Amount) override;
 	virtual EStance GetStance() const override;
 	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
+	virtual float GetCurrentHorizontalMovement() const override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

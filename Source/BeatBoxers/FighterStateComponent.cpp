@@ -2,9 +2,11 @@
 
 #include "FighterStateComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "FighterCharacter.h"
 
 
 // Sets default values for this component's properties
@@ -28,8 +30,13 @@ void UFighterStateComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetComponentTickEnabled(false);
-	// ...
 	
+	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+	if (Fighter != nullptr)
+	{
+		DefaultHitEffects = Fighter->DefaultHitEffects;
+		DefaultBlockEffects = Fighter->DefaultBlockEffects;
+	}
 }
 
 
@@ -69,7 +76,9 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 		}
 		GetOwner()->SetActorLocation(
 			GetOwner()->GetActorLocation() + CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime,
-			true
+			true,
+			nullptr,
+			ETeleportType::TeleportPhysics
 		);
 		return true;
 	}
@@ -147,10 +156,21 @@ bool UFighterStateComponent::IsInputBlocked() const
 
 bool UFighterStateComponent::IsBlocking() const
 {
+	float ToOpponent = (MyFighter != nullptr) ? MyFighter->GetOpponentDirection() : 0.f;
+	UE_LOG(LogUFighterState, VeryVerbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %f, %s, %s, %f"),
+		*GetNameSafe(GetOwner()),
+		IsStunned(),
+		IsCurrentStunBlock,
+		IsInputBlocked(),
+		MoveDirection,
+		(MyFighter != nullptr) ? TEXT("Valid") : TEXT("nullptr"),
+		*GetEnumValueToString<EStance>(TEXT("EStance"), (MyFighter != nullptr) ? MyFighter->GetStance() : EStance::SE_NA),
+		ToOpponent
+	);
+	if (IsStunned() && IsCurrentStunBlock) return true;
 	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
 	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
-	float ToOpponent = MyFighter->GetOpponentDirection();
 	if (ToOpponent == 0) return false;
 
 	if (ToOpponent > 0 && MoveDirection < 0) return true;
@@ -173,6 +193,17 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window)
 {
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
+	if (CurrentWindow.IsHitboxActive)
+	{
+		if (!CurrentWindow.DefenderHit.SFX.IsValid())
+		{
+			CurrentWindow.DefenderHit.SFX = DefaultHitEffects;
+		}
+		if (!CurrentWindow.DefenderBlock.SFX.IsValid())
+		{
+			CurrentWindow.DefenderBlock.SFX = DefaultBlockEffects;
+		}
+	}
 	CurrentWindowEnd = EWindowEnd::WE_Finished;
 
 	if (IsStunned())
@@ -181,12 +212,41 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window)
 	}
 	else
 	{
+		if (Window.AnimMontage != nullptr && MyFighter != nullptr)
+		{
+			ACharacter *Character = Cast<ACharacter>(MyFighter);
+			if (Character != nullptr)
+			{
+				float Duration = Character->PlayAnimMontage(Window.AnimMontage);
+				if (Duration == 0.f)
+				{
+					UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartMoveWindow PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(Window.AnimMontage));
+				}
+				else
+				{
+					UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartMoveWindow PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(Window.AnimMontage), Duration);
+				}
+			}
+			else
+			{
+				UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartMoveWindow unable to cast fighter to character."), *GetNameSafe(this));
+			}
+		}
 		StartCurrentWindowWindup();
 	}
 }
 
-void UFighterStateComponent::StartStun(float Duration)
+void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
+	IsCurrentStunBlock = WasBlocked;
+	if (IsWindowActive && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	{
+		ACharacter *Character = Cast<ACharacter>(MyFighter);
+		if (Character != nullptr)
+		{
+			Character->StopAnimMontage();
+		}
+	}
 	EndWindow(EWindowEnd::WE_Stunned);
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_Stun,
@@ -441,8 +501,7 @@ void UFighterStateComponent::PerformHitboxScan()
 					{
 					case EHitResponse::HE_Hit:
 						HasMoveWindowHit = true;
-						//TODO verify this is correct multiplication order
-						RelativeTransform = ImpactTransform * CurrentWindow.DefenderHit.SFX.RelativeTransform;
+						RelativeTransform = CurrentWindow.DefenderHit.SFX.RelativeTransform * ImpactTransform;
 						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
 						{
 							UGameplayStatics::SpawnEmitterAtLocation(
@@ -463,8 +522,7 @@ void UFighterStateComponent::PerformHitboxScan()
 						break;
 					case EHitResponse::HE_Blocked:
 						HasMoveWindowHit = true;
-						//TODO verify this is correct multiplication order
-						RelativeTransform = ImpactTransform * CurrentWindow.DefenderBlock.SFX.RelativeTransform;
+						RelativeTransform = CurrentWindow.DefenderBlock.SFX.RelativeTransform * ImpactTransform;
 						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)
 						{
 							UGameplayStatics::SpawnEmitterAtLocation(
@@ -527,8 +585,8 @@ void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
 	}
 	else
 	{
-		//TODO verify this is correct multiplication order
-		FTransform RelativeTransform = GetOwner()->GetTransform() * Effects.RelativeTransform;
+		FTransform RelativeTransform = Effects.RelativeTransform * GetOwner()->GetActorTransform();
+		UE_LOG(LogUFighterState, Verbose, TEXT("Owner location %s, spawn location %s"), *GetOwner()->GetActorLocation().ToString(), *RelativeTransform.GetLocation().ToString());
 		if (Effects.ParticleSystem != nullptr)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(
@@ -607,4 +665,17 @@ TSubclassOf<AMoveState> UFighterStateComponent::GetDefaultMoveState()
 		return TSubclassOf<AMoveState>(AMoveState::StaticClass());
 	}
 	return MyFighter->GetDefaultMoveState();
+}
+
+float UFighterStateComponent::GetCurrentHorizontalMovement() const
+{
+	if (IsBeingMoved)
+	{
+		if (CurrentMovement.UseDeltaAsSpeed)
+		{
+			return CurrentMovement.Delta.X;
+		}
+		return CurrentMovement.Delta.X / CurrentMovement.Duration;
+	}
+	return 0.f;
 }

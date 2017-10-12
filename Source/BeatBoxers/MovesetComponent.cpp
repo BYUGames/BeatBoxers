@@ -82,17 +82,18 @@ void UMovesetComponent::StartNextWindow()
 	if (NextWindow == nullptr)
 	{
 		// We've reached the end of this window list for this state.
-		if (CurrentStateClass.GetDefaultObject()->MaxDuration == 0)
+		if (CurrentStateClass.GetDefaultObject()->MaxPostWait == 0)
 		{
 			// End this state immediately.
 			GotoDefaultState();
 		}
-		else if (CurrentStateClass.GetDefaultObject()->MaxDuration > 0)
+		else if (CurrentStateClass.GetDefaultObject()->MaxPostWait > 0)
 		{
 			GetOwner()->GetWorldTimerManager().SetTimer(
 				TimerHandle_PostWait,
 				this,
 				&UMovesetComponent::OnPostWaitExpired,
+				CurrentStateClass.GetDefaultObject()->MaxPostWait,
 				false
 			);
 		}
@@ -105,6 +106,10 @@ void UMovesetComponent::StartNextWindow()
 		if (MyInputParser != nullptr)
 		{
 			return MyInputParser->OnControlReturned();
+		}
+		else
+		{
+			UE_LOG(LogUMoveset, Warning, TEXT("%s UMovesetComponent does not have a valid InputParser reference."))
 		}
 	}
 	else
@@ -183,6 +188,12 @@ void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 				if (MyFighterState->UseSpecial(PossibleMove.GetDefaultObject()->SpecialCost))
 				{
 					// Found a state that we can enter.
+					UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
+						*GetNameSafe(GetOwner()),
+						*GetNameSafe(CurrentStateClass),
+						*GetNameSafe(CurrentStateClass.GetDefaultObject()->PossibleTransitions[i]),
+						*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
+					);
 					GotoState(CurrentStateClass.GetDefaultObject()->PossibleTransitions[i]);
 					return;
 				}

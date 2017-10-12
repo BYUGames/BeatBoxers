@@ -67,11 +67,14 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_None:
 		return false;
 		break;
-	case EInputToken::IE_Punch:
-		if (Punch) return true;
+	case EInputToken::IE_Light:
+		if (Light) return true;
 		break;
-	case EInputToken::IE_Kick:
-		if (Kick) return true;
+	case EInputToken::IE_Medium:
+		if (Medium) return true;
+		break;
+	case EInputToken::IE_Heavy:
+		if (Heavy) return true;
 		break;
 	case EInputToken::IE_Jump:
 		if (Jump) return true;
@@ -92,6 +95,7 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 AMoveState::AMoveState(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	MaxPostWait = 0.25f;
 	MoveWindows = TArray<FMoveWindow>();
 	PossibleTransitions = TArray< TSubclassOf<AMoveState> >();
 }
@@ -113,4 +117,9 @@ FMovement FMovement::operator*(float f)
 	FMovement Result = *this;
 	Result.Delta *= f;
 	return Result;
+}
+
+bool FEffects::IsValid() const
+{
+	return ParticleSystem != nullptr || SoundCue != nullptr;
 }

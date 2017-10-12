@@ -25,6 +25,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 
 	InitialCameraLocation = FVector(0, 800, 180);
 	InitialCameraLookAtLocation = FVector(0, 0, 180);
+	bDrawDebugTraces = true;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -50,16 +51,19 @@ struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObje
 		Params
 	);
 
-	DrawDebugLine(
-		GetWorld(),
-		Hitbox.Origin,
-		Hitbox.End,
-		FColor::Red,
-		false,
-		-1.f,
-		(uint8)'\000',
-		Hitbox.Radius
-	);
+	if (bDrawDebugTraces)
+	{
+		DrawDebugLine(
+			GetWorld(),
+			Hitbox.Origin,
+			Hitbox.End,
+			FColor::Red,
+			false,
+			-1.f,
+			(uint8)'\000',
+			Hitbox.Radius
+		);
+	}
 	return Result;
 }
 
@@ -193,6 +197,7 @@ void ABBGameMode::StartMatch()
 				if (WorldMusicBox != nullptr)
 				{
 					GetGameState<ABBGameState>()->WorldMusicBox = WorldMusicBox;
+					WorldMusicBox->StartMusic();
 				}
 				else
 				{
@@ -319,7 +324,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	GetWorld()->LineTraceSingleByObjectType(
 		Result,
 		Target.Get()->GetActorLocation(),
-		Target.Get()->GetActorLocation() + NonrelativeMovement.Delta.GetSafeNormal() * 50.f, //This number needs to be greater than the fighter's radius.
+		Target.Get()->GetActorLocation() + NonrelativeMovement.Delta.GetSafeNormal() * 100.f,
 		FCollisionObjectQueryParams::AllStaticObjects,
 		FCollisionQueryParams::DefaultQueryParam
 	);

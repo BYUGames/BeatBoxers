@@ -28,16 +28,16 @@ class BEATBOXERS_API IMusicBox
 public:
 
 	/** Called by the GameMode when the music box needs to start or restart the music. */
-	virtual void StartMusic() = 0;
+	virtual int StartMusic() = 0;
 
 	/** Called by the GameMode if it needs to pause the music. */
-	virtual void PauseMusic() = 0;
+	virtual int PauseMusic() = 0;
 
 	/** Called by the GameMode if it needs to resume the music. */
-	virtual void ResumeMusic() = 0;
+	virtual int ResumeMusic() = 0;
 
 	/** Called by the GameMode if it needs to stop the music. */
-	virtual void StopMusic() = 0;
+	virtual int StopMusic() = 0;
 
 	/** Allows objects to query when the next beat will happen. Returns -beat interval if the beat is not currently... beating. */
 	virtual float GetTimeToNextBeat() = 0;

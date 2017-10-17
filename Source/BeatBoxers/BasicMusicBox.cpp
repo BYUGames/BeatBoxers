@@ -55,24 +55,28 @@ void ABasicMusicBox::DropBeat()
 	}
 }
 
-void ABasicMusicBox::StartMusic()
+int ABasicMusicBox::StartMusic()
 {
 	K2_StartMusic();
+	return true;
 }
 
-void ABasicMusicBox::PauseMusic()
+int ABasicMusicBox::PauseMusic()
 {
 	K2_PauseMusic();
+	return true;
 }
 
-void ABasicMusicBox::ResumeMusic()
+int ABasicMusicBox::ResumeMusic()
 {
 	K2_ResumeMusic();
+	return true;
 }
 
-void ABasicMusicBox::StopMusic()
+int ABasicMusicBox::StopMusic()
 {
 	K2_StopMusic();
+	return true;
 }
 
 float ABasicMusicBox::GetTimeToSongEnd()
@@ -97,22 +101,26 @@ float ABasicMusicBox::K2_GetTimeToNextBeat_Implementation() const
 	return 0.f;
 }
 
-void ABasicMusicBox::K2_StartMusic_Implementation() const
+int ABasicMusicBox::K2_StartMusic_Implementation()
 {
 	//NOP
+	return true;
 }
 
-void ABasicMusicBox::K2_StopMusic_Implementation() const
+int ABasicMusicBox::K2_StopMusic_Implementation()
 {
 	//NOP
+	return true;
 }
 
-void ABasicMusicBox::K2_PauseMusic_Implementation() const
+int ABasicMusicBox::K2_PauseMusic_Implementation()
 {
 	//NOP
+	return true;
 }
 
-void ABasicMusicBox::K2_ResumeMusic_Implementation() const
+int ABasicMusicBox::K2_ResumeMusic_Implementation()
 {
 	//NOP
+	return true;
 }

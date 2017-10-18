@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "IMoveset.h"
-#include "IFighterState.h"
-#include "IInputParser.h"
-#include "ISoloTracker.h"
+#include "Interfaces/IMoveset.h"
+#include "Interfaces/IFighterState.h"
+#include "Interfaces/IInputParser.h"
+#include "Interfaces/ISoloTracker.h"
 #include "MovesetComponent.generated.h"
 
 

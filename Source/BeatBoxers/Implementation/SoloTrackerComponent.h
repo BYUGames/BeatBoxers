@@ -6,8 +6,8 @@
 #include "BeatBoxersStructs.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "ISoloTracker.h"
-#include "IFretboardFeed.h"
+#include "Interfaces/ISoloTracker.h"
+#include "Interfaces/IFretboardFeed.h"
 #include "SoloTrackerComponent.generated.h"
 
 

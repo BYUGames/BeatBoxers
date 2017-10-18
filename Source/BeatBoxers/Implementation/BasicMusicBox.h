@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IMusicBox.h"
-#include "IFretboardFeed.h"
+#include "Interfaces/IMusicBox.h"
+#include "Interfaces/IFretboardFeed.h"
 #include "BasicMusicBox.generated.h"
 
 UCLASS(BlueprintType)

@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
-#include "IInputParser.h"
-#include "IMoveset.h"
-#include "IFighterState.h"
+#include "Interfaces/IInputParser.h"
+#include "Interfaces/IMoveset.h"
+#include "Interfaces/IFighterState.h"
 #include "InputParserComponent.generated.h"
 
 class UInputParserComponent;

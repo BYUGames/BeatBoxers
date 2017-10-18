@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
 #include "BeatBoxersStructs.h"
-#include "IFighterWorld.h"
+#include "Interfaces/IFighterWorld.h"
 #include "BBGameMode.generated.h"
 
 class AFighterCharacter;

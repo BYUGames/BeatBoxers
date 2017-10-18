@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 #include "Camera/CameraActor.h"
-#include "IMusicBox.h"
+#include "Interfaces/IMusicBox.h"
 #include "BBGameState.generated.h"
 
 /**

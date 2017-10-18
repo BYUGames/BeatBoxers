@@ -1,7 +1,7 @@
 // copyright 2017 BYU Animation
 
 #include "BBGameMode.h"
-#include "IFighter.h"
+#include "Interfaces/IFighter.h"
 #include "FighterCharacter.h"
 #include "BBPlayerController.h"
 #include "BBGameState.h"

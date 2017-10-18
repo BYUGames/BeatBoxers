@@ -104,9 +104,9 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		}
 	}
 
-	if (GetGameState<ABBGameState>() != nullptr && SourceController.IsValid())
+	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
 	{
-		GetGameState<ABBGameState>()->AddScore(SourceController.Get(), ImpactData->Damage);
+		SourceController.Get()->PlayerState->Score += ImpactData->Damage;
 	}
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
@@ -190,23 +190,31 @@ void ABBGameMode::StartMatch()
 
 		if (DefaultMusicBoxClass.Get() != nullptr)
 		{
-			AActor *Actor = GetWorld()->SpawnActorDeferred<AActor>(DefaultMusicBoxClass.Get(), FTransform::Identity);
-			if (Actor != nullptr)
+			IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->WorldMusicBox;
+			if (WorldMusicBox == nullptr)
 			{
-				IMusicBox *WorldMusicBox = Cast<IMusicBox>(Actor);
-				if (WorldMusicBox != nullptr)
+				AActor *Actor = GetWorld()->SpawnActorDeferred<AActor>(DefaultMusicBoxClass.Get(), FTransform::Identity);
+				if (Actor != nullptr)
 				{
-					GetGameState<ABBGameState>()->WorldMusicBox = WorldMusicBox;
-					WorldMusicBox->StartMusic();
+					WorldMusicBox = Cast<IMusicBox>(Actor);
+					if (WorldMusicBox != nullptr)
+					{
+						GetGameState<ABBGameState>()->WorldMusicBox = WorldMusicBox;
+						WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+					}
+					else
+					{
+						UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
+					}
 				}
 				else
 				{
-					UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
+					UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
 				}
 			}
-			else
+			if (WorldMusicBox != nullptr)
 			{
-				UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
+					WorldMusicBox->StartMusic();
 			}
 		}
 		else
@@ -451,4 +459,10 @@ void ABBGameMode::AdjustLocation(AActor *ActorToAdjust)
 void ABBGameMode::BPAdjustLocation_Implementation(AActor *ActorToAdjust)
 {
 	//nop
+}
+
+void ABBGameMode::OnMusicEnd()
+{
+	UE_LOG(LogABBGameMode, Log, TEXT("Music ended, ending game."));
+	EndMatch();
 }

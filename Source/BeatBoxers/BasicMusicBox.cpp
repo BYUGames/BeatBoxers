@@ -39,19 +39,24 @@ void ABasicMusicBox::OnNewNote(FNoteData data)
 	}
 }
 
-void ABasicMusicBox::EndMusic()
-{
-	if (MusicEndEvent.IsBound()) 
-	{
-		MusicEndEvent.Broadcast();
-	}
-}
-
 void ABasicMusicBox::DropBeat()
 {
 	if (BeatEvent.IsBound())
 	{
 		BeatEvent.Broadcast();
+	}
+}
+
+void ABasicMusicBox::EndMusic()
+{
+	if (MusicEndEvent.IsBound())
+	{
+		UE_LOG(LogBeatBoxers, Log, TEXT("calling MusicEndEvent"));
+		MusicEndEvent.Broadcast();
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxers, Log, TEXT("MusicEndEvent not bound"));
 	}
 }
 

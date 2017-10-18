@@ -58,6 +58,9 @@ public:
 
 	virtual void StartMatch() override;
 
+	UFUNCTION()
+	virtual void OnMusicEnd();
+
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;

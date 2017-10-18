@@ -46,11 +46,15 @@ public:
 	virtual FNewNoteEvent& GetOnNewNoteEvent() override;
 	/** End Implementation of IFretboardFeed */
 
-	void ABasicMusicBox::EndMusic();
-	void ABasicMusicBox::OnNewNote(FNoteData data);
 
 	UFUNCTION(BlueprintCallable)
 	void DropBeat();
+
+	UFUNCTION(BlueprintCallable)
+	void EndMusic();
+
+	UFUNCTION(BlueprintCallable)
+	void OnNewNote(FNoteData data);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintPure, meta = (displayname = "Get Time To Song End"))
 	float K2_GetTimeToSongEnd() const;

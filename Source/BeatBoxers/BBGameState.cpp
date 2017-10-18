@@ -5,26 +5,10 @@
 ABBGameState::ABBGameState(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Scores = TMap<AController*, float>();
+	WorldMusicBox = nullptr;
 }
 
-float ABBGameState::GetScore(AController* Controller)
+AActor* ABBGameState::GetMusicBox()
 {
-	return Scores.FindOrAdd(Controller);
-}
-
-float ABBGameState::AddScore(AController* Controller, float Amount)
-{
-	float OldScore = Scores.FindOrAdd(Controller);
-	return Scores.Add(Controller, OldScore + Amount);
-}
-
-float ABBGameState::SetScore(AController* Controller, float Value)
-{
-	return Scores.Add(Controller, Value);
-}
-
-void ABBGameState::ResetScores()
-{
-	Scores.Reset();
+	return Cast<AActor>(WorldMusicBox);
 }

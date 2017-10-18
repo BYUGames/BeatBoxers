@@ -18,13 +18,10 @@ class BEATBOXERS_API ABBGameState : public AGameState
 	
 public:
 	IMusicBox *WorldMusicBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACameraActor *MainCamera;
-	TMap<AController*, float> Scores;
 
 	UFUNCTION(BlueprintCallable)
-	float GetScore(AController* Controller);
-
-	float AddScore(AController* Controller, float Amount);
-	float SetScore(AController* Controller, float Value);
-	void ResetScores();
+	AActor* GetMusicBox();
 };

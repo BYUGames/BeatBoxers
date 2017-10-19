@@ -2,7 +2,7 @@
 
 #include "BBGameMode.h"
 #include "Interfaces/IFighter.h"
-#include "FighterCharacter.h"
+#include "Character/FighterCharacter.h"
 #include "BBPlayerController.h"
 #include "BBGameState.h"
 #include "BBGameInstance.h"

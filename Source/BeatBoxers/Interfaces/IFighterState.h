@@ -34,6 +34,9 @@ public:
 	/** Saves a reference to the InputParser so it can notify it when control is returned after a stun. */
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) = 0;
 
+	/** Saves a reference to the BBPlayerState so it can use its special. */
+	virtual void RegisterFighterPlayerState(TWeakObjectPtr<UObject> FighterPlayerState) = 0;
+
 	/** A check if input is being accepted right now or should be buffered. */
 	virtual bool IsInputBlocked() const = 0;
 
@@ -67,13 +70,13 @@ public:
 	/** Receives pushed notifications from Fighter when landing on the ground. */
 	virtual void OnLand() = 0;
 
-	/** Returns the amount of "special" the fighter has. */
-	virtual float GetSpecialAmount() const = 0;
+	/** Returns the amount of "special" the fighter has, acts as an interface to the playerstate. */
+	virtual float GetSpecial() const = 0;
 
-	/** Adds an amount to the fighter's special. */
+	/** Adds an amount to the fighter's special, acts as an interface to the playerstate. */
 	virtual void AddSpecial(float Amount) = 0;
 
-	/** Uses an amount of the fighter's special. Returns false and does not modify special if there is not that much available, otherwise subtracts special amount and returns true. */
+	/** Uses an amount of the fighter's special. Returns false and does not modify special if there is not that much available, otherwise subtracts special amount and returns true, acts as an interface to the playerstate. */
 	virtual bool UseSpecial(float Amount) = 0;
 
 	/** An interface to the Fighter's GetStance function. */
@@ -84,4 +87,6 @@ public:
 
 	/** Get horizontal movement to expose to animation blueprint. */
 	virtual float GetCurrentHorizontalMovement() const = 0;
+
+	virtual void EndSolo() = 0;
 };

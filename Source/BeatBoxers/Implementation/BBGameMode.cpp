@@ -107,9 +107,19 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
 	{
 		SourceController.Get()->PlayerState->Score += ImpactData->Damage;
+		AddSpecial(SourceController.Get()->PlayerState, ImpactData->SpecialGenerated);
 	}
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
+}
+
+void ABBGameMode::AddSpecial(APlayerState *PlayerState, float Amount)
+{
+	ABBPlayerState *BBPlayerState = Cast<ABBPlayerState>(PlayerState);
+	if (BBPlayerState != nullptr)
+	{
+		BBPlayerState->AddSpecial(Amount);
+	}
 }
 
 bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const
@@ -190,7 +200,7 @@ void ABBGameMode::StartMatch()
 
 		if (DefaultMusicBoxClass.Get() != nullptr)
 		{
-			IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->WorldMusicBox;
+			IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
 			if (WorldMusicBox == nullptr)
 			{
 				AActor *Actor = GetWorld()->SpawnActorDeferred<AActor>(DefaultMusicBoxClass.Get(), FTransform::Identity);
@@ -199,7 +209,7 @@ void ABBGameMode::StartMatch()
 					WorldMusicBox = Cast<IMusicBox>(Actor);
 					if (WorldMusicBox != nullptr)
 					{
-						GetGameState<ABBGameState>()->WorldMusicBox = WorldMusicBox;
+						GetGameState<ABBGameState>()->SetMusicBox(WorldMusicBox);
 						WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
 					}
 					else
@@ -351,6 +361,14 @@ void ABBGameMode::StartSolo(TWeakObjectPtr<AActor> OneSoloing)
 	if (OneSoloing.IsValid() && SoloStartEvent.IsBound())
 	{
 		SoloStartEvent.Broadcast(OneSoloing.Get());
+	}
+}
+
+void ABBGameMode::EndSolo()
+{
+	if (SoloEndEvent.IsBound())
+	{
+		SoloEndEvent.Broadcast();
 	}
 }
 

@@ -232,3 +232,8 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 		break;
 	}
 }
+
+void UMovesetComponent::OnSoloStart()
+{
+	//TODO
+}

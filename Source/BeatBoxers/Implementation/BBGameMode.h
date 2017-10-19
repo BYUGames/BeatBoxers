@@ -49,6 +49,7 @@ public:
 	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
 	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement);
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
+	virtual void EndSolo() override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
@@ -56,6 +57,7 @@ public:
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
 
+	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
 	virtual void StartMatch() override;
 
 	UFUNCTION()

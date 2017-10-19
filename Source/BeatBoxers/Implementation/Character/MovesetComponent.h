@@ -47,6 +47,7 @@ protected:
 	/** Starts the next window in the current move. */
 	void StartNextWindow();
 
+
 public:	
 
 	/** IMoveset implementation */
@@ -55,5 +56,6 @@ public:
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) override;
 	virtual void ReceiveInputToken(EInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
+	virtual void OnSoloStart() override;
 	/** End IMovesetImplementation */
 };

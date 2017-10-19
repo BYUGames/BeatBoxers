@@ -197,6 +197,9 @@ struct FImpactData
 	float Damage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpecialGenerated;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float StunLength;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -224,7 +227,7 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Interruptible : 1;
 
-	/** Whether or not landing a blow during this window starts the character's solo. */
+	/** Whether or not landing a blow during this window starts the character's solo. If the blow is blocked the solo does not start. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 BeginsSolo : 1;
 

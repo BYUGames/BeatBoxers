@@ -2,6 +2,7 @@
 
 #include "FighterCharacter.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -200,6 +201,10 @@ void AFighterCharacter::PostInitializeComponents()
 		GetFighterState()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetFighterState()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
 		GetFighterState()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
+		if (GetController() != nullptr && GetController()->PlayerState != nullptr)
+		{
+			GetFighterState()->RegisterFighterPlayerState(TWeakObjectPtr<UObject>(Cast<UObject>(GetController()->PlayerState)));
+		}
 
 		GetMoveset()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetMoveset()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
@@ -490,4 +495,14 @@ float AFighterCharacter::GetHorizontalMovement() const
 		return GetFighterState()->GetCurrentHorizontalMovement();
 	}
 	return 0.f;
+}
+
+void AFighterCharacter::PossessedBy(AController *NewController)
+{
+	ACharacter::PossessedBy(NewController);
+
+	if (GetFighterState() != nullptr)
+	{
+		GetFighterState()->RegisterFighterPlayerState(TWeakObjectPtr<UObject>(Cast<UObject>(NewController->PlayerState)));
+	}
 }

@@ -17,7 +17,6 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
-	Special = 0.f;
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	IsWindowActive = false;
 	IsHitboxActive = false;
@@ -87,6 +86,11 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 
 void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld)
 {
+	if (MyFighterWorld != nullptr)
+	{
+		MyFighterWorld->GetOnSoloStartEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloStart);
+		MyFighterWorld->GetOnSoloEndEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloEnd);
+	}
 	if (!FighterWorld.IsValid())
 	{
 		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid object to register as FighterWorld."), *GetNameSafe(GetOwner()));
@@ -98,6 +102,9 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 		{
 			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(GetOwner()), *GetNameSafe(FighterWorld.Get()));
 		}
+
+		MyFighterWorld->GetOnSoloStartEvent().AddDynamic(this, &UFighterStateComponent::OnSoloStart);
+		MyFighterWorld->GetOnSoloEndEvent().AddDynamic(this, &UFighterStateComponent::OnSoloEnd);
 	}
 }
 
@@ -149,9 +156,25 @@ void UFighterStateComponent::RegisterInputParser(TWeakObjectPtr<UObject> InputPa
 	}
 }
 
+void UFighterStateComponent::RegisterFighterPlayerState(TWeakObjectPtr<UObject> FighterPlayerState)
+{
+	if (!FighterPlayerState.IsValid())
+	{
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given invalid object to register as FighterPlayerState."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyFighterPlayerState = Cast<IFighterPlayerState>(FighterPlayerState.Get());
+		if (MyFighterPlayerState == nullptr)
+		{
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent given %s to register as FighterPlayerState, but it doesn't implement IFighterPlayerState."), *GetNameSafe(GetOwner()), *GetNameSafe(FighterPlayerState.Get()));
+		}
+	}
+}
+
 bool UFighterStateComponent::IsInputBlocked() const
 {
-	return IsMidMove() || IsStunned();
+	return IsMidMove() || IsStunned() || IsFrozenForSolo;
 }
 
 bool UFighterStateComponent::IsBlocking() const
@@ -519,6 +542,10 @@ void UFighterStateComponent::PerformHitboxScan()
 								RelativeTransform.GetRotation().Rotator()
 							);
 						}
+						if (CurrentWindow.BeginsSolo && MyFighterWorld != nullptr)
+						{
+							MyFighterWorld->StartSolo(TWeakObjectPtr<AActor>(GetOwner()));
+						}
 						break;
 					case EHitResponse::HE_Blocked:
 						HasMoveWindowHit = true;
@@ -629,22 +656,28 @@ AController* UFighterStateComponent::GetOwnerController() const
 	return nullptr;
 }
 
-float UFighterStateComponent::GetSpecialAmount() const
+float UFighterStateComponent::GetSpecial() const
 {
-	return Special;
+	if (MyFighterPlayerState != nullptr)
+	{
+		return MyFighterPlayerState->GetSpecial();
+	}
+	return 0.f;
 }
 
 void UFighterStateComponent::AddSpecial(float Amount)
 {
-	Special += Amount;
+	if (MyFighterPlayerState != nullptr)
+	{
+		MyFighterPlayerState->AddSpecial(Amount);
+	}
 }
 
 bool UFighterStateComponent::UseSpecial(float Amount)
 {
-	if (Special >= Amount)
+	if (MyFighterPlayerState != nullptr)
 	{
-		Special -= Amount;
-		return true;
+		return MyFighterPlayerState->UseSpecial(Amount);
 	}
 	return false;
 }
@@ -678,4 +711,29 @@ float UFighterStateComponent::GetCurrentHorizontalMovement() const
 		return CurrentMovement.Delta.X / CurrentMovement.Duration;
 	}
 	return 0.f;
+}
+
+void UFighterStateComponent::EndSolo()
+{
+	if (MyFighterWorld != nullptr)
+	{
+		MyFighterWorld->EndSolo();
+	}
+}
+
+void UFighterStateComponent::OnSoloStart(AActor *OneSoloing)
+{
+	if (OneSoloing == nullptr || OneSoloing == GetOwner())
+	{
+		IsFrozenForSolo = true;
+	}
+	else
+	{
+		IsFrozenForSolo = false;
+	}
+}
+
+void UFighterStateComponent::OnSoloEnd()
+{
+	IsFrozenForSolo = false;
 }

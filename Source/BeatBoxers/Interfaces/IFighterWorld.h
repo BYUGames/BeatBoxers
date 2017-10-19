@@ -39,6 +39,8 @@ public:
 
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) = 0;
 
+	virtual void EndSolo() = 0;
+
 	virtual FSoloStartEvent& GetOnSoloStartEvent() = 0;
 
 	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;

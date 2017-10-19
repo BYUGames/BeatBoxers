@@ -121,6 +121,8 @@ public:
 
 	virtual void Landed(const FHitResult& Result) override;
 
+	virtual void PossessedBy(AController *NewController) override;
+
 	/** Gets the sign of the actor's facing in the X axis. */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
 	virtual float GetFacing() const;

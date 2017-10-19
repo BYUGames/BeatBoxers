@@ -36,4 +36,7 @@ public:
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) = 0;
+
+	/** Function call to alert the moveset that it has entered it's solo. */
+	virtual void OnSoloStart() = 0;
 };

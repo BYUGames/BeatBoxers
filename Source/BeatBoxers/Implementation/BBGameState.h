@@ -15,13 +15,30 @@ UCLASS()
 class BEATBOXERS_API ABBGameState : public AGameState
 {
 	GENERATED_UCLASS_BODY()
-	
-public:
+
+protected:
 	IMusicBox *WorldMusicBox;
+
+	UFUNCTION()
+	void OnBeat();
+
+	UFUNCTION()
+	void OnMusicEnd();
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FBeatEvent BeatEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FMusicEndEvent MusicEndEvent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACameraActor *MainCamera;
 
 	UFUNCTION(BlueprintCallable)
 	AActor* GetMusicBox();
+
+	IMusicBox* GetIMusicBox();
+
+	void SetMusicBox(IMusicBox *NewMusicBox);
 };

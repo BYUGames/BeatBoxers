@@ -12,6 +12,7 @@
 #include "Interfaces/IFighterWorld.h"
 #include "Interfaces/IMoveset.h"
 #include "Interfaces/IInputParser.h"
+#include "Interfaces/IFighterPlayerState.h"
 #include "BBFunctionLibrary.h"
 #include "FighterStateComponent.generated.h"
 
@@ -26,14 +27,14 @@ protected:
 	IFighter *MyFighter;
 	IMoveset *MyMoveset;
 	IInputParser *MyInputParser;
-
-	float Special;
+	IFighterPlayerState *MyFighterPlayerState;
 
 	uint32 IsWindowActive : 1;
 	uint32 IsHitboxActive : 1;
 	uint32 HasMoveWindowHit : 1;
 	uint32 IsBeingMoved : 1;
-	uint32 IsCurrentStunBlock : 1; 
+	uint32 IsCurrentStunBlock : 1;
+	uint32 IsFrozenForSolo : 1;
 
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
@@ -98,6 +99,7 @@ public:
 	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) override;
+	virtual void RegisterFighterPlayerState(TWeakObjectPtr<UObject> FighterPlayerState) override;
 	virtual bool IsInputBlocked() const override;
 	virtual bool IsBlocking() const override;
 	virtual bool IsStunned() const override;
@@ -109,15 +111,22 @@ public:
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual void Jump() override;
 	virtual void OnLand() override;
-	virtual float GetSpecialAmount() const override;
+	virtual float GetSpecial() const override;
 	virtual void AddSpecial(float Amount) override;
 	virtual bool UseSpecial(float Amount) override;
 	virtual EStance GetStance() const override;
 	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
 	virtual float GetCurrentHorizontalMovement() const override;
+	virtual void EndSolo() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;
+
+	UFUNCTION()
+	void OnSoloStart(AActor *OneSoloing);
+
+	UFUNCTION()
+	void OnSoloEnd();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

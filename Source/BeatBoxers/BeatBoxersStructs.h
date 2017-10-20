@@ -346,9 +346,17 @@ struct FNoteData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ENoteType NoteType;
 
-	/** Time until this note passes. */
+	/** Which track is the note on? */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TimeLeft;
+	int Track;
+
+	/** Timer for this note. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FTimerHandle TimerHandle;
+
+	/** Total time this note had to start with. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InitialDuration;
 };
 
 USTRUCT(BlueprintType)

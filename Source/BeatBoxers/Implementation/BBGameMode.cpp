@@ -198,43 +198,19 @@ void ABBGameMode::StartMatch()
 			}
 		}
 
-		if (DefaultMusicBoxClass.Get() != nullptr)
+		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
+		if (WorldMusicBox != nullptr)
 		{
-			IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
-			if (WorldMusicBox == nullptr)
-			{
-				AActor *Actor = GetWorld()->SpawnActorDeferred<AActor>(DefaultMusicBoxClass.Get(), FTransform::Identity);
-				if (Actor != nullptr)
-				{
-					WorldMusicBox = Cast<IMusicBox>(Actor);
-					if (WorldMusicBox != nullptr)
-					{
-						GetGameState<ABBGameState>()->SetMusicBox(WorldMusicBox);
-						WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
-					}
-					else
-					{
-						UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
-					}
-				}
-				else
-				{
-					UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
-				}
-			}
-			if (WorldMusicBox != nullptr)
-			{
-					WorldMusicBox->StartMusic();
-			}
+			WorldMusicBox->StartMusic();
 		}
 		else
 		{
-			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass is not set to a valid class."), *GetNameSafe(this));
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("Gamemode unable to get musicbox from gamestate."));
 		}
 	}
 	else
 	{
-		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s unable to get gamestate as ABBGameState."), *GetNameSafe(this));
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("Gamemode unable to get gamestate as ABBGameState."));
 	}
 
 	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
@@ -387,6 +363,42 @@ void ABBGameMode::InitGame(const FString& MapName, const FString& Options, FStri
 	AGameMode::InitGame(MapName, Options, ErrorMessage);
 }
 
+void ABBGameMode::InitGameState()
+{
+	Super::InitGameState();
+	if (DefaultMusicBoxClass.Get() != nullptr)
+	{
+		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
+		if (WorldMusicBox == nullptr)
+		{
+			FActorSpawnParameters SpawnInfo;
+
+			AActor *Actor = GetWorld()->SpawnActor<AActor>(DefaultMusicBoxClass.Get(), SpawnInfo);
+			if (Actor != nullptr)
+			{
+				WorldMusicBox = Cast<IMusicBox>(Actor);
+				if (WorldMusicBox != nullptr)
+				{
+					GetGameState<ABBGameState>()->SetMusicBox(WorldMusicBox);
+					WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+				}
+				else
+				{
+					UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
+				}
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass is not set to a valid class."), *GetNameSafe(this));
+	}
+}
+
 UClass* ABBGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
 	if (InController == nullptr)
@@ -472,11 +484,6 @@ APawn* ABBGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, A
 void ABBGameMode::AdjustLocation(AActor *ActorToAdjust)
 {
 	BPAdjustLocation(ActorToAdjust);
-}
-
-void ABBGameMode::BPAdjustLocation_Implementation(AActor *ActorToAdjust)
-{
-	//nop
 }
 
 void ABBGameMode::OnMusicEnd()

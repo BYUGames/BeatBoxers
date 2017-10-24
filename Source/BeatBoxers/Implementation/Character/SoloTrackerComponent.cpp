@@ -10,10 +10,17 @@ USoloTrackerComponent::USoloTrackerComponent(const class FObjectInitializer& Obj
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
+UBasicFretboardFeed* USoloTrackerComponent::GetMyFretboardFeed()
+{
+	if (MyFretboardFeed == nullptr)
+	{
+		MyFretboardFeed = NewObject<UBasicFretboardFeed>();
+		MyFretboardFeed->SetTimerManager(GetOwner()->GetWorldTimerManager());
+	}
+	return MyFretboardFeed;
+}
 
 // Called when the game starts
 void USoloTrackerComponent::BeginPlay()
@@ -21,7 +28,6 @@ void USoloTrackerComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -40,15 +46,6 @@ void USoloTrackerComponent::BeginSolo(FSoloParameters SoloParameters)
 
 void USoloTrackerComponent::EndSolo()
 {
+	ClearFeed();
 	//TODO
-}
-
-TArray<FNoteData> USoloTrackerComponent::GetExistingNotes_Implementation()
-{
-	return TArray<FNoteData>();
-}
-
-FNewNoteEvent & USoloTrackerComponent::GetOnNewNoteEvent()
-{
-	return NewNoteEvent;
 }

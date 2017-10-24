@@ -7,8 +7,18 @@
 ABasicMusicBox::ABasicMusicBox(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+UBasicFretboardFeed* ABasicMusicBox::GetMyFretboardFeed()
+{
+	if (MyFretboardFeed == nullptr)
+	{
+		MyFretboardFeed = NewObject<UBasicFretboardFeed>();
+		MyFretboardFeed->SetTimerManager(GetWorldTimerManager());
+	}
+	return MyFretboardFeed;
 }
 
 FBeatEvent& ABasicMusicBox::GetOnBeatEvent()
@@ -16,27 +26,14 @@ FBeatEvent& ABasicMusicBox::GetOnBeatEvent()
 	return BeatEvent;
 }
 
-TArray<FNoteData> ABasicMusicBox::GetExistingNotes_Implementation()
-{
-	return TArray<FNoteData>();
-}
-
-FNewNoteEvent& ABasicMusicBox::GetOnNewNoteEvent()
-{
-	return NewNoteEvent;
-}
-
 FMusicEndEvent& ABasicMusicBox::GetMusicEndEvent()
 {
 	return MusicEndEvent;
 }
 
-void ABasicMusicBox::OnNewNote(FNoteData data)
+void ABasicMusicBox::OnNewNote(FFeedNoteData NoteData)
 {
-	if (NewNoteEvent.IsBound())
-	{
-		NewNoteEvent.Broadcast(data);
-	}
+	//TODO
 }
 
 void ABasicMusicBox::DropBeat()
@@ -114,18 +111,18 @@ int ABasicMusicBox::K2_StartMusic_Implementation()
 
 int ABasicMusicBox::K2_StopMusic_Implementation()
 {
-	//NOP
+	ClearFeed();
 	return true;
 }
 
 int ABasicMusicBox::K2_PauseMusic_Implementation()
 {
-	//NOP
+	PauseFeed();
 	return true;
 }
 
 int ABasicMusicBox::K2_ResumeMusic_Implementation()
 {
-	//NOP
+	ResumeFeed();
 	return true;
 }

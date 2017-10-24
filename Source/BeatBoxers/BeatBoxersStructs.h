@@ -89,6 +89,15 @@ enum class EInputToken : uint8
 	IE_DashRight	UMETA(DisplayName = "DashRight")
 };
 
+UENUM(BlueprintType)
+enum class ENoteType : uint8
+{
+	NE_None		UMETA(DisplayName = "None"),
+	NE_Light	UMETA(DisplayName = "Light"),
+	NE_Medium	UMETA(DisplayName = "Medium"),
+	NE_Heavy	UMETA(DisplayName = "Heavy")
+};
+
 USTRUCT(BlueprintType)
 struct FInputTokenBools
 {
@@ -316,28 +325,17 @@ public:
 	TArray< TSubclassOf<AMoveState> > PossibleTransitions;
 };
 
-UENUM(BlueprintType)
-enum class ENoteType : uint8
-{
-	NE_None		UMETA(DisplayName = "None")
-};
-
 /** Results returned to the moveset from the fretboard. */
 USTRUCT(BlueprintType)
 struct FFretboardInputResult
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Was the input correct. */
+	/** 1 is perfect accuracy, 0 is worst accuracy, -1 was a miss. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint32 WasCorrect : 1;
-
-	/** Positive means they were late, negative means early. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TimeDifference;
+	float Accuracy;
 };
 
-/** Representation of notes sent to the fretboard. */
 USTRUCT(BlueprintType)
 struct FNoteData
 {
@@ -350,13 +348,51 @@ struct FNoteData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Track;
 
+	/** Total time this note had to start with. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InitialDuration;
+
 	/** Timer for this note. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTimerHandle TimerHandle;
+};
+
+USTRUCT(BlueprintType)
+struct FFeedNoteData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ENoteType NoteType;
+
+	/** Which track is the note on? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Track;
 
 	/** Total time this note had to start with. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialDuration;
+
+	/** Total time this note had to start with. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DurationRemaining;
+};
+
+USTRUCT(BlueprintType)
+struct FNoteWidgetData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ENoteType NoteType;
+
+	/** Which track is the note on? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Track;
+
+	/** Percent of distance travelled until the note "hits". */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Percent;
 };
 
 USTRUCT(BlueprintType)
@@ -370,3 +406,8 @@ struct FNewGameData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> Player1Class;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewFeedNoteEvent, FFeedNoteData, NoteData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNewNoteEvent, int, NoteID, FNoteData, NoteData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNoteEndEvent, int, NoteID, float, Accuracy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNotesClearedEvent);

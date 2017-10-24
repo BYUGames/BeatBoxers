@@ -6,10 +6,8 @@
 #include "BeatBoxersStructs.h"
 #include "IFretboardFeed.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewNoteEvent, FNoteData, NoteData);
-
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI, Blueprintable)
+UINTERFACE(MinimalAPI)
 class UFretboardFeed : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()
@@ -26,8 +24,16 @@ class BEATBOXERS_API IFretboardFeed
 public:
 
 	/** Allows a new listener to get a collection of all the notes that are already existing in the feed. */
-	UFUNCTION(BlueprintNativeEvent)
-	TArray<FNoteData> GetExistingNotes();
+	virtual TArray<FFeedNoteData> GetExistingNotes() = 0;
 
-	virtual FNewNoteEvent& GetOnNewNoteEvent() = 0;
+	virtual void PauseFeed() = 0;
+	virtual void ResumeFeed() = 0;
+	virtual void ClearFeed() = 0;
+
+	/** How early/long are notes added to the feed? */
+	virtual float GetNoteLifetime() = 0;
+
+	virtual void AddNote(FFeedNoteData FeedNote) = 0;
+
+	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() = 0;
 };

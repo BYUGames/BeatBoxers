@@ -64,10 +64,11 @@ public:
 	virtual void OnMusicEnd();
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void InitGameState() override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
-	UFUNCTION(BlueprintNativeEvent, meta=(DisplayName = AdjustLocation))
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 };

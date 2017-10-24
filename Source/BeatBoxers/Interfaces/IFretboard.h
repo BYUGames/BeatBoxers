@@ -28,7 +28,16 @@ public:
 	/** Receives a token, returns if it was correct. */
 	virtual FFretboardInputResult ReceiveInputToken(EInputToken InputToken) = 0;
 
-	virtual void ListenToFeed(TWeakObjectPtr<UObject> FretboardFeed) = 0;
+	virtual void Listen(TWeakObjectPtr<UObject> NoteFeed) = 0;
+	virtual void StopListening() = 0;
 
-	virtual void StopListeningToFeed() = 0;
+	virtual void PauseBoard() = 0;
+	virtual void ResumeBoard() = 0;
+	virtual void ClearBoard() = 0;
+
+	virtual const TMap<int, FNoteData>& GetAllNotes() = 0;
+
+	virtual FNewNoteEvent& GetOnNewNoteEvent() = 0;
+	virtual FNoteEndEvent& GetOnNoteEndEvent() = 0;
+	virtual FNotesClearedEvent& GetOnNotesClearedEvent() = 0;
 };

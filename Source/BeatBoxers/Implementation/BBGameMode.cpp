@@ -355,14 +355,16 @@ void ABBGameMode::InitGameState()
 	Super::InitGameState();
 	if (DefaultMusicBoxClass.Get() != nullptr)
 	{
-		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
-		if (WorldMusicBox != nullptr)
+		UObject *Object = GetWorld()->SpawnActor(DefaultMusicBoxClass);
+		IMusicBox *MusicBox = Cast<IMusicBox>(Object);
+		if (MusicBox != nullptr)
 		{
-			WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+			GetGameState<ABBGameState>()->SetMusicBox(Object);
+			MusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
 		}
 		else
 		{
-			UE_LOG(LogABBGameMode, Error, TEXT("Gamemode unable to retrieve musicbox from gamestate."));
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass does not implement IMusicBox."), *GetNameSafe(this));
 		}
 	}
 	else
@@ -484,6 +486,8 @@ void ABBGameMode::HandleMatchIsWaitingToStart()
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("GameMode unable to get gameinstance as UBBGameInstance."));
 	}
+
+
 
 	Super::HandleMatchIsWaitingToStart();
 }

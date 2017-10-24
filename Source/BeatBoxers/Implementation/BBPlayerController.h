@@ -16,10 +16,4 @@ class BEATBOXERS_API ABBPlayerController : public APlayerController
 {
 	GENERATED_UCLASS_BODY()
 
-protected:
-	UBasicFretboard *BGFretboard;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	UBasicFretboard* GetBGFretboard();
 };

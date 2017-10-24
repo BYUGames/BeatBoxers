@@ -17,7 +17,7 @@ class BEATBOXERS_API ABBGameState : public AGameState
 	GENERATED_UCLASS_BODY()
 
 protected:
-	IMusicBox *WorldMusicBox;
+	UObject *WorldMusicBox;
 
 	UFUNCTION()
 	void OnBeat();
@@ -35,10 +35,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACameraActor *MainCamera;
 
+	UObject* GetUMusicBox();
+
 	UFUNCTION(BlueprintCallable)
-	AActor* GetMusicBox();
+	AActor* GetAMusicBox();
 
 	IMusicBox* GetIMusicBox();
 
-	void SetMusicBox(IMusicBox *NewMusicBox);
+	void SetMusicBox(UObject *NewMusicBox);
 };

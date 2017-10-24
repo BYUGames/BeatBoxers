@@ -442,11 +442,6 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	}
 }
 
-TSubclassOf<AMoveState> AFighterCharacter::GetDefaultMoveState()
-{
-	return DefaultMoveState;
-}
-
 void AFighterCharacter::SetFacing(float Sign)
 {
 	Sign = FMath::Sign(Sign);

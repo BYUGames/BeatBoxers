@@ -82,9 +82,6 @@ public:
 	/** An interface to the Fighter's GetStance function. */
 	virtual EStance GetStance() const = 0;
 
-	/** Interface to get DefaultMoveState from the Fighter. */
-	virtual TSubclassOf<AMoveState> GetDefaultMoveState() = 0;
-
 	/** Get horizontal movement to expose to animation blueprint. */
 	virtual float GetCurrentHorizontalMovement() const = 0;
 

@@ -25,7 +25,7 @@ public:
 	FMusicEndEvent MusicEndEvent;
 
 	UFUNCTION(BlueprintCallable)
-	UBasicFretboardFeed* GetMyFretboardFeed();
+	UBasicFretboardFeed* GetFretboardFeed();
 
 	/** Implementation of IMusicBox */
 	virtual int StartMusic() override;
@@ -39,13 +39,13 @@ public:
 	/** End Implementation of IMusicBox */
 
 	/** Implmementation of IFretboardFeed */
-	virtual TArray<FFeedNoteData> GetExistingNotes() override { return GetMyFretboardFeed()->GetExistingNotes(); }
-	virtual void PauseFeed() override { GetMyFretboardFeed()->PauseFeed(); }
-	virtual void ResumeFeed() override { GetMyFretboardFeed()->ResumeFeed(); }
-	virtual void ClearFeed() override { GetMyFretboardFeed()->ClearFeed(); }
-	virtual float GetNoteLifetime() override { return GetMyFretboardFeed()->GetNoteLifetime(); }
-	virtual void AddNote(FFeedNoteData FeedNote) override { GetMyFretboardFeed()->AddNote(FeedNote); }
-	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return GetMyFretboardFeed()->GetOnNewFeedNoteEvent(); }
+	virtual TArray<FFeedNoteData> GetExistingNotes() override { return GetFretboardFeed()->GetExistingNotes(); }
+	virtual void PauseFeed() override { GetFretboardFeed()->PauseFeed(); }
+	virtual void ResumeFeed() override { GetFretboardFeed()->ResumeFeed(); }
+	virtual void ClearFeed() override { GetFretboardFeed()->ClearFeed(); }
+	virtual float GetNoteLifetime() override { return GetFretboardFeed()->GetNoteLifetime(); }
+	virtual void AddNote(FFeedNoteData FeedNote) override { GetFretboardFeed()->AddNote(FeedNote); }
+	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return GetFretboardFeed()->GetOnNewFeedNoteEvent(); }
 	/** End Implementation of IFretboardFeed*/
 
 	UFUNCTION(BlueprintCallable)
@@ -55,7 +55,7 @@ public:
 	void EndMusic();
 
 	UFUNCTION(BlueprintCallable)
-	void OnNewNote(FFeedNoteData NoteData);
+	void OnNewNote(FFeedNoteData NoteData) { AddNote(NoteData); }
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintPure, meta = (displayname = "Get Time To Song End"))
 	float K2_GetTimeToSongEnd() const;

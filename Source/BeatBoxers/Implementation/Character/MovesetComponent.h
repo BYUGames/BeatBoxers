@@ -9,6 +9,7 @@
 #include "Interfaces/IFighterState.h"
 #include "Interfaces/IInputParser.h"
 #include "Interfaces/ISoloTracker.h"
+#include "../BasicFretboard.h"
 #include "MovesetComponent.generated.h"
 
 
@@ -28,6 +29,9 @@ protected:
 	IFighterState *MyFighterState;
 	IInputParser *MyInputParser;
 	ISoloTracker *MySoloTracker;
+
+	UBasicFretboard *BGFretboard;
+	UBasicFretboard *SoloFretboard;
 
 	TSubclassOf<AMoveState> CurrentStateClass;
 	FTimerHandle TimerHandle_PostWait;
@@ -49,6 +53,11 @@ protected:
 
 
 public:	
+	UFUNCTION(BlueprintCallable)
+	UBasicFretboard* GetBGFretboard();
+
+	UFUNCTION(BlueprintCallable)
+	UBasicFretboard* GetSoloFretboard();
 
 	/** IMoveset implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;

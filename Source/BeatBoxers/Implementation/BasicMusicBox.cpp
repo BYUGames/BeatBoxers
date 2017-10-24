@@ -11,7 +11,7 @@ ABasicMusicBox::ABasicMusicBox(const class FObjectInitializer& ObjectInitializer
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-UBasicFretboardFeed* ABasicMusicBox::GetMyFretboardFeed()
+UBasicFretboardFeed* ABasicMusicBox::GetFretboardFeed()
 {
 	if (MyFretboardFeed == nullptr)
 	{
@@ -29,11 +29,6 @@ FBeatEvent& ABasicMusicBox::GetOnBeatEvent()
 FMusicEndEvent& ABasicMusicBox::GetMusicEndEvent()
 {
 	return MusicEndEvent;
-}
-
-void ABasicMusicBox::OnNewNote(FFeedNoteData NoteData)
-{
-	//TODO
 }
 
 void ABasicMusicBox::DropBeat()

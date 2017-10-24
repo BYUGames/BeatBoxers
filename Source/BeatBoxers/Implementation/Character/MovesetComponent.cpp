@@ -2,6 +2,8 @@
 
 #include "MovesetComponent.h"
 #include "GameFramework/Actor.h"
+#include "FighterCharacter.h"
+#include "../BBGameState.h"
 
 
 // Sets default values for this component's properties
@@ -16,9 +18,11 @@ UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectIniti
 void UMovesetComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (MyFighterState != nullptr)
+
+	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+	if (Fighter != nullptr)
 	{
-		DefaultStateClass = MyFighterState->GetDefaultMoveState();
+		DefaultStateClass = Fighter->DefaultMoveState;
 	}
 	else
 	{
@@ -236,4 +240,33 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 void UMovesetComponent::OnSoloStart()
 {
 	//TODO
+}
+
+UBasicFretboard* UMovesetComponent::GetBGFretboard()
+{
+	if (BGFretboard == nullptr)
+	{
+		BGFretboard = NewObject<UBasicFretboard>();
+		BGFretboard->SetTimerManager(GetOwner()->GetWorldTimerManager());
+		ABBGameState *GameState = GetWorld()->GetGameState<ABBGameState>();
+		if (GameState != nullptr)
+		{
+			BGFretboard->Listen(GameState->GetUMusicBox());
+		}
+		else
+		{
+			UE_LOG(LogFretboard, Warning, TEXT("%s UMovesetComponent unable reach gamestate to attach fretboard to bg music."), *GetNameSafe(GetOwner()));
+		}
+	}
+	return BGFretboard;
+}
+
+UBasicFretboard* UMovesetComponent::GetSoloFretboard()
+{
+	if (SoloFretboard == nullptr)
+	{
+		SoloFretboard = NewObject<UBasicFretboard>();
+		SoloFretboard->SetTimerManager(GetOwner()->GetWorldTimerManager());
+	}
+	return SoloFretboard;
 }

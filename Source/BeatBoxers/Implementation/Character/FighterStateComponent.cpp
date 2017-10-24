@@ -691,15 +691,6 @@ EStance UFighterStateComponent::GetStance() const
 	return MyFighter->GetStance();
 }
 
-TSubclassOf<AMoveState> UFighterStateComponent::GetDefaultMoveState()
-{
-	if (MyFighter == nullptr)
-	{
-		return TSubclassOf<AMoveState>(AMoveState::StaticClass());
-	}
-	return MyFighter->GetDefaultMoveState();
-}
-
 float UFighterStateComponent::GetCurrentHorizontalMovement() const
 {
 	if (IsBeingMoved)

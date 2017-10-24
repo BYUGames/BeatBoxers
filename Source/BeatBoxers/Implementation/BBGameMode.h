@@ -58,6 +58,7 @@ public:
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
 
 	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
+	virtual void HandleMatchIsWaitingToStart() override;
 	virtual void StartMatch() override;
 
 	UFUNCTION()

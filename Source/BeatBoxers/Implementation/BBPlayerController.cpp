@@ -8,16 +8,3 @@ ABBPlayerController::ABBPlayerController(const class FObjectInitializer& ObjectI
 {
 
 }
-
-UBasicFretboard* ABBPlayerController::GetBGFretboard()
-{
-	if (BGFretboard == nullptr)
-	{
-		BGFretboard = NewObject<UBasicFretboard>();
-		BGFretboard->SetTimerManager(GetWorldTimerManager());
-
-		//TODO: Fix this sketchy code
-		BGFretboard->Listen(GetWorld()->GetGameState<ABBGameState>()->GetMusicBox());
-	}
-	return BGFretboard;
-}

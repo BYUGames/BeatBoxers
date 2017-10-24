@@ -115,7 +115,6 @@ public:
 	virtual void AddSpecial(float Amount) override;
 	virtual bool UseSpecial(float Amount) override;
 	virtual EStance GetStance() const override;
-	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
 	virtual float GetCurrentHorizontalMovement() const override;
 	virtual void EndSolo() override;
 	/** End IFighterState implmementation */

@@ -213,19 +213,6 @@ void ABBGameMode::StartMatch()
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("Gamemode unable to get gamestate as ABBGameState."));
 	}
 
-	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
-	{
-		FNewGameData NewGameData = GetWorld()->GetGameInstance<UBBGameInstance>()->NewGameData;
-		if (NumPlayers + NumBots < 2)
-		{
-			//Create second local player.
-			UGameplayStatics::CreatePlayer(GetWorld(), -1, true);
-		}
-	}
-	else
-	{
-		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("GameMode unable to get gameinstance as UBBGameInstance."));
-	}
 
 	if (GameState != nullptr)
 	{
@@ -369,28 +356,13 @@ void ABBGameMode::InitGameState()
 	if (DefaultMusicBoxClass.Get() != nullptr)
 	{
 		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
-		if (WorldMusicBox == nullptr)
+		if (WorldMusicBox != nullptr)
 		{
-			FActorSpawnParameters SpawnInfo;
-
-			AActor *Actor = GetWorld()->SpawnActor<AActor>(DefaultMusicBoxClass.Get(), SpawnInfo);
-			if (Actor != nullptr)
-			{
-				WorldMusicBox = Cast<IMusicBox>(Actor);
-				if (WorldMusicBox != nullptr)
-				{
-					GetGameState<ABBGameState>()->SetMusicBox(WorldMusicBox);
-					WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
-				}
-				else
-				{
-					UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("%s DefaultMusicBoxClass %s does not implement IMusicBox."), *GetNameSafe(this), *GetNameSafe(Actor));
-				}
-			}
-			else
-			{
-				UE_LOG(LogABBGameMode, Error, TEXT("%s was unable to spawn MusicBox actor."), *GetNameSafe(this));
-			}
+			WorldMusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+		}
+		else
+		{
+			UE_LOG(LogABBGameMode, Error, TEXT("Gamemode unable to retrieve musicbox from gamestate."));
 		}
 	}
 	else
@@ -490,4 +462,28 @@ void ABBGameMode::OnMusicEnd()
 {
 	UE_LOG(LogABBGameMode, Log, TEXT("Music ended, ending game."));
 	EndMatch();
+}
+
+void ABBGameMode::HandleMatchIsWaitingToStart()
+{
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
+	{
+		FNewGameData NewGameData = GetWorld()->GetGameInstance<UBBGameInstance>()->NewGameData;
+		if (NumPlayers + NumBots < 2)
+		{
+			//Create second local player.
+			UE_LOG(LogABBGameMode, Log, TEXT("NumPlayers %d, NumBots %d. Adding second local player."), NumPlayers, NumBots);
+			FString Err;
+			if (GetWorld()->GetGameInstance<UBBGameInstance>()->CreateLocalPlayer(-1, Err, true) == nullptr)
+			{
+				UE_LOG(LogABBGameMode, Error, TEXT("Unable to add local player: %s"), *Err);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("GameMode unable to get gameinstance as UBBGameInstance."));
+	}
+
+	Super::HandleMatchIsWaitingToStart();
 }

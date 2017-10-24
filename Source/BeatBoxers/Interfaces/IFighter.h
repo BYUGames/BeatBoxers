@@ -58,9 +58,6 @@ public:
 	/** Recieves calls from FighterState, gating logic should have been done there. */
 	virtual void Jump() = 0;
 
-	/** Gets the DefaultMoveState, which is only here so that a blueprint implementing IFighter can change it. */
-	virtual TSubclassOf<AMoveState> GetDefaultMoveState() = 0;
-
 	virtual FStartJumpEvent& GetOnStartJumpEvent() = 0;
 
 	virtual FLandEvent& GetOnLandEvent() = 0;

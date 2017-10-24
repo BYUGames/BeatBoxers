@@ -35,9 +35,6 @@ protected:
 	TWeakObjectPtr<AActor> MyOpponent;
 	float Facing;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<AMoveState> DefaultMoveState;
-
 	/** Windup for a jump. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float JumpDelay;
@@ -94,6 +91,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ComplexInputWindow;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AMoveState> DefaultMoveState;
+
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
 	virtual void RegisterOpponent(TWeakObjectPtr<AActor> Opponent) override;
@@ -106,7 +106,6 @@ public:
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void Jump() override;
-	virtual TSubclassOf<AMoveState> GetDefaultMoveState() override;
 	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
 	virtual FLandEvent& GetOnLandEvent() override;
 	/** End IFighter implementation */

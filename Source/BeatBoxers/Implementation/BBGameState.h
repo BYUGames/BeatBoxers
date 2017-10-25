@@ -17,6 +17,7 @@ class BEATBOXERS_API ABBGameState : public AGameState
 	GENERATED_UCLASS_BODY()
 
 protected:
+	UPROPERTY()
 	UObject *WorldMusicBox;
 
 	UFUNCTION()

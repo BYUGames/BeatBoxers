@@ -15,6 +15,7 @@ class BEATBOXERS_API ABasicMusicBox : public AActor, public IMusicBox, public IF
 	GENERATED_UCLASS_BODY()
 
 protected:
+	UPROPERTY()
 	UBasicFretboardFeed *MyFretboardFeed;
 
 public:

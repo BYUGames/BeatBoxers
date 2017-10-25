@@ -30,7 +30,10 @@ protected:
 	IInputParser *MyInputParser;
 	ISoloTracker *MySoloTracker;
 
+	UPROPERTY()
 	UBasicFretboard *BGFretboard;
+
+	UPROPERTY()
 	UBasicFretboard *SoloFretboard;
 
 	TSubclassOf<AMoveState> CurrentStateClass;

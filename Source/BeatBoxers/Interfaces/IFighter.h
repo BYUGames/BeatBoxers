@@ -61,4 +61,6 @@ public:
 	virtual FStartJumpEvent& GetOnStartJumpEvent() = 0;
 
 	virtual FLandEvent& GetOnLandEvent() = 0;
+
+	virtual void OnInputReceived() = 0;
 };

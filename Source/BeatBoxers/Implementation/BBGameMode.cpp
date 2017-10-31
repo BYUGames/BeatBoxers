@@ -67,7 +67,7 @@ struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObje
 	return Result;
 }
 
-EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
+EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
 {
 	if (!Actor.IsValid())
 	{
@@ -93,21 +93,22 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
-	if (ApplyMovementToActor(Actor, Source, SourceController, ImpactData->ImpartedMovement) == 1)
+	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
+	if (ApplyMovementToActor(Actor, Source, SourceController, ScaledImpact.ImpartedMovement) == 1)
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
 		//The target is already pushed up against a wall, push back the source instead.
 		if (Source.IsValid() && SourceController.IsValid() && Source.Get() == SourceController.Get()->GetPawn())
 		{
 			//Don't do this for projectiles.
-			ApplyMovementToActor(Source, Source, SourceController, -ImpactData->ImpartedMovement);
+			ApplyMovementToActor(Source, Source, SourceController, -ScaledImpact.ImpartedMovement);
 		}
 	}
 
 	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
 	{
-		SourceController.Get()->PlayerState->Score += ImpactData->Damage;
-		AddSpecial(SourceController.Get()->PlayerState, ImpactData->SpecialGenerated);
+		SourceController.Get()->PlayerState->Score += ScaledImpact.Damage;
+		AddSpecial(SourceController.Get()->PlayerState, ScaledImpact.SpecialGenerated);
 	}
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
@@ -490,4 +491,18 @@ void ABBGameMode::HandleMatchIsWaitingToStart()
 
 
 	Super::HandleMatchIsWaitingToStart();
+}
+
+FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& ImpactData, float Accuracy)
+{
+	FImpactData OutImpact = ImpactData;
+	OutImpact.Damage *= Accuracy;
+	OutImpact.ImpartedMovement.Delta *= Accuracy;
+	OutImpact.SpecialGenerated *= Accuracy;
+	return OutImpact;
+}
+
+UObject* ABBGameMode::GetMusicBox()
+{
+		return GetGameState<ABBGameState>()->GetUMusicBox();
 }

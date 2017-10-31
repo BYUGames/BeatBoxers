@@ -22,6 +22,12 @@ class BEATBOXERS_API IMoveset
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	/** Saves a reference to the FighterWorld. */
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) = 0;
+
+	/** Saves a reference to the Fighter. */
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) = 0;
+
 	/** Saves a reference to the fighterstate so it can push requests to start new windows. */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) = 0;
 
@@ -30,6 +36,9 @@ public:
 
 	/** Saves a reference to the solo tracker so it can push requests to stat a solo. */
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) = 0;
+
+	/** Saves a reference to the music box so it can push requests to stat a solo. */
+	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) = 0;
 
 	/** Call to execute whatever move, or move in current combo, comes next according to the given input. */
 	virtual void ReceiveInputToken(EInputToken Token) = 0;

@@ -212,10 +212,11 @@ bool UFighterStateComponent::IsMidMove() const
 	return IsWindowActive;
 }
 
-void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window)
+void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
 {
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
+	CurrentWindowAccuracy = Accuracy;
 	if (CurrentWindow.IsHitboxActive)
 	{
 		if (!CurrentWindow.DefenderHit.SFX.IsValid())
@@ -514,6 +515,7 @@ void UFighterStateComponent::PerformHitboxScan()
 						),
 						CurrentWindow.DefenderHit,
 						CurrentWindow.DefenderBlock,
+						CurrentWindowAccuracy,
 						GetOwner(),
 						(Pawn == nullptr) ? nullptr : Pawn->GetController()
 					);
@@ -712,15 +714,17 @@ void UFighterStateComponent::EndSolo()
 	}
 }
 
-void UFighterStateComponent::OnSoloStart(AActor *OneSoloing)
+void UFighterStateComponent::OnSoloStart(AActor *ActorSoloing)
 {
-	if (OneSoloing == nullptr || OneSoloing == GetOwner())
+	if (ActorSoloing == nullptr) return;
+	if (ActorSoloing == GetOwner())
 	{
-		IsFrozenForSolo = true;
+		IsFrozenForSolo = false;
+		MyMoveset->OnSoloStart();
 	}
 	else
 	{
-		IsFrozenForSolo = false;
+		IsFrozenForSolo = true;
 	}
 }
 

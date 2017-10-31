@@ -39,11 +39,17 @@ public:
 	/** Called by the GameMode if it needs to stop the music. */
 	virtual int StopMusic() = 0;
 
-	/** Allows objects to query when the next beat will happen. Returns -beat interval if the beat is not currently... beating. */
-	virtual float GetTimeToNextBeat() = 0;
+	/** Allows objects to query when the next beat will happen. */
+	virtual float GetTimeToNextBeat() const = 0;
+
+	/** Allows objects to query total time between beats. */
+	virtual float GetTimeBetweenBeats() const = 0;
+
+	/** Returns a value [0..1] describing how accurate now is to the being in-sync with the next beat, 0 being barely missed the last beat, 1 being perfect timing. */
+	virtual float GetBeatAccuracy() const = 0;
 
 	/** Allows objects to query when the Song will end. */
-	virtual float GetTimeToSongEnd() = 0;
+	virtual float GetTimeToSongEnd() const = 0;
 
 	/** Returns a reference to an event that occurs with every beat. */
 	virtual FBeatEvent& GetOnBeatEvent() = 0;

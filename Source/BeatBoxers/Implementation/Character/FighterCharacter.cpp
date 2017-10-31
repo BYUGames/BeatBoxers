@@ -196,7 +196,6 @@ void AFighterCharacter::PostInitializeComponents()
 
 	if (AllGood)
 	{
-
 		GetFighterState()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
 		GetFighterState()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetFighterState()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
@@ -206,12 +205,20 @@ void AFighterCharacter::PostInitializeComponents()
 			GetFighterState()->RegisterFighterPlayerState(TWeakObjectPtr<UObject>(Cast<UObject>(GetController()->PlayerState)));
 		}
 
+		GetMoveset()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
+		GetMoveset()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetMoveset()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetMoveset()->RegisterInputParser(TWeakObjectPtr<UObject>(Cast<UObject>(InputParser)));
 		GetMoveset()->RegisterSoloTracker(TWeakObjectPtr<UObject>(Cast<UObject>(SoloTracker)));
+		GetMoveset()->RegisterMusicBox(TWeakObjectPtr<UObject>(GetFighterWorld()->GetMusicBox()));
 
+		GetInputParser()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
+		GetInputParser()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
+
+		GetSoloTracker()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
+		GetSoloTracker()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 
 		GetSelfAsFighter()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 	}
@@ -500,4 +507,9 @@ void AFighterCharacter::PossessedBy(AController *NewController)
 	{
 		GetFighterState()->RegisterFighterPlayerState(TWeakObjectPtr<UObject>(Cast<UObject>(NewController->PlayerState)));
 	}
+}
+
+void AFighterCharacter::OnInputReceived()
+{
+	K2_OnInputReceived();
 }

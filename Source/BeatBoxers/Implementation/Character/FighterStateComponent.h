@@ -41,6 +41,7 @@ protected:
 	FMoveWindow CurrentWindow;
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
+	float CurrentWindowAccuracy;
 
 	UPROPERTY(EditDefaultsOnly)
 	FEffects DefaultHitEffects;
@@ -104,7 +105,7 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual bool IsStunned() const override;
 	virtual bool IsMidMove() const override;
-	virtual void StartMoveWindow(FMoveWindow& Window) override;
+	virtual void StartMoveWindow(FMoveWindow& Window, float Accuracy) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
@@ -122,7 +123,7 @@ public:
 	AController* GetOwnerController() const;
 
 	UFUNCTION()
-	void OnSoloStart(AActor *OneSoloing);
+	void OnSoloStart(AActor *ActorSoloing);
 
 	UFUNCTION()
 	void OnSoloEnd();

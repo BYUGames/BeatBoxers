@@ -76,14 +76,24 @@ int ABasicMusicBox::StopMusic()
 	return true;
 }
 
-float ABasicMusicBox::GetTimeToSongEnd()
+float ABasicMusicBox::GetTimeToSongEnd() const
 {
 	return K2_GetTimeToSongEnd();
 }
 
-float ABasicMusicBox::GetTimeToNextBeat()
+float ABasicMusicBox::GetTimeToNextBeat() const
 {
 	return K2_GetTimeToNextBeat();
+}
+
+float ABasicMusicBox::GetTimeBetweenBeats() const 
+{
+	return K2_GetTimeBetweenBeats();
+}
+
+float ABasicMusicBox::GetBeatAccuracy() const
+{
+	return K2_GetBeatAccuracy();
 }
 
 float ABasicMusicBox::K2_GetTimeToSongEnd_Implementation() const
@@ -96,6 +106,17 @@ float ABasicMusicBox::K2_GetTimeToNextBeat_Implementation() const
 {
 	//NOP
 	return 0.f;
+}
+
+float ABasicMusicBox::K2_GetTimeBetweenBeats_Implementation() const
+{
+	//NOP
+	return 0.f;
+}
+
+float ABasicMusicBox::K2_GetBeatAccuracy_Implementation() const
+{
+	return GetTimeToNextBeat() / GetTimeBetweenBeats();
 }
 
 int ABasicMusicBox::K2_StartMusic_Implementation()

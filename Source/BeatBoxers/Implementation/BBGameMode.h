@@ -46,13 +46,14 @@ public:
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
-	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
+	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) override;
 	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement);
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
 	virtual void EndSolo() override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
+	virtual UObject* GetMusicBox() override;
 	/** End IFighterWorld implementation */
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
@@ -60,6 +61,9 @@ public:
 	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
 	virtual void HandleMatchIsWaitingToStart() override;
 	virtual void StartMatch() override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	FImpactData GetScaledImpactData(const FImpactData& ImpactData, float Accuracy);
 
 	UFUNCTION()
 	virtual void OnMusicEnd();

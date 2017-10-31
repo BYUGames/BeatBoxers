@@ -7,6 +7,8 @@
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
 #include "Interfaces/ISoloTracker.h"
+#include "Interfaces/IFighterWorld.h"
+#include "Interfaces/IFighter.h"
 #include "Interfaces/IFretboardFeed.h"
 #include "../BasicFretboardFeed.h"
 #include "SoloTrackerComponent.generated.h"
@@ -18,6 +20,8 @@ class BEATBOXERS_API USoloTrackerComponent : public UActorComponent, public ISol
 	GENERATED_UCLASS_BODY()
 
 protected:
+	IFighterWorld *MyFighterWorld;
+	IFighter *MyFighter;
 	UBasicFretboardFeed *MyFretboardFeed;
 
 public:
@@ -28,6 +32,8 @@ public:
 	virtual void BeginPlay() override;
 
 	/** ISoloTracker implementation */
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
 	virtual void BeginSolo(FSoloParameters SoloParameters) override;
 	virtual void EndSolo() override;
 	/** End ISoloTracker implementation */

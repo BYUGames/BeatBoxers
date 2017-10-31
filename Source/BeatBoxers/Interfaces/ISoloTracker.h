@@ -22,6 +22,11 @@ class BEATBOXERS_API ISoloTracker
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	/** Saves a reference to the FighterWorld. */
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) = 0;
+
+	/** Saves a reference to the Fighter. */
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) = 0;
 
 	/** Starts a new solo based on the given parameters. */
 	virtual void BeginSolo(FSoloParameters SoloParameters) = 0;

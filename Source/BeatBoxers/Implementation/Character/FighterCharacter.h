@@ -108,7 +108,11 @@ public:
 	virtual void Jump() override;
 	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
 	virtual FLandEvent& GetOnLandEvent() override;
+	virtual void OnInputReceived() override;
 	/** End IFighter implementation */
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
+	void K2_OnInputReceived();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

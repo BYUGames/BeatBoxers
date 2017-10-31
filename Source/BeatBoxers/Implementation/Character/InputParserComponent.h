@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "BeatBoxers.h"
 #include "Interfaces/IInputParser.h"
+#include "Interfaces/IFighterWorld.h"
+#include "Interfaces/IFighter.h"
 #include "Interfaces/IMoveset.h"
 #include "Interfaces/IFighterState.h"
 #include "InputParserComponent.generated.h"
@@ -83,6 +85,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ComplexInputWindow;
 
+	IFighterWorld *MyFighterWorld;
+	IFighter *MyFighter;
 	IFighterState *MyFighterState;
 	IMoveset *MyMoveset;
 	FTimerHandle TimerHandle_InputBuffer;
@@ -101,6 +105,8 @@ public:
 	TSubclassOf<UInputParserState> CurrentStateClass;
 
 	/** IInputParser implementation */
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void OnControlReturned() override;

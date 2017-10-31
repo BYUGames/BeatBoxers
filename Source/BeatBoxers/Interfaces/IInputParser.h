@@ -21,6 +21,12 @@ class BEATBOXERS_API IInputParser
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	/** Saves a reference to the FighterWorld. */
+	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) = 0;
+
+	/** Saves a reference to the Fighter. */
+	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) = 0;
+
 	/** Saves a reference to the fighterstate so it can query if input is blocked and send requests to be passed on to the Fighter. */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) = 0;
 

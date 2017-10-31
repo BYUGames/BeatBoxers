@@ -33,8 +33,10 @@ public:
 	virtual int PauseMusic() override;
 	virtual int ResumeMusic() override;
 	virtual int StopMusic() override;
-	virtual float GetTimeToNextBeat() override;
-	virtual float GetTimeToSongEnd() override;
+	virtual float GetTimeToNextBeat() const override;
+	virtual float GetTimeBetweenBeats() const override;
+	virtual float GetBeatAccuracy() const override;
+	virtual float GetTimeToSongEnd() const override;
 	virtual FBeatEvent& GetOnBeatEvent() override;
 	virtual FMusicEndEvent& GetMusicEndEvent() override;
 	/** End Implementation of IMusicBox */
@@ -63,6 +65,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintPure, meta=(displayname = "Get Time To Next Beat"))
 	float K2_GetTimeToNextBeat() const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintPure, meta=(displayname = "Get Time Between Beats"))
+	float K2_GetTimeBetweenBeats() const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintPure, meta=(displayname = "Get Beat Accuracy"))
+	float K2_GetBeatAccuracy() const;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintCallable, meta=(displayname = "Start Music"))
 	int K2_StartMusic();

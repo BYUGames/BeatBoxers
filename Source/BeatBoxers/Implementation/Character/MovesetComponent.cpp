@@ -11,6 +11,7 @@ UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	DefaultStateClass = AMoveState::StaticClass();
+	BufferAccuracy = -1.f;
 }
 
 
@@ -120,7 +121,39 @@ void UMovesetComponent::StartNextWindow()
 	{
 		if (MyFighterState != nullptr)
 		{
-			MyFighterState->StartMoveWindow(*NextWindow);
+			MyFighterState->StartMoveWindow(*NextWindow, MoveAccuracy);
+		}
+	}
+}
+
+void UMovesetComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld)
+{
+	if (!FighterWorld.IsValid())
+	{
+		UE_LOG(LogUFighterState, Error, TEXT("%s UMovesetComponent given invalid object to register as FighterWorld."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyFighterWorld = Cast<IFighterWorld>(FighterWorld.Get());
+		if (MyFighterWorld == nullptr)
+		{
+			UE_LOG(LogUFighterState, Error, TEXT("%s UMovesetComponent given %s to register as FighterWorld, but it doesn't implement IFighterWorld."), *GetNameSafe(GetOwner()), *GetNameSafe(FighterWorld.Get()));
+		}
+	}
+}
+
+void UMovesetComponent::RegisterFighter(TWeakObjectPtr<UObject> Fighter)
+{
+	if (!Fighter.IsValid())
+	{
+		UE_LOG(LogUFighterState, Error, TEXT("%s UMovesetComponent given invalid object to register as Fighter."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyFighter = Cast<IFighter>(Fighter.Get());
+		if (MyFighter == nullptr)
+		{
+			UE_LOG(LogUFighterState, Error, TEXT("%s UMovesetComponent given %s to register as Fighter, but it doesn't implement IFighter."), *GetNameSafe(GetOwner()), *GetNameSafe(Fighter.Get()));
 		}
 	}
 }
@@ -173,13 +206,52 @@ void UMovesetComponent::RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker)
 	}
 }
 
+void UMovesetComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
+{
+	UnbindMusicBox(MyMusicBox);
+	if (!MusicBox.IsValid())
+	{
+		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent given invalid object to register as MusicBox."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyMusicBox = Cast<IMusicBox>(MusicBox.Get());
+		if (MyMusicBox == nullptr)
+		{
+			UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent given %s to register as MusicBox, but it doesn't implement IMusicBox."), *GetNameSafe(GetOwner()), *GetNameSafe(MusicBox.Get()));
+		}
+		else
+		{
+			BindMusicBox(MyMusicBox);
+		}
+	}
+}
+
 void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 {
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token));
+	BufferToken = Token;
+	if (BufferAccuracy < 0)
+	{
+		BufferAccuracy = 1.f;
+		if (MyMusicBox != nullptr)
+		{
+			BufferAccuracy = MyMusicBox->GetBeatAccuracy();
+		}
+	}
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), BufferAccuracy);
+	if (MyFighter != nullptr)
+	{
+		MyFighter->OnInputReceived();
+	}
+}
+
+void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
+{
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 	if (CurrentStateClass.Get() == nullptr)
 	{
 		GotoDefaultState();
-		return ReceiveInputToken(Token);
+		return ProcessInputToken(Token, Accuracy);
 	}
 
 	for (int i = 0; i < CurrentStateClass.GetDefaultObject()->PossibleTransitions.Num(); i++)
@@ -210,7 +282,7 @@ void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 	{
 		// Reached the end of this combo, return to default and try this input again.
 		GotoDefaultState();
-		return ReceiveInputToken(Token);
+		return ProcessInputToken(Token, Accuracy);
 	}
 	else
 	{
@@ -240,6 +312,16 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 void UMovesetComponent::OnSoloStart()
 {
 	//TODO
+	if (MySoloTracker != nullptr)
+	{
+		MySoloTracker->BeginSolo(FSoloParameters());
+		//Still need to set everything up to realize we're doing the solo
+	}
+	//Eventually solo needs to end, probably won't be done in this function.
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->EndSolo();
+	}
 }
 
 UBasicFretboard* UMovesetComponent::GetBGFretboard()
@@ -269,4 +351,31 @@ UBasicFretboard* UMovesetComponent::GetSoloFretboard()
 		SoloFretboard->SetTimerManager(GetOwner()->GetWorldTimerManager());
 	}
 	return SoloFretboard;
+}
+
+void UMovesetComponent::BindMusicBox(IMusicBox *MusicBox)
+{
+	if (MusicBox != nullptr)
+	{
+		MusicBox->GetOnBeatEvent().AddDynamic(this, &UMovesetComponent::OnBeat);
+	}
+}
+
+void UMovesetComponent::UnbindMusicBox(IMusicBox *MusicBox)
+{
+	if (MusicBox != nullptr)
+	{
+		MusicBox->GetOnBeatEvent().RemoveDynamic(this, &UMovesetComponent::OnBeat);
+	}
+}
+
+void UMovesetComponent::OnBeat()
+{
+	if (BufferToken != EInputToken::IE_None)
+	{
+		MoveAccuracy = BufferAccuracy;
+		BufferAccuracy = -1.f;
+		ProcessInputToken(BufferToken, MoveAccuracy);
+		BufferToken = EInputToken::IE_None;
+	}
 }

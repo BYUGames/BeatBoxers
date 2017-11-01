@@ -401,10 +401,28 @@ struct FNewGameData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName LevelName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName SongName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> Player0Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> Player1Class;
+};
+
+USTRUCT(BlueprintType)
+struct FFighterData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FighterName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture *Portrait;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewFeedNoteEvent, FFeedNoteData, NoteData);

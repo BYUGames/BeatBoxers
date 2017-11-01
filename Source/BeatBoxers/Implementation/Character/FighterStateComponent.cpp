@@ -18,8 +18,8 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	PrimaryComponentTick.bCanEverTick = true;
 	
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
-	IsWindowActive = false;
-	IsHitboxActive = false;
+	bIsWindowActive = false;
+	bIsHitboxActive = false;
 }
 
 
@@ -45,7 +45,7 @@ void UFighterStateComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	bool action = false;
-	if (IsWindowActive && CurrentWindow.IsHitboxActive && IsHitboxActive)
+	if (bIsWindowActive && CurrentWindow.IsHitboxActive && bIsHitboxActive)
 	{
 		action = true;
 		PerformHitboxScan();
@@ -62,7 +62,7 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 {
 	FVector LastSpot = GetOwner()->GetActorLocation();
 
-	if (IsBeingMoved)
+	if (bIsBeingMoved)
 	{
 		FVector TargetLocation = GetOwner()->GetActorLocation();
 		if (CurrentMovement.UseDeltaAsSpeed)
@@ -174,7 +174,7 @@ void UFighterStateComponent::RegisterFighterPlayerState(TWeakObjectPtr<UObject> 
 
 bool UFighterStateComponent::IsInputBlocked() const
 {
-	return IsMidMove() || IsStunned() || IsFrozenForSolo;
+	return IsMidMove() || IsStunned() || bIsFrozenForSolo;
 }
 
 bool UFighterStateComponent::IsBlocking() const
@@ -183,14 +183,14 @@ bool UFighterStateComponent::IsBlocking() const
 	UE_LOG(LogUFighterState, VeryVerbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %f, %s, %s, %f"),
 		*GetNameSafe(GetOwner()),
 		IsStunned(),
-		IsCurrentStunBlock,
+		bIsCurrentStunBlock,
 		IsInputBlocked(),
 		MoveDirection,
 		(MyFighter != nullptr) ? TEXT("Valid") : TEXT("nullptr"),
 		*GetEnumValueToString<EStance>(TEXT("EStance"), (MyFighter != nullptr) ? MyFighter->GetStance() : EStance::SE_NA),
 		ToOpponent
 	);
-	if (IsStunned() && IsCurrentStunBlock) return true;
+	if (IsStunned() && bIsCurrentStunBlock) return true;
 	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
 	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
@@ -202,6 +202,11 @@ bool UFighterStateComponent::IsBlocking() const
 	return false;
 }
 
+bool UFighterStateComponent::IsCharging() const
+{
+	return !IsInputBlocked() && MyFighter->GetStance() == EStance::SE_Standing && bWantsToCharge;
+}
+
 bool UFighterStateComponent::IsStunned() const
 {
 	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun);
@@ -209,7 +214,7 @@ bool UFighterStateComponent::IsStunned() const
 
 bool UFighterStateComponent::IsMidMove() const
 {
-	return IsWindowActive;
+	return bIsWindowActive;
 }
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
@@ -262,8 +267,8 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
-	IsCurrentStunBlock = WasBlocked;
-	if (IsWindowActive && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	bIsCurrentStunBlock = WasBlocked;
+	if (bIsWindowActive && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
 	{
 		ACharacter *Character = Cast<ACharacter>(MyFighter);
 		if (Character != nullptr)
@@ -302,6 +307,11 @@ void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 	MyFighter->SetWantsToCrouch(WantsToCrouch);
 }
 
+void UFighterStateComponent::SetWantsToCharge(bool WantsToCharge)
+{
+	bWantsToCharge = WantsToCharge;
+}
+
 void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
 	if (!Movement.IsValid())
@@ -312,12 +322,12 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.ToString());
 
-	IsBeingMoved = true;
+	bIsBeingMoved = true;
 	CurrentMovement = Movement;
 	if (Movement.Duration == 0)
 	{
 		MovementStep(1.f);
-		IsBeingMoved = false;
+		bIsBeingMoved = false;
 	}
 	else
 	{
@@ -341,7 +351,7 @@ void UFighterStateComponent::Jump()
 
 void UFighterStateComponent::OnLand()
 {
-	if (IsWindowActive)
+	if (bIsWindowActive)
 	{
 		if (CurrentWindow.LandingInterrupts)
 		{
@@ -368,7 +378,7 @@ void UFighterStateComponent::OnLand()
 
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
-	IsWindowActive = true;
+	bIsWindowActive = true;
 	ActorsToIgnore.Empty();
 	ActorsToIgnore.Add(GetOwner());
 
@@ -416,7 +426,7 @@ void UFighterStateComponent::StartCurrentWindow()
 	{
 		if (CurrentWindow.IsHitboxActive)
 		{
-			IsHitboxActive = true;
+			bIsHitboxActive = true;
 			SetComponentTickEnabled(true);
 		}
 		GetOwner()->GetWorldTimerManager().SetTimer(
@@ -431,14 +441,14 @@ void UFighterStateComponent::StartCurrentWindow()
 
 void UFighterStateComponent::OnCurrentWindowFinished()
 {
-	IsHitboxActive = false;
+	bIsHitboxActive = false;
 	TryDisableTick();
 	StartCurrentWindowWinddown();
 }
 
 void UFighterStateComponent::StartCurrentWindowWinddown()
 {
-	HasMoveWindowHit = false;
+	bHasMoveWindowHit = false;
 	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.Winddown <= 0)
 	{
@@ -459,7 +469,7 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 
 void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 {
-	if (HasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Finished)
+	if (bHasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Finished)
 	{
 		PlayerAttackerEffects(CurrentWindow.MissSFX);
 	}
@@ -469,9 +479,9 @@ void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 
 void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 {
-	if (IsWindowActive)
+	if (bIsWindowActive)
 	{
-		IsWindowActive = false;
+		bIsWindowActive = false;
 		if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
@@ -525,7 +535,7 @@ void UFighterStateComponent::PerformHitboxScan()
 					switch (Response)
 					{
 					case EHitResponse::HE_Hit:
-						HasMoveWindowHit = true;
+						bHasMoveWindowHit = true;
 						RelativeTransform = CurrentWindow.DefenderHit.SFX.RelativeTransform * ImpactTransform;
 						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
 						{
@@ -550,7 +560,7 @@ void UFighterStateComponent::PerformHitboxScan()
 						}
 						break;
 					case EHitResponse::HE_Blocked:
-						HasMoveWindowHit = true;
+						bHasMoveWindowHit = true;
 						RelativeTransform = CurrentWindow.DefenderBlock.SFX.RelativeTransform * ImpactTransform;
 						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)
 						{
@@ -638,7 +648,7 @@ void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
 
 void UFighterStateComponent::TryDisableTick()
 {
-	if ((!IsWindowActive || !CurrentWindow.IsHitboxActive || !IsHitboxActive) && !IsBeingMoved)
+	if ((!bIsWindowActive || !CurrentWindow.IsHitboxActive || !bIsHitboxActive) && !bIsBeingMoved)
 	{
 		SetComponentTickEnabled(false);
 	}
@@ -646,7 +656,7 @@ void UFighterStateComponent::TryDisableTick()
 
 void UFighterStateComponent::OnMovementTimer()
 {
-	IsBeingMoved = false;
+	bIsBeingMoved = false;
 	TryDisableTick();
 	MyFighterWorld->AdjustLocation(GetOwner());
 }
@@ -695,7 +705,7 @@ EStance UFighterStateComponent::GetStance() const
 
 float UFighterStateComponent::GetCurrentHorizontalMovement() const
 {
-	if (IsBeingMoved)
+	if (bIsBeingMoved)
 	{
 		if (CurrentMovement.UseDeltaAsSpeed)
 		{
@@ -719,16 +729,16 @@ void UFighterStateComponent::OnSoloStart(AActor *ActorSoloing)
 	if (ActorSoloing == nullptr) return;
 	if (ActorSoloing == GetOwner())
 	{
-		IsFrozenForSolo = false;
+		bIsFrozenForSolo = false;
 		MyMoveset->OnSoloStart();
 	}
 	else
 	{
-		IsFrozenForSolo = true;
+		bIsFrozenForSolo = true;
 	}
 }
 
 void UFighterStateComponent::OnSoloEnd()
 {
-	IsFrozenForSolo = false;
+	bIsFrozenForSolo = false;
 }

@@ -40,8 +40,11 @@ public:
 	/** A check if input is being accepted right now or should be buffered. */
 	virtual bool IsInputBlocked() const = 0;
 
-	/** A check to see if the character is currently attempting to block. Relies on opponent direction received from Fighter. */
+	/** A check to see if the character is currently attempting to block. */
 	virtual bool IsBlocking() const = 0;
+
+	/** A check to see if the character is currently attempting to charge. */
+	virtual bool IsCharging() const = 0;
 
 	/** A check to see if character is currently stunned. */
 	virtual bool IsStunned() const = 0;
@@ -60,6 +63,9 @@ public:
 
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
+
+	/** Interface to Fighter function, enable charging when it sees fit. */
+	virtual void SetWantsToCharge(bool WantsToCharge) = 0;
 
 	/** Applied movement to character. A new call will override this. */
 	virtual void ApplyMovement(FMovement Movement) = 0;

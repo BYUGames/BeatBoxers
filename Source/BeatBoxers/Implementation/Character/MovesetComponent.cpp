@@ -229,6 +229,7 @@ void UMovesetComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 
 void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 {
+	bool diff = BufferToken != Token;
 	BufferToken = Token;
 	if (BufferAccuracy < 0)
 	{
@@ -239,7 +240,7 @@ void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 		}
 	}
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), BufferAccuracy);
-	if (MyFighter != nullptr)
+	if (MyFighter != nullptr && diff)
 	{
 		MyFighter->OnInputReceived();
 	}

@@ -30,6 +30,9 @@ public:
 	UInputParserComponent *InputParser;
 	USoloTrackerComponent *SoloTracker;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FFighterData FighterData;
+
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;

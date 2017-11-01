@@ -29,12 +29,13 @@ protected:
 	IInputParser *MyInputParser;
 	IFighterPlayerState *MyFighterPlayerState;
 
-	uint32 IsWindowActive : 1;
-	uint32 IsHitboxActive : 1;
-	uint32 HasMoveWindowHit : 1;
-	uint32 IsBeingMoved : 1;
-	uint32 IsCurrentStunBlock : 1;
-	uint32 IsFrozenForSolo : 1;
+	uint32 bIsWindowActive : 1;
+	uint32 bIsHitboxActive : 1;
+	uint32 bHasMoveWindowHit : 1;
+	uint32 bIsBeingMoved : 1;
+	uint32 bIsCurrentStunBlock : 1;
+	uint32 bIsFrozenForSolo : 1;
+	uint32 bWantsToCharge: 1;
 
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
@@ -103,12 +104,14 @@ public:
 	virtual void RegisterFighterPlayerState(TWeakObjectPtr<UObject> FighterPlayerState) override;
 	virtual bool IsInputBlocked() const override;
 	virtual bool IsBlocking() const override;
+	virtual bool IsCharging() const override;
 	virtual bool IsStunned() const override;
 	virtual bool IsMidMove() const override;
 	virtual void StartMoveWindow(FMoveWindow& Window, float Accuracy) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
+	virtual void SetWantsToCharge(bool WantsToCharge) override;
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual void Jump() override;
 	virtual void OnLand() override;

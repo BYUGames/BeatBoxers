@@ -12,7 +12,7 @@ USoloTrackerComponent::USoloTrackerComponent(const class FObjectInitializer& Obj
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-UBasicFretboardFeed* USoloTrackerComponent::GetMyFretboardFeed()
+UBasicFretboardFeed* USoloTrackerComponent::GetFretboardFeed()
 {
 	if (MyFretboardFeed == nullptr)
 	{

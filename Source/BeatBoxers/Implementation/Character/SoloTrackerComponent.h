@@ -26,7 +26,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	UBasicFretboardFeed* GetMyFretboardFeed();
+	UBasicFretboardFeed* GetFretboardFeed();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -39,13 +39,14 @@ public:
 	/** End ISoloTracker implementation */
 
 	/** Implmementation of IFretboardFeed */
-	virtual TArray<FFeedNoteData> GetExistingNotes() override { return GetMyFretboardFeed()->GetExistingNotes(); }
-	virtual void PauseFeed() override { GetMyFretboardFeed()->PauseFeed(); }
-	virtual void ResumeFeed() override { GetMyFretboardFeed()->ResumeFeed(); }
-	virtual void ClearFeed() override { GetMyFretboardFeed()->ClearFeed(); }
-	virtual float GetNoteLifetime() override { return GetMyFretboardFeed()->GetNoteLifetime(); }
-	virtual void AddNote(FFeedNoteData FeedNote) override { GetMyFretboardFeed()->AddNote(FeedNote); }
-	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return GetMyFretboardFeed()->GetOnNewFeedNoteEvent(); }
+	virtual TArray<FFeedNoteData> GetExistingNotes() override { return GetFretboardFeed()->GetExistingNotes(); }
+	virtual void PauseFeed() override { GetFretboardFeed()->PauseFeed(); }
+	virtual void ResumeFeed() override { GetFretboardFeed()->ResumeFeed(); }
+	virtual void ClearFeed() override { GetFretboardFeed()->ClearFeed(); }
+	virtual float GetNoteLifetime() override { return GetFretboardFeed()->GetNoteLifetime(); }
+	virtual void SetNoteLifetime(float NewDuration) override { return GetFretboardFeed()->SetNoteLifetime(NewDuration); }
+	virtual void AddNote(FFeedNoteData FeedNote) override { GetFretboardFeed()->AddNote(FeedNote); }
+	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return GetFretboardFeed()->GetOnNewFeedNoteEvent(); }
 	/** End Implementation of IFretboardFeed*/
 
 	// Called every frame

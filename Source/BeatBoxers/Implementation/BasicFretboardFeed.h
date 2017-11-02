@@ -29,14 +29,13 @@ public:
 
 	void SetTimerManager(FTimerManager& TimerManager) { UBasicFretboardFeed::TimerManager = &TimerManager; }
 
-	void SetDuration(float NewDuration) { NoteDuration = NewDuration; }
-
 	/** Begin IFretboardFeed Implementation */
 	virtual TArray<FFeedNoteData> GetExistingNotes() override;
 	virtual void PauseFeed() override;
 	virtual void ResumeFeed() override;
 	virtual void ClearFeed() override;
 	virtual float GetNoteLifetime() override { return NoteDuration; }
+	virtual void SetNoteLifetime(float NewLifetime) override { NoteDuration = NewLifetime; }
 	virtual void AddNote(FFeedNoteData FeedNote) override;
 	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return NewFeedNoteEvent; }
 	/** End IFretboardFeed Implementation */

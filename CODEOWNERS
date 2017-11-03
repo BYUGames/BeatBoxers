@@ -1,4 +1,2 @@
-*	@BigDub	@miketowne
 *.cpp	@BigDub
-
-CODEOWNERS	@BigDub
+*.h	@BigDub

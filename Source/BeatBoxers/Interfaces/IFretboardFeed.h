@@ -33,6 +33,8 @@ public:
 	/** How early/long are notes added to the feed? */
 	virtual float GetNoteLifetime() = 0;
 
+	virtual void SetNoteLifetime(float NewLifetime) = 0;
+
 	virtual void AddNote(FFeedNoteData FeedNote) = 0;
 
 	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() = 0;

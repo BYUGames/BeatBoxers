@@ -47,6 +47,7 @@ public:
 	virtual void ResumeFeed() override { GetFretboardFeed()->ResumeFeed(); }
 	virtual void ClearFeed() override { GetFretboardFeed()->ClearFeed(); }
 	virtual float GetNoteLifetime() override { return GetFretboardFeed()->GetNoteLifetime(); }
+	virtual void SetNoteLifetime(float NewDuration) override { return GetFretboardFeed()->SetNoteLifetime(NewDuration); }
 	virtual void AddNote(FFeedNoteData FeedNote) override { GetFretboardFeed()->AddNote(FeedNote); }
 	virtual FNewFeedNoteEvent& GetOnNewFeedNoteEvent() override { return GetFretboardFeed()->GetOnNewFeedNoteEvent(); }
 	/** End Implementation of IFretboardFeed*/

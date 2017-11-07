@@ -502,7 +502,6 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& I
 {
 	FImpactData OutImpact = ImpactData;
 	OutImpact.Damage *= Accuracy;
-	OutImpact.ImpartedMovement.Delta *= Accuracy;
 	OutImpact.SpecialGenerated *= Accuracy;
 	return OutImpact;
 }

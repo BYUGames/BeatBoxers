@@ -155,7 +155,7 @@ struct FMovement
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector Delta;
+	FVector2D Delta;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Duration;
@@ -175,6 +175,11 @@ struct FMovement
 	FMovement operator*(float f);
 
 	FString ToString() const;
+
+	FMovement()
+	{
+		IsRelativeToAttackerFacing = true;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -184,15 +189,21 @@ struct FMoveHitbox
 
 	/** Where to begin the trace from, relative to attacker's position and facing. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector Origin;
+	FVector2D Origin;
 
 	/** Where to end the trace, relative to attacker's position and facing. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector End;
+	FVector2D End;
 
 	/** Radius to trace. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Radius;
+
+	FMoveHitbox()
+	{
+		Radius = 20.f;
+		End.X = 75.f;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -284,6 +295,11 @@ struct FMoveWindow
 	/** The animation montage to play in conjuction with this window. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UAnimMontage *AnimMontage;
+
+	FMoveWindow()
+	{
+		Interruptible = true;
+	}
 };
 
 USTRUCT(BlueprintType)

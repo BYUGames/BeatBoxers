@@ -105,6 +105,7 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual EStance GetStance() const override;
 	virtual void SetFacing(float Sign) override;
+	virtual float GetFacing() const override { return Facing; }
 	virtual TWeakObjectPtr<AController> GetFighterController() const override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
@@ -132,7 +133,7 @@ public:
 
 	/** Gets the sign of the actor's facing in the X axis. */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
-	virtual float GetFacing() const;
+	virtual float K2_GetFacing() const { return GetFacing(); }
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Blocking"))
 	virtual bool K2_IsBlocking() const;

@@ -65,16 +65,17 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 	if (bIsBeingMoved)
 	{
 		FVector TargetLocation = GetOwner()->GetActorLocation();
+		FVector Movement = FVector(CurrentMovement.Delta.X, 0, CurrentMovement.Delta.Y);
 		if (CurrentMovement.UseDeltaAsSpeed)
 		{
-			TargetLocation += CurrentMovement.Delta * DeltaTime;
+			TargetLocation += Movement * DeltaTime;
 		}
 		else
 		{
-			TargetLocation += CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime;
+			TargetLocation += Movement / CurrentMovement.Duration * DeltaTime;
 		}
 		GetOwner()->SetActorLocation(
-			GetOwner()->GetActorLocation() + CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime,
+			TargetLocation,
 			true,
 			nullptr,
 			ETeleportType::TeleportPhysics
@@ -324,6 +325,14 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 	bIsBeingMoved = true;
 	CurrentMovement = Movement;
+	if (Movement.Delta.Y > 0.f)
+	{
+		UCharacterMovementComponent *MovementComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
+		if (MovementComponent != nullptr && MovementComponent->IsMovingOnGround())
+		{
+			MovementComponent->SetMovementMode(EMovementMode::MOVE_Falling);
+		}
+	}
 	if (Movement.Duration == 0)
 	{
 		MovementStep(1.f);
@@ -500,11 +509,18 @@ void UFighterStateComponent::PerformHitboxScan()
 	{
 		FMoveHitbox WorldHitbox;
 		WorldHitbox.Radius = CurrentWindow.Hitbox.Radius;
-		FTransform Transform = GetOwner()->GetActorTransform();
-		WorldHitbox.Origin = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.Origin);
-		WorldHitbox.End = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.End);
+		WorldHitbox.Origin = CurrentWindow.Hitbox.Origin;
+		WorldHitbox.End = CurrentWindow.Hitbox.End;
+
+		//Make hitboxes relative to facing
+		if (MyFighter != nullptr)
+		{
+			WorldHitbox.Origin.X *= MyFighter->GetFacing();
+			WorldHitbox.End.X *= MyFighter->GetFacing();
+		}
 
 		FHitResult HitResult = MyFighterWorld->TraceHitbox(
+			GetOwner()->GetActorLocation(),
 			WorldHitbox,
 			ActorsToIgnore
 		);

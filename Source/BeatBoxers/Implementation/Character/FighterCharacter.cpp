@@ -461,11 +461,6 @@ void AFighterCharacter::SetFacing(float Sign)
 	}
 }
 
-float AFighterCharacter::GetFacing() const
-{
-	return Facing;
-}
-
 bool AFighterCharacter::K2_IsBlocking() const
 {
 	return IsBlocking();

@@ -46,6 +46,9 @@ public:
 	/** Set the fighter's facing. */
 	virtual void SetFacing(float Sign) = 0;
 
+	/** Get the fighter's facing. */
+	virtual float GetFacing() const = 0;
+
 	/** Get the figher's controller. */
 	virtual TWeakObjectPtr<AController> GetFighterController() const = 0;
 

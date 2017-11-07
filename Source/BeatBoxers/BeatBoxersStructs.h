@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "BeatBoxersStructs.generated.h"
 
 template<typename TEnum>
@@ -292,6 +293,37 @@ struct FSoloParameters
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int NumberOfNotes;
+};
+
+USTRUCT(BlueprintType)
+struct FMoveData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FInputTokenBools AllowedInputs;
+
+	/** This is what allows or prevents this move in certain stances, like standing or crouching. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FStanceFilter StanceFilter;
+
+	/** Amount of special required, and consumed, to use the move. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpecialCost;
+
+	/** Amount of time after finishing last window that the MovesetComponent will remain in this state until reverting to its default state. Negative means it stays in the state indefinitely. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxPostWait;
+
+	/** This defines the actual things done in this move. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FMoveWindow> MoveWindows;
+
+	/** Possible other moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FDataTableRowHandle> PossibleTransitions;
 };
 
 UCLASS(Abstract, MinimalAPI, Blueprintable)

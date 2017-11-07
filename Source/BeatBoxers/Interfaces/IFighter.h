@@ -63,4 +63,6 @@ public:
 	virtual FLandEvent& GetOnLandEvent() = 0;
 
 	virtual void OnInputReceived() = 0;
+
+	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
 };

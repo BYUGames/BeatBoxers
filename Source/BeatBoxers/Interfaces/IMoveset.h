@@ -48,4 +48,7 @@ public:
 
 	/** Function call to alert the moveset that it has entered it's solo. */
 	virtual void OnSoloStart() = 0;
+
+	/** A way for input parser to push what the current horizontal axis value is. */
+	virtual void UpdateInputAxis(float Axis) = 0;
 };

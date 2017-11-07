@@ -37,6 +37,8 @@ protected:
 	ISoloTracker *MySoloTracker;
 	IMusicBox *MyMusicBox;
 
+	float InputAxis;
+
 	EInputToken BufferToken;
 	float BufferAccuracy;
 	float MoveAccuracy;
@@ -90,5 +92,6 @@ public:
 	virtual void ReceiveInputToken(EInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
 	virtual void OnSoloStart() override;
+	virtual void UpdateInputAxis(float Axis) override { InputAxis = Axis; }
 	/** End IMovesetImplementation */
 };

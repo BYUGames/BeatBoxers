@@ -182,6 +182,10 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(Amount);
+		if (MyMoveset != nullptr)
+		{
+			MyMoveset->UpdateInputAxis((MyFighterState->IsInputBlocked()) ? 0.f : Amount);
+		}
 	}
 }
 
@@ -295,24 +299,6 @@ void UInputParserState::InputActionLight(UInputParserComponent *Parser) { UE_LOG
 void UInputParserState::InputActionMedium(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionMedium()")); }
 void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionHeavy()")); }
 
-void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLeft()"));
-	if (Parser != nullptr)
-	{
-		ChangeState(Parser, UPreLeftDashState::StaticClass());
-	}
-}
-
-void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
-	if (Parser != nullptr)
-	{
-		ChangeState(Parser, UPreRightDashState::StaticClass());
-	}
-}
-
 void UInputParserDefaultState::InputActionLight(UInputParserComponent *Parser)
 {
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLight()"));
@@ -337,89 +323,5 @@ void UInputParserDefaultState::InputActionHeavy(UInputParserComponent *Parser)
 	if (Parser != nullptr)
 	{
 		Parser->PushInputToken(EInputToken::IE_Heavy);
-	}
-}
-
-bool UPreLeftDashState::IsComplex() { return true; }
-
-void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
-	if (Parser != nullptr)
-	{
-		Parser->PushInputToken(EInputToken::IE_DashLeft);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreLeftDashState::InputActionLight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLight()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionLight(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreLeftDashState::InputActionMedium(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionMedium()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionMedium(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreLeftDashState::InputActionHeavy(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionHeavy()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionHeavy(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-bool UPreRightDashState::IsComplex() { return true; }
-
-void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
-	if (Parser != nullptr)
-	{
-		Parser->PushInputToken(EInputToken::IE_DashRight);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreRightDashState::InputActionLight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionLight()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionLight(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreRightDashState::InputActionMedium(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionMedium()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionMedium(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
-	}
-}
-
-void UPreRightDashState::InputActionHeavy(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionHeavy()"));
-	if (Parser != nullptr)
-	{
-		UInputParserDefaultState::InputActionHeavy(Parser);
-		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }

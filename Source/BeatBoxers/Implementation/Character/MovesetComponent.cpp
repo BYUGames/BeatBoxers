@@ -374,4 +374,11 @@ void UMovesetComponent::OnBeat()
 		ProcessInputToken(BufferToken, MoveAccuracy);
 		BufferToken = EInputToken::IE_None;
 	}
+	else
+	{
+		if (MyFighterState != nullptr && !MyFighterState->IsInputBlocked() && InputAxis != 0.f)
+		{
+			ProcessInputToken((InputAxis > 0) ? EInputToken::IE_DashRight : EInputToken::IE_DashLeft, 1.f);
+		}
+	}
 }

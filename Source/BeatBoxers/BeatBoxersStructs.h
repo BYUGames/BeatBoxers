@@ -326,37 +326,6 @@ public:
 	TArray<FDataTableRowHandle> PossibleTransitions;
 };
 
-UCLASS(Abstract, MinimalAPI, Blueprintable)
-class AMoveState : public AActor
-{
-	GENERATED_UCLASS_BODY()
-
-public:
-	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FInputTokenBools AllowedInputs;
-
-	/** This is what allows or prevents this move in certain stances, like standing or crouching. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FStanceFilter StanceFilter;
-
-	/** Amount of special required, and consumed, to use the move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float SpecialCost;
-
-	/** Amount of time after finishing last window that the MovesetComponent will remain in this state until reverting to its default state. Negative means it stays in the state indefinitely. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float MaxPostWait;
-
-	/** This defines the actual things done in this move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<FMoveWindow> MoveWindows;
-
-	/** Possible moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray< TSubclassOf<AMoveState> > PossibleTransitions;
-};
-
 /** Results returned to the moveset from the fretboard. */
 USTRUCT(BlueprintType)
 struct FFretboardInputResult

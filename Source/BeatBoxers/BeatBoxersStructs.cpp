@@ -92,14 +92,6 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	return false;
 }
 
-AMoveState::AMoveState(const class FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	MaxPostWait = 0.25f;
-	MoveWindows = TArray<FMoveWindow>();
-	PossibleTransitions = TArray< TSubclassOf<AMoveState> >();
-}
-
 FString FMovement::ToString() const
 {
 	return FString::Printf(TEXT("Delta={%s} Duration=%f IsRelative=%s"), *Delta.ToString(), Duration, (IsRelativeToAttackerFacing) ? TEXT("TRUE") : TEXT("FALSE"));

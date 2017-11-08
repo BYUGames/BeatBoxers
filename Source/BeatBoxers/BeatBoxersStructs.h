@@ -442,6 +442,31 @@ struct FFighterData
 	UTexture *Portrait;
 };
 
+USTRUCT(BlueprintType)
+struct FBufferInputToken
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EInputToken token;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float accuracy;
+
+	FBufferInputToken operator=(const FBufferInputToken toSet)
+	{
+		token = toSet.token;
+		accuracy = toSet.accuracy;
+		return toSet;
+	}
+
+	FBufferInputToken()
+	{
+		token = EInputToken::IE_None;
+		accuracy = -1;
+	}
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewFeedNoteEvent, FFeedNoteData, NoteData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNewNoteEvent, int, NoteID, FNoteData, NoteData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNoteEndEvent, int, NoteID, float, Accuracy);

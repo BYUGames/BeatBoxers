@@ -41,7 +41,7 @@ public:
 	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) = 0;
 
 	/** Call to execute whatever move, or move in current combo, comes next according to the given input. */
-	virtual void ReceiveInputToken(EInputToken Token) = 0;
+	virtual void ReceiveInputToken(FBufferInputToken Token) = 0;
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) = 0;
@@ -51,4 +51,7 @@ public:
 
 	/** A way for input parser to push what the current horizontal axis value is. */
 	virtual void UpdateInputAxis(float Axis) = 0;
+
+	/** Gets teh accuracy at that moment in a beat. */
+	virtual float getBeatAccuracy() = 0;
 };

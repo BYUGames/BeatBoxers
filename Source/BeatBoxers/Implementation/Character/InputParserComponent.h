@@ -62,16 +62,19 @@ protected:
 	IFighterState *MyFighterState;
 	IMoveset *MyMoveset;
 	FTimerHandle TimerHandle_InputBuffer;
-	EInputToken InputBuffer;
+	FBufferInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
 	void OnInputBufferTimer();
-	void SetInputBuffer(EInputToken NewToken);
+	void SetInputBuffer(FBufferInputToken NewToken);
 
 	void OnComboTimer();
+
+	UFUNCTION()
+	void OnBeat();
 
 public:	
 	TSubclassOf<UInputParserState> CurrentStateClass;

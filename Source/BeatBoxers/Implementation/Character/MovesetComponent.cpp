@@ -222,23 +222,26 @@ void UMovesetComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 	}
 }
 
-void UMovesetComponent::ReceiveInputToken(EInputToken Token)
+void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 {
-	bool diff = BufferToken != Token;
-	BufferToken = Token;
-	if (BufferAccuracy < 0)
-	{
-		BufferAccuracy = 1.f;
-		if (MyMusicBox != nullptr)
-		{
-			BufferAccuracy = MyMusicBox->GetBeatAccuracy();
-		}
-	}
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), BufferAccuracy);
+	bool diff = BufferToken != Token.token;
+	BufferToken = Token.token;
+	BufferAccuracy = Token.accuracy;
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
 	{
 		MyFighter->OnInputReceived();
 	}
+}
+
+float UMovesetComponent::getBeatAccuracy()
+{
+	if (MyMusicBox != nullptr)
+	{
+		float acc = MyMusicBox->GetBeatAccuracy();
+		return acc;
+	}
+	return -1;
 }
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)

@@ -68,4 +68,7 @@ public:
 	virtual void OnInputReceived() = 0;
 
 	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
+
+	/** Sets the fighters personal gravity scale. */
+	virtual void SetGravityScale(float scale) = 0;
 };

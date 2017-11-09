@@ -270,7 +270,7 @@ struct FMoveWindow
 
 	/** Will gravity be scaled during this windows duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	uint32 IsGravityScaled;
+	uint32 IsGravityScaled : 1;
 
 	/** Multipl of gravity during the windows duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

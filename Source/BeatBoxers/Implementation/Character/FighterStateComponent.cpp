@@ -438,10 +438,14 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 			bIsHitboxActive = true;
 			SetComponentTickEnabled(true);
 		}
+		if (CurrentWindow.IsGravityScaled)
+		{
+			MyFighter->SetGravityScale(CurrentWindow.GravityScale);
+		}
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Window,
 			this,
-			&UFighterStateComponent::OnCurrentWindowFinished,
+			&UFighterStateComponent::OnCurrentWindowDurationFinished,
 			CurrentWindow.Duration,
 			false
 		);
@@ -451,6 +455,7 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 void UFighterStateComponent::OnCurrentWindowDurationFinished()
 {
 	bIsHitboxActive = false;
+	if (CurrentWindow.IsGravityScaled) { MyFighter->SetGravityScale(1 / CurrentWindow.GravityScale); }
 	TryDisableTick();
 	StartCurrentWindowWinddown();
 }

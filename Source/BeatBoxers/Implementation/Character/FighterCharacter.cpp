@@ -509,3 +509,8 @@ void AFighterCharacter::OnInputReceived()
 {
 	K2_OnInputReceived();
 }
+
+void AFighterCharacter::SetGravityScale(float scale)
+{
+	GetCharacterMovement()->GravityScale = GetCharacterMovement()->GravityScale * scale;
+}

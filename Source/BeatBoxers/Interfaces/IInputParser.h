@@ -32,6 +32,9 @@ public:
 
 	/** Saves a reference to the movestate so it can push input tokens. */
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) = 0;
+	
+	/** Saves a reference to the music box so it can push requests to stat a solo. */
+	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) = 0;
 
 	/** Receives notification from FighterState when control may be input again. Input buffer should send its request after receiving such a signal. */
 	virtual void OnControlReturned() = 0;

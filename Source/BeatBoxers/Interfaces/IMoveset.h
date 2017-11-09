@@ -51,7 +51,4 @@ public:
 
 	/** A way for input parser to push what the current horizontal axis value is. */
 	virtual void UpdateInputAxis(float Axis) = 0;
-
-	/** Gets teh accuracy at that moment in a beat. */
-	virtual float getBeatAccuracy() = 0;
 };

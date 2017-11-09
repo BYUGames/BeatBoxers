@@ -79,8 +79,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 {
 	FBufferInputToken bToken;
 	bToken.token = NewToken;	
-	bToken.accuracy = MyMoveset->getBeatAccuracy();
-
+	bToken.accuracy = calcAccuracy();
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{
@@ -96,10 +95,13 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 }
 
 
-void UInputParserComponent::OnBeat()
+float UInputParserComponent::calcAccuracy()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Beat Hit")));
-
+	if (MyMusicBox != nullptr)
+	{
+		return MyMusicBox->GetBeatAccuracy();
+	}
+	return -1;
 }
 
 // Called every frame
@@ -173,6 +175,23 @@ void UInputParserComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 		}
 	}
 }
+
+void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
+{
+	if (!MusicBox.IsValid())
+	{
+		UE_LOG(LogUMoveset, Error, TEXT("%s UInputParserComponent given invalid object to register as MusicBox."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyMusicBox = Cast<IMusicBox>(MusicBox.Get());
+		if (MyMusicBox == nullptr)
+		{
+			UE_LOG(LogUMoveset, Error, TEXT("%s UInputParserComponent given %s to register as MusicBox, but it doesn't implement IMusicBox."), *GetNameSafe(GetOwner()), *GetNameSafe(MusicBox.Get()));
+		}
+	}
+}
+
 
 void UInputParserComponent::OnControlReturned()
 {

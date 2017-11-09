@@ -216,6 +216,7 @@ void AFighterCharacter::PostInitializeComponents()
 		GetInputParser()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
+		GetInputParser()->RegisterMusicBox(TWeakObjectPtr<UObject>(GetFighterWorld()->GetMusicBox()));
 
 		GetSoloTracker()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
 		GetSoloTracker()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));

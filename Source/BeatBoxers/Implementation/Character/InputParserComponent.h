@@ -10,7 +10,9 @@
 #include "Interfaces/IFighter.h"
 #include "Interfaces/IMoveset.h"
 #include "Interfaces/IFighterState.h"
+#include "Interfaces/IMusicBox.h"
 #include "InputParserComponent.generated.h"
+
 
 class UInputParserComponent;
 
@@ -64,6 +66,7 @@ protected:
 	FTimerHandle TimerHandle_InputBuffer;
 	FBufferInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
+	IMusicBox *MyMusicBox;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -72,10 +75,7 @@ protected:
 	void SetInputBuffer(FBufferInputToken NewToken);
 
 	void OnComboTimer();
-
-	UFUNCTION()
-	void OnBeat();
-
+	float calcAccuracy();
 public:	
 	TSubclassOf<UInputParserState> CurrentStateClass;
 
@@ -84,6 +84,7 @@ public:
 	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> FighterState) override;
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
+	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) override;
 	virtual void OnControlReturned() override;
 	virtual void InputAxisHorizontal(float Amount) override;
 	virtual void InputAxisVertical(float Amount) override;

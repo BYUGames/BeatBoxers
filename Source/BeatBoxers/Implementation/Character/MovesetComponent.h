@@ -93,6 +93,5 @@ public:
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
 	virtual void OnSoloStart() override;
 	virtual void UpdateInputAxis(float Axis) override { InputAxis = Axis; }
-	virtual float getBeatAccuracy() override;
 	/** End IMovesetImplementation */
 };

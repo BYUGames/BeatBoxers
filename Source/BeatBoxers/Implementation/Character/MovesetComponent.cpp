@@ -234,16 +234,6 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	}
 }
 
-float UMovesetComponent::getBeatAccuracy()
-{
-	if (MyMusicBox != nullptr)
-	{
-		float acc = MyMusicBox->GetBeatAccuracy();
-		return acc;
-	}
-	return -1;
-}
-
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);

@@ -366,13 +366,13 @@ void UFighterStateComponent::OnLand()
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandInt;
-			OnCurrentWindowFinished();
+			OnCurrentWindowDurationFinished();
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
-			OnCurrentWindowFinished();
+			OnCurrentWindowDurationFinished();
 		}
 		else
 		{
@@ -394,7 +394,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	if (CurrentWindow.Windup <= 0)
 	{
 		// No windup, proceed.
-		StartCurrentWindow();
+		StartCurrentWindowDuration();
 	}
 	else
 	{
@@ -410,10 +410,10 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 
 void UFighterStateComponent::OnCurrentWindowWindupFinished()
 {
-	StartCurrentWindow();
+	StartCurrentWindowDuration();
 }
 
-void UFighterStateComponent::StartCurrentWindow()
+void UFighterStateComponent::StartCurrentWindowDuration()
 {
 	if (CurrentWindow.AttackerMovement)
 	{
@@ -429,7 +429,7 @@ void UFighterStateComponent::StartCurrentWindow()
 		{
 			PerformHitboxScan();
 		}
-		OnCurrentWindowFinished();
+		OnCurrentWindowDurationFinished();
 	}
 	else
 	{
@@ -448,7 +448,7 @@ void UFighterStateComponent::StartCurrentWindow()
 	}
 }
 
-void UFighterStateComponent::OnCurrentWindowFinished()
+void UFighterStateComponent::OnCurrentWindowDurationFinished()
 {
 	bIsHitboxActive = false;
 	TryDisableTick();

@@ -40,6 +40,34 @@ class UInputParserDefaultState : public UInputParserState
 	GENERATED_BODY()
 
 public:
+	virtual void InputActionLeft(UInputParserComponent *Parser) override;
+	virtual void InputActionRight(UInputParserComponent *Parser) override;
+	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+};
+
+UCLASS()
+class UPreLeftDashState : public UInputParserDefaultState
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool IsComplex() override;
+	virtual void InputActionLeft(UInputParserComponent *Parser) override;
+	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+};
+
+UCLASS()
+class UPreRightDashState : public UInputParserDefaultState
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool IsComplex() override;
+	virtual void InputActionRight(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;

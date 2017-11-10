@@ -347,7 +347,7 @@ void AFighterCharacter::OnJumpTimer()
 	if (JumpEffects.ParticleSystem != nullptr)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(
-			GetOwner()->GetWorld(),
+			GetWorld(),
 			JumpEffects.ParticleSystem,
 			RelativeTransform
 		);
@@ -355,7 +355,7 @@ void AFighterCharacter::OnJumpTimer()
 	if (JumpEffects.SoundCue != nullptr)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(
-			GetOwner(),
+			this,
 			JumpEffects.SoundCue,
 			RelativeTransform.GetLocation(),
 			RelativeTransform.GetRotation().Rotator()

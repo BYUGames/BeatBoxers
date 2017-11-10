@@ -227,6 +227,7 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	bool diff = BufferToken != Token.token;
 	BufferToken = Token.token;
 	BufferAccuracy = Token.accuracy;
+	ProcessInputToken(Token.token, Token.accuracy);
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
 	{
@@ -344,27 +345,12 @@ UBasicFretboard* UMovesetComponent::GetSoloFretboard()
 
 void UMovesetComponent::BindMusicBox(IMusicBox *MusicBox)
 {
-	if (MusicBox != nullptr)
-	{
-		MusicBox->GetOnBeatEvent().AddDynamic(this, &UMovesetComponent::OnBeat);
-	}
 }
 
 void UMovesetComponent::UnbindMusicBox(IMusicBox *MusicBox)
 {
-	if (MusicBox != nullptr)
-	{
-		MusicBox->GetOnBeatEvent().RemoveDynamic(this, &UMovesetComponent::OnBeat);
-	}
 }
 
 void UMovesetComponent::OnBeat()
 {
-	if (BufferToken != EInputToken::IE_None)
-	{
-		MoveAccuracy = BufferAccuracy;
-		BufferAccuracy = -1.f;
-		ProcessInputToken(BufferToken, MoveAccuracy);
-		BufferToken = EInputToken::IE_None;
-	}
 }

@@ -490,7 +490,7 @@ float AFighterCharacter::GetHorizontalMovement() const
 {
 	if (GetFighterState() != nullptr)
 	{
-		return GetFighterState()->GetCurrentHorizontalMovement();
+		return GetFighterState()->GetCurrentHorizontalMovement() + GetCharacterMovement()->Velocity.X;
 	}
 	return 0.f;
 }

@@ -268,6 +268,14 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMoveHitbox Hitbox;
 
+	/** Will gravity be scaled during this windows duration. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 IsGravityScaled : 1;
+
+	/** Multipl of gravity during the windows duration. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GravityScale;
+
 	/** Impact data used when a defender is hit during this window. Transform relative to the impact point, can't be attached. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefenderHit;

@@ -95,6 +95,8 @@ protected:
 
 	bool MovementStep(float DeltaTime);
 
+	void AdjustGravity(float Scale);
+
 public:	
 	/** IFighterState implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;

@@ -438,10 +438,14 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 			bIsHitboxActive = true;
 			SetComponentTickEnabled(true);
 		}
+		if (CurrentWindow.IsGravityScaled)
+		{
+			AdjustGravity(CurrentWindow.GravityScale);
+		}
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Window,
 			this,
-			&UFighterStateComponent::OnCurrentWindowFinished,
+			&UFighterStateComponent::OnCurrentWindowDurationFinished,
 			CurrentWindow.Duration,
 			false
 		);
@@ -451,8 +455,29 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 void UFighterStateComponent::OnCurrentWindowDurationFinished()
 {
 	bIsHitboxActive = false;
+	if (CurrentWindow.IsGravityScaled)
+	{
+		AdjustGravity(1.f);
+	}
 	TryDisableTick();
 	StartCurrentWindowWinddown();
+}
+
+void UFighterStateComponent::AdjustGravity(float Amount)
+{
+	UCharacterMovementComponent *MoveComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
+	if (MoveComponent != nullptr)
+	{
+		const AActor *CDO = GetDefault<AActor>(GetOwner()->GetClass());
+		if (CDO != nullptr)
+		{
+			UCharacterMovementComponent *CDMoveComponent = CDO->FindComponentByClass<UCharacterMovementComponent>();
+			if (CDMoveComponent != nullptr)
+			{
+				MoveComponent->GravityScale = CDMoveComponent->GravityScale * Amount;
+			}
+		}
+	}
 }
 
 void UFighterStateComponent::StartCurrentWindowWinddown()
@@ -494,6 +519,10 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 		if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+		}
+		if (WindowEnd != EWindowEnd::WE_Finished && CurrentWindow.IsGravityScaled)
+		{
+			AdjustGravity(1.f);
 		}
 		if (MyMoveset != nullptr)
 		{

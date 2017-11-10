@@ -1,4 +1,4 @@
-// copyright 2017 BYU Animation
+ // copyright 2017 BYU Animation
 
 #pragma once
 
@@ -68,4 +68,5 @@ public:
 	virtual void OnInputReceived() = 0;
 
 	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
+
 };

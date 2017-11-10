@@ -513,4 +513,12 @@ void AFighterCharacter::OnInputReceived()
 void AFighterCharacter::SetGravityScale(float scale)
 {
 	GetCharacterMovement()->GravityScale = GetCharacterMovement()->GravityScale * scale;
+	const AFighterCharacter *CDO = GetDefault<AFighterCharacter>(GetClass());
+	if (CDO != nullptr)
+	{
+		if (CDO->GetCharacterMovement() != nullptr)
+		{
+			GetCharacterMovement()->GravityScale = CDO->GetCharacterMovement()->GravityScale;
+		}
+	}
 }

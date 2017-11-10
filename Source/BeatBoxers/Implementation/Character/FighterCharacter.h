@@ -71,6 +71,7 @@ protected:
 	void InputActionLight();
 	void InputActionMedium();
 	void InputActionHeavy();
+	void SetGravityScale(float scale);
 
 public:	
 	UPROPERTY(BlueprintAssignable)
@@ -114,7 +115,6 @@ public:
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
-	virtual void SetGravityScale(float scale) override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))

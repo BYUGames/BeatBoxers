@@ -1,4 +1,4 @@
-// copyright 2017 BYU Animation
+ // copyright 2017 BYU Animation
 
 #pragma once
 
@@ -69,6 +69,4 @@ public:
 
 	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
 
-	/** Sets the fighters personal gravity scale. */
-	virtual void SetGravityScale(float scale) = 0;
 };

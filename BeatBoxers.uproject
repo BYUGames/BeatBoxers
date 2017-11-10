@@ -19,10 +19,6 @@
 		{
 			"Name": "HoudiniEngine",
 			"Enabled": false
-		},
-		{
-			"Name": "FMODStudio",
-			"Enabled": true
 		}
 	]
 }

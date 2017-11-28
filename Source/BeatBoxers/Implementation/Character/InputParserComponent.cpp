@@ -35,13 +35,16 @@ void UInputParserComponent::BeginPlay()
 void UInputParserComponent::OnInputBufferTimer()
 {
 	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
-	InputBuffer = EInputToken::IE_None;
+	InputBuffer.token = EInputToken::IE_None;
 }
 
-void UInputParserComponent::SetInputBuffer(EInputToken NewToken)
+void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 {
-	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), InputBufferLength);
-	InputBuffer = NewToken;
+	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
+	if (InputBuffer.token == EInputToken::IE_None)
+		InputBuffer = NewToken;
+	else
+		InputBuffer.token = NewToken.token;
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
 		this,
@@ -74,20 +77,32 @@ void UInputParserComponent::OnComboTimer()
 
 void UInputParserComponent::PushInputToken(EInputToken NewToken)
 {
+	FBufferInputToken bToken;
+	bToken.token = NewToken;	
+	bToken.accuracy = calcAccuracy();
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{
 		if (MyFighterState->IsInputBlocked())
 		{
-			SetInputBuffer(NewToken);
+			SetInputBuffer(bToken);
 		}
 		else if (MyMoveset != nullptr)
 		{
-			MyMoveset->ReceiveInputToken(NewToken);
+			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
 }
 
+
+float UInputParserComponent::calcAccuracy()
+{
+	if (MyMusicBox != nullptr)
+	{
+		return MyMusicBox->GetBeatAccuracy();
+	}
+	return -1;
+}
 
 // Called every frame
 void UInputParserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -161,21 +176,40 @@ void UInputParserComponent::RegisterMoveset(TWeakObjectPtr<UObject> Moveset)
 	}
 }
 
+void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
+{
+	if (!MusicBox.IsValid())
+	{
+		UE_LOG(LogUMoveset, Error, TEXT("%s UInputParserComponent given invalid object to register as MusicBox."), *GetNameSafe(GetOwner()));
+	}
+	else
+	{
+		MyMusicBox = Cast<IMusicBox>(MusicBox.Get());
+		if (MyMusicBox == nullptr)
+		{
+			UE_LOG(LogUMoveset, Error, TEXT("%s UInputParserComponent given %s to register as MusicBox, but it doesn't implement IMusicBox."), *GetNameSafe(GetOwner()), *GetNameSafe(MusicBox.Get()));
+		}
+	}
+}
+
+
 void UInputParserComponent::OnControlReturned()
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned, input buffer = %s."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), InputBuffer));
+	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned, input buffer = %s."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), InputBuffer.token));
 	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_InputBuffer))
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_InputBuffer);
-		if (MyMoveset != nullptr && InputBuffer != EInputToken::IE_None)
+		if (MyMoveset != nullptr && InputBuffer.token != EInputToken::IE_None)
 		{
 			// Preventing infinite loops.
-			EInputToken BufferToken = InputBuffer;
-			InputBuffer = EInputToken::IE_None;
+			FBufferInputToken BufferToken = InputBuffer;
+			InputBuffer.token = EInputToken::IE_None;
 			MyMoveset->ReceiveInputToken(BufferToken);
 		}
 	}
 }
+
+
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {

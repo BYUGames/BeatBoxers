@@ -37,6 +37,9 @@ public:
 
 	virtual const TMap<int, FNoteData>& GetAllNotes() = 0;
 
+	/** Quickly returns the percent for a specified note. */
+	virtual float GetNotePercent(FNoteData NoteData) = 0;
+
 	virtual FNewNoteEvent& GetOnNewNoteEvent() = 0;
 	virtual FNoteEndEvent& GetOnNoteEndEvent() = 0;
 	virtual FNotesClearedEvent& GetOnNotesClearedEvent() = 0;

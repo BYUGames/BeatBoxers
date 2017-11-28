@@ -34,17 +34,20 @@ EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType
 	return DesiredOverride;
 }
 
-struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors)
+struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors)
 {
 	FHitResult Result;
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActors(IgnoreActors);
 
+	FVector Origin = Source + FVector(Hitbox.Origin.X, 0, Hitbox.Origin.Y);
+	FVector End = Source + FVector(Hitbox.End.X, 0, Hitbox.End.Y);
+
 	GetWorld()->SweepSingleByObjectType(
 		Result,
-		Hitbox.Origin,
-		Hitbox.End,
+		Origin,
+		End,
 		FQuat::Identity,
 		FCollisionObjectQueryParams::AllDynamicObjects,
 		FCollisionShape::MakeSphere(Hitbox.Radius),
@@ -55,8 +58,8 @@ struct FHitResult ABBGameMode::TraceHitbox(FMoveHitbox Hitbox, TArray< TWeakObje
 	{
 		DrawDebugLine(
 			GetWorld(),
-			Hitbox.Origin,
-			Hitbox.End,
+			Origin,
+			End,
 			FColor::Red,
 			false,
 			-1.f,
@@ -296,17 +299,19 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	FMovement NonrelativeMovement = Movement;
 	if (Movement.IsRelativeToAttackerFacing && Source.IsValid())
 	{
-		FTransform Transform = Source.Get()->GetActorTransform();
-		FRotator Rotator = Source.Get()->GetActorRotation();
-		NonrelativeMovement.Delta = Rotator.RotateVector(NonrelativeMovement.Delta);
-		NonrelativeMovement.IsRelativeToAttackerFacing = false;
+		IFighter *Fighter = Cast<IFighter>(Source.Get());
+		if (Fighter != nullptr)
+		{
+			NonrelativeMovement.Delta.X *= Fighter->GetFacing();
+			NonrelativeMovement.IsRelativeToAttackerFacing = false;
+		}
 	}
 
 	FHitResult Result;
 	GetWorld()->LineTraceSingleByObjectType(
 		Result,
 		Target.Get()->GetActorLocation(),
-		Target.Get()->GetActorLocation() + NonrelativeMovement.Delta.GetSafeNormal() * 100.f,
+		Target.Get()->GetActorLocation() + FVector(NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y).GetSafeNormal() * 100.f,
 		FCollisionObjectQueryParams::AllStaticObjects,
 		FCollisionQueryParams::DefaultQueryParam
 	);
@@ -497,7 +502,6 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& I
 {
 	FImpactData OutImpact = ImpactData;
 	OutImpact.Damage *= Accuracy;
-	OutImpact.ImpartedMovement.Delta *= Accuracy;
 	OutImpact.SpecialGenerated *= Accuracy;
 	return OutImpact;
 }

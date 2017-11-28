@@ -41,7 +41,7 @@ public:
 	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) = 0;
 
 	/** Call to execute whatever move, or move in current combo, comes next according to the given input. */
-	virtual void ReceiveInputToken(EInputToken Token) = 0;
+	virtual void ReceiveInputToken(FBufferInputToken Token) = 0;
 
 	/** Receives notifications from FighterState when its current window has finished and if it was interrupted or not. */
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) = 0;

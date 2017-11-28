@@ -216,6 +216,7 @@ void AFighterCharacter::PostInitializeComponents()
 		GetInputParser()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
 		GetInputParser()->RegisterFighterState(TWeakObjectPtr<UObject>(Cast<UObject>(FighterState)));
 		GetInputParser()->RegisterMoveset(TWeakObjectPtr<UObject>(Cast<UObject>(Moveset)));
+		GetInputParser()->RegisterMusicBox(TWeakObjectPtr<UObject>(GetFighterWorld()->GetMusicBox()));
 
 		GetSoloTracker()->RegisterFighterWorld(TWeakObjectPtr<UObject>(Cast<UObject>(GetFighterWorld())));
 		GetSoloTracker()->RegisterFighter(TWeakObjectPtr<UObject>(Cast<UObject>(this)));
@@ -346,7 +347,7 @@ void AFighterCharacter::OnJumpTimer()
 	if (JumpEffects.ParticleSystem != nullptr)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(
-			GetOwner()->GetWorld(),
+			GetWorld(),
 			JumpEffects.ParticleSystem,
 			RelativeTransform
 		);
@@ -354,7 +355,7 @@ void AFighterCharacter::OnJumpTimer()
 	if (JumpEffects.SoundCue != nullptr)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(
-			GetOwner(),
+			this,
 			JumpEffects.SoundCue,
 			RelativeTransform.GetLocation(),
 			RelativeTransform.GetRotation().Rotator()
@@ -461,11 +462,6 @@ void AFighterCharacter::SetFacing(float Sign)
 	}
 }
 
-float AFighterCharacter::GetFacing() const
-{
-	return Facing;
-}
-
 bool AFighterCharacter::K2_IsBlocking() const
 {
 	return IsBlocking();
@@ -494,7 +490,7 @@ float AFighterCharacter::GetHorizontalMovement() const
 {
 	if (GetFighterState() != nullptr)
 	{
-		return GetFighterState()->GetCurrentHorizontalMovement();
+		return GetFighterState()->GetCurrentHorizontalMovement() + GetCharacterMovement()->Velocity.X;
 	}
 	return 0.f;
 }
@@ -512,4 +508,17 @@ void AFighterCharacter::PossessedBy(AController *NewController)
 void AFighterCharacter::OnInputReceived()
 {
 	K2_OnInputReceived();
+}
+
+void AFighterCharacter::SetGravityScale(float scale)
+{
+	GetCharacterMovement()->GravityScale = GetCharacterMovement()->GravityScale * scale;
+	const AFighterCharacter *CDO = GetDefault<AFighterCharacter>(GetClass());
+	if (CDO != nullptr)
+	{
+		if (CDO->GetCharacterMovement() != nullptr)
+		{
+			GetCharacterMovement()->GravityScale = CDO->GetCharacterMovement()->GravityScale;
+		}
+	}
 }

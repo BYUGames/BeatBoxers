@@ -53,6 +53,7 @@ public:
 	virtual void PauseBoard() override;
 	virtual void ResumeBoard() override;
 	virtual void ClearBoard() override;
+	virtual float GetNotePercent(FNoteData NoteData) override;
 	virtual FNewNoteEvent& GetOnNewNoteEvent() override { return NewNoteEvent; }
 	virtual FNoteEndEvent& GetOnNoteEndEvent() override { return NoteEndEvent; }
 	virtual FNotesClearedEvent& GetOnNotesClearedEvent() override { return NotesClearedEvent; }
@@ -64,8 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Listen"))
 	void K2_ListenToFeed(UObject *Feed) { Listen(Feed); }
 
-	UFUNCTION(BlueprintCallable)
-	float GetNotePercent(FNoteData NoteData);
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="GetNotePercent"))
+	float K2_GetNotePercent(FNoteData NoteData) { return GetNotePercent(NoteData); }
 
 	/** Returns the accuracy of hitting the note right now. -1 is a miss, 0 is worst possible accuracy, 1 is perfect accuracy. */
 	UFUNCTION(BlueprintCallable)

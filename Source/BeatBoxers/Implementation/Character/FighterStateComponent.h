@@ -64,10 +64,10 @@ protected:
 	void OnCurrentWindowWindupFinished();
 
 	// Sets the window timer to the window's duration to call OnWindowFinished, sets up hitbox.
-	void StartCurrentWindow();
+	void StartCurrentWindowDuration();
 
 	// Calls StartCurrentWindowWinddown, disables hitbox.
-	void OnCurrentWindowFinished();
+	void OnCurrentWindowDurationFinished();
 
 	// Sets the window timer to the window's winddown duration to call OnWindowWinddownFinished.
 	void StartCurrentWindowWinddown();
@@ -94,6 +94,8 @@ protected:
 	void OnMovementTimer();
 
 	bool MovementStep(float DeltaTime);
+
+	void AdjustGravity(float Scale);
 
 public:	
 	/** IFighterState implementation */

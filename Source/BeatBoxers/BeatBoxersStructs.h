@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "BeatBoxersStructs.generated.h"
 
 template<typename TEnum>
@@ -154,7 +155,7 @@ struct FMovement
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector Delta;
+	FVector2D Delta;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Duration;
@@ -174,6 +175,11 @@ struct FMovement
 	FMovement operator*(float f);
 
 	FString ToString() const;
+
+	FMovement()
+	{
+		IsRelativeToAttackerFacing = true;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -183,15 +189,21 @@ struct FMoveHitbox
 
 	/** Where to begin the trace from, relative to attacker's position and facing. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector Origin;
+	FVector2D Origin;
 
 	/** Where to end the trace, relative to attacker's position and facing. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector End;
+	FVector2D End;
 
 	/** Radius to trace. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Radius;
+
+	FMoveHitbox()
+	{
+		Radius = 20.f;
+		End.X = 75.f;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -256,6 +268,14 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMoveHitbox Hitbox;
 
+	/** Will gravity be scaled during this windows duration. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 IsGravityScaled : 1;
+
+	/** Multipl of gravity during the windows duration. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GravityScale;
+
 	/** Impact data used when a defender is hit during this window. Transform relative to the impact point, can't be attached. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefenderHit;
@@ -283,6 +303,11 @@ struct FMoveWindow
 	/** The animation montage to play in conjuction with this window. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UAnimMontage *AnimMontage;
+
+	FMoveWindow()
+	{
+		Interruptible = true;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -294,35 +319,35 @@ struct FSoloParameters
 	int NumberOfNotes;
 };
 
-UCLASS(Abstract, MinimalAPI, Blueprintable)
-class AMoveState : public AActor
+USTRUCT(BlueprintType)
+struct FMoveData : public FTableRowBase
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_USTRUCT_BODY()
 
 public:
 	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FInputTokenBools AllowedInputs;
 
 	/** This is what allows or prevents this move in certain stances, like standing or crouching. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FStanceFilter StanceFilter;
 
 	/** Amount of special required, and consumed, to use the move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpecialCost;
 
 	/** Amount of time after finishing last window that the MovesetComponent will remain in this state until reverting to its default state. Negative means it stays in the state indefinitely. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxPostWait;
 
 	/** This defines the actual things done in this move. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FMoveWindow> MoveWindows;
 
-	/** Possible moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray< TSubclassOf<AMoveState> > PossibleTransitions;
+	/** Possible other moves to go to from here. Will proceed down the list in order and select the first available move. If none are available resets MovesetComponent to default state. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FDataTableRowHandle> PossibleTransitions;
 };
 
 /** Results returned to the moveset from the fretboard. */
@@ -423,6 +448,31 @@ struct FFighterData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture *Portrait;
+};
+
+USTRUCT(BlueprintType)
+struct FBufferInputToken
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EInputToken token;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float accuracy;
+
+	FBufferInputToken operator=(const FBufferInputToken toSet)
+	{
+		token = toSet.token;
+		accuracy = toSet.accuracy;
+		return toSet;
+	}
+
+	FBufferInputToken()
+	{
+		token = EInputToken::IE_None;
+		accuracy = -1;
+	}
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewFeedNoteEvent, FFeedNoteData, NoteData);

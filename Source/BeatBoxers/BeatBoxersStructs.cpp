@@ -4,7 +4,7 @@
 
 bool FMovement::IsValid() const
 {
-	return Duration >= 0 && (Delta.X != 0 || Delta.Y != 0 || Delta.Z != 0);
+	return Duration >= 0 && (Delta.X != 0 || Delta.Y != 0);
 }
 
 bool FStanceFilter::FilterStance(EStance Stance) const
@@ -90,14 +90,6 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 		break;
 	}
 	return false;
-}
-
-AMoveState::AMoveState(const class FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	MaxPostWait = 0.25f;
-	MoveWindows = TArray<FMoveWindow>();
-	PossibleTransitions = TArray< TSubclassOf<AMoveState> >();
 }
 
 FString FMovement::ToString() const

@@ -71,6 +71,7 @@ protected:
 	void InputActionLight();
 	void InputActionMedium();
 	void InputActionHeavy();
+	void SetGravityScale(float scale);
 
 public:	
 	UPROPERTY(BlueprintAssignable)
@@ -95,7 +96,7 @@ public:
 	float ComplexInputWindow;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<AMoveState> DefaultMoveState;
+	FDataTableRowHandle DefaultMoveState;
 
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
@@ -105,6 +106,7 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual EStance GetStance() const override;
 	virtual void SetFacing(float Sign) override;
+	virtual float GetFacing() const override { return Facing; }
 	virtual TWeakObjectPtr<AController> GetFighterController() const override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
@@ -112,6 +114,7 @@ public:
 	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual void OnInputReceived() override;
+	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
@@ -131,7 +134,7 @@ public:
 
 	/** Gets the sign of the actor's facing in the X axis. */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
-	virtual float GetFacing() const;
+	virtual float K2_GetFacing() const { return GetFacing(); }
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Blocking"))
 	virtual bool K2_IsBlocking() const;

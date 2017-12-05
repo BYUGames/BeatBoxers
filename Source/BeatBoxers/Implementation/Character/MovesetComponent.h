@@ -22,11 +22,12 @@ class BEATBOXERS_API UMovesetComponent : public UActorComponent, public IMoveset
 	GENERATED_UCLASS_BODY()
 
 private:
-	TSubclassOf<AMoveState> DefaultStateClass;
+	FString cs; //Context String
+	FDataTableRowHandle DefaultState;
 	int CurrentWindowInState;
 
 	// Don't call this. It does no checking.
-	void SetState(TSubclassOf<AMoveState> State);
+	void SetState(FDataTableRowHandle State);
 
 protected:
 	IFighterWorld *MyFighterWorld;
@@ -46,7 +47,7 @@ protected:
 	UPROPERTY()
 	UBasicFretboard *SoloFretboard;
 
-	TSubclassOf<AMoveState> CurrentStateClass;
+	FDataTableRowHandle CurrentState;
 	FTimerHandle TimerHandle_PostWait;
 
 	// Called when the game starts
@@ -59,7 +60,7 @@ protected:
 	void GotoDefaultState();
 
 	/** Sets the current state to a new instance of the given state. */
-	void GotoState(TSubclassOf<AMoveState> NewState);
+	void GotoState(FDataTableRowHandle NewState);
 
 	/** Starts the next window in the current move. */
 	void StartNextWindow();
@@ -86,7 +87,7 @@ public:
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) override;
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) override;
 	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) override;
-	virtual void ReceiveInputToken(EInputToken Token) override;
+	virtual void ReceiveInputToken(FBufferInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
 	virtual void OnSoloStart() override;
 	/** End IMovesetImplementation */

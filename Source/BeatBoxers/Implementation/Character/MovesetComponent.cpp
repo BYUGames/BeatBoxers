@@ -10,7 +10,6 @@
 UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	DefaultStateClass = AMoveState::StaticClass();
 	BufferAccuracy = -1.f;
 }
 
@@ -19,15 +18,11 @@ UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectIniti
 void UMovesetComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	cs = GetNameSafe(this);
 
-	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
-	if (Fighter != nullptr)
+	if (MyFighter != nullptr)
 	{
-		DefaultStateClass = Fighter->DefaultMoveState;
-	}
-	else
-	{
-		DefaultStateClass = TSubclassOf<AMoveState>(AMoveState::StaticClass());
+		DefaultState = MyFighter->GetDefaultMoveState();
 	}
 	GotoDefaultState();
 }
@@ -39,28 +34,28 @@ void UMovesetComponent::OnPostWaitExpired()
 
 void UMovesetComponent::GotoDefaultState()
 {
-	if (DefaultStateClass.Get() == nullptr)
+	if (DefaultState.GetRow<FMoveData>(cs) == nullptr)
 	{
-		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid default class!"), *GetNameSafe(GetOwner()));
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid default move state!"), *GetNameSafe(GetOwner()));
 		return;
 	}
-	SetState(DefaultStateClass);
+	SetState(DefaultState);
 }
 
-void UMovesetComponent::SetState(TSubclassOf<AMoveState> State)
+void UMovesetComponent::SetState(FDataTableRowHandle State)
 {
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent changing state to %s"), *GetNameSafe(GetOwner()), *GetNameSafe(State.Get()));
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent changing state to %s"), *GetNameSafe(GetOwner()), *State.RowName.ToString());
 	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait))
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait);
 	}
-	CurrentStateClass = State;
+	CurrentState = State;
 	CurrentWindowInState = 0;
 }
 
-void UMovesetComponent::GotoState(TSubclassOf<AMoveState> NewState)
+void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 {
-	if (NewState.Get() == nullptr)
+	if (NewState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent passed invalid class reference as new state."), *GetNameSafe(GetOwner()));
 		GotoDefaultState();
@@ -74,31 +69,31 @@ void UMovesetComponent::GotoState(TSubclassOf<AMoveState> NewState)
 
 void UMovesetComponent::StartNextWindow()
 {
-	if (CurrentStateClass.Get() == nullptr)
+	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent CurrentStateClass invalid when trying to start next window."), *GetNameSafe(GetOwner()));
 		return;
 	}
 	FMoveWindow *NextWindow =
-		(CurrentStateClass.GetDefaultObject()->MoveWindows.Num() > CurrentWindowInState) ?
-		&CurrentStateClass.GetDefaultObject()->MoveWindows[CurrentWindowInState++] :
+		(CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num() > CurrentWindowInState) ?
+		&CurrentState.GetRow<FMoveData>(cs)->MoveWindows[CurrentWindowInState++] :
 		nullptr;
 
 	if (NextWindow == nullptr)
 	{
 		// We've reached the end of this window list for this state.
-		if (CurrentStateClass.GetDefaultObject()->MaxPostWait == 0)
+		if (CurrentState.GetRow<FMoveData>(cs)->MaxPostWait == 0)
 		{
 			// End this state immediately.
 			GotoDefaultState();
 		}
-		else if (CurrentStateClass.GetDefaultObject()->MaxPostWait > 0)
+		else if (CurrentState.GetRow<FMoveData>(cs)->MaxPostWait > 0)
 		{
 			GetOwner()->GetWorldTimerManager().SetTimer(
 				TimerHandle_PostWait,
 				this,
 				&UMovesetComponent::OnPostWaitExpired,
-				CurrentStateClass.GetDefaultObject()->MaxPostWait,
+				CurrentState.GetRow<FMoveData>(cs)->MaxPostWait,
 				false
 			);
 		}
@@ -227,19 +222,13 @@ void UMovesetComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 	}
 }
 
-void UMovesetComponent::ReceiveInputToken(EInputToken Token)
+void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 {
-	bool diff = BufferToken != Token;
-	BufferToken = Token;
-	if (BufferAccuracy < 0)
-	{
-		BufferAccuracy = 1.f;
-		if (MyMusicBox != nullptr)
-		{
-			BufferAccuracy = MyMusicBox->GetBeatAccuracy();
-		}
-	}
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), BufferAccuracy);
+	bool diff = BufferToken != Token.token;
+	BufferToken = Token.token;
+	BufferAccuracy = Token.accuracy;
+	ProcessInputToken(Token.token, Token.accuracy);
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
 	{
 		MyFighter->OnInputReceived();
@@ -249,29 +238,29 @@ void UMovesetComponent::ReceiveInputToken(EInputToken Token)
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
-	if (CurrentStateClass.Get() == nullptr)
+	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		GotoDefaultState();
 		return ProcessInputToken(Token, Accuracy);
 	}
 
-	for (int i = 0; i < CurrentStateClass.GetDefaultObject()->PossibleTransitions.Num(); i++)
+	for (int i = 0; i < CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
 	{
-		TSubclassOf<AMoveState> PossibleMove = CurrentStateClass.GetDefaultObject()->PossibleTransitions[i];
-		if (PossibleMove.GetDefaultObject()->AllowedInputs.FilterInputToken(Token))
+		FDataTableRowHandle PossibleMove = CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+		if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
 		{
-			if (MyFighterState != nullptr && PossibleMove.GetDefaultObject()->StanceFilter.FilterStance(MyFighterState->GetStance()))
+			if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 			{
-				if (MyFighterState->UseSpecial(PossibleMove.GetDefaultObject()->SpecialCost))
+				if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
 				{
 					// Found a state that we can enter.
 					UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
 						*GetNameSafe(GetOwner()),
-						*GetNameSafe(CurrentStateClass),
-						*GetNameSafe(CurrentStateClass.GetDefaultObject()->PossibleTransitions[i]),
+						*CurrentState.RowName.ToString(),
+						*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 						*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 					);
-					GotoState(CurrentStateClass.GetDefaultObject()->PossibleTransitions[i]);
+					GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
 					return;
 				}
 			}
@@ -279,7 +268,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 	}
 	// We weren't able to use any of the possible transitions or there were none to begin with.
 
-	if (CurrentStateClass != DefaultStateClass)
+	if (CurrentState != DefaultState)
 	{
 		// Reached the end of this combo, return to default and try this input again.
 		GotoDefaultState();
@@ -356,27 +345,12 @@ UBasicFretboard* UMovesetComponent::GetSoloFretboard()
 
 void UMovesetComponent::BindMusicBox(IMusicBox *MusicBox)
 {
-	if (MusicBox != nullptr)
-	{
-		MusicBox->GetOnBeatEvent().AddDynamic(this, &UMovesetComponent::OnBeat);
-	}
 }
 
 void UMovesetComponent::UnbindMusicBox(IMusicBox *MusicBox)
 {
-	if (MusicBox != nullptr)
-	{
-		MusicBox->GetOnBeatEvent().RemoveDynamic(this, &UMovesetComponent::OnBeat);
-	}
 }
 
 void UMovesetComponent::OnBeat()
 {
-	if (BufferToken != EInputToken::IE_None)
-	{
-		MoveAccuracy = BufferAccuracy;
-		BufferAccuracy = -1.f;
-		ProcessInputToken(BufferToken, MoveAccuracy);
-		BufferToken = EInputToken::IE_None;
-	}
 }

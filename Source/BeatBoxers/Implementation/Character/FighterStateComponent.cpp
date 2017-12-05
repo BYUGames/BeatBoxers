@@ -65,16 +65,17 @@ bool UFighterStateComponent::MovementStep(float DeltaTime)
 	if (bIsBeingMoved)
 	{
 		FVector TargetLocation = GetOwner()->GetActorLocation();
+		FVector Movement = FVector(CurrentMovement.Delta.X, 0, CurrentMovement.Delta.Y);
 		if (CurrentMovement.UseDeltaAsSpeed)
 		{
-			TargetLocation += CurrentMovement.Delta * DeltaTime;
+			TargetLocation += Movement * DeltaTime;
 		}
 		else
 		{
-			TargetLocation += CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime;
+			TargetLocation += Movement / CurrentMovement.Duration * DeltaTime;
 		}
 		GetOwner()->SetActorLocation(
-			GetOwner()->GetActorLocation() + CurrentMovement.Delta / CurrentMovement.Duration * DeltaTime,
+			TargetLocation,
 			true,
 			nullptr,
 			ETeleportType::TeleportPhysics
@@ -324,6 +325,14 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 	bIsBeingMoved = true;
 	CurrentMovement = Movement;
+	if (Movement.Delta.Y > 0.f)
+	{
+		UCharacterMovementComponent *MovementComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
+		if (MovementComponent != nullptr && MovementComponent->IsMovingOnGround())
+		{
+			MovementComponent->SetMovementMode(EMovementMode::MOVE_Falling);
+		}
+	}
 	if (Movement.Duration == 0)
 	{
 		MovementStep(1.f);
@@ -357,13 +366,13 @@ void UFighterStateComponent::OnLand()
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandInt;
-			OnCurrentWindowFinished();
+			OnCurrentWindowDurationFinished();
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
-			OnCurrentWindowFinished();
+			OnCurrentWindowDurationFinished();
 		}
 		else
 		{
@@ -385,7 +394,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	if (CurrentWindow.Windup <= 0)
 	{
 		// No windup, proceed.
-		StartCurrentWindow();
+		StartCurrentWindowDuration();
 	}
 	else
 	{
@@ -401,10 +410,10 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 
 void UFighterStateComponent::OnCurrentWindowWindupFinished()
 {
-	StartCurrentWindow();
+	StartCurrentWindowDuration();
 }
 
-void UFighterStateComponent::StartCurrentWindow()
+void UFighterStateComponent::StartCurrentWindowDuration()
 {
 	if (CurrentWindow.AttackerMovement)
 	{
@@ -420,7 +429,7 @@ void UFighterStateComponent::StartCurrentWindow()
 		{
 			PerformHitboxScan();
 		}
-		OnCurrentWindowFinished();
+		OnCurrentWindowDurationFinished();
 	}
 	else
 	{
@@ -429,21 +438,46 @@ void UFighterStateComponent::StartCurrentWindow()
 			bIsHitboxActive = true;
 			SetComponentTickEnabled(true);
 		}
+		if (CurrentWindow.IsGravityScaled)
+		{
+			AdjustGravity(CurrentWindow.GravityScale);
+		}
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Window,
 			this,
-			&UFighterStateComponent::OnCurrentWindowFinished,
+			&UFighterStateComponent::OnCurrentWindowDurationFinished,
 			CurrentWindow.Duration,
 			false
 		);
 	}
 }
 
-void UFighterStateComponent::OnCurrentWindowFinished()
+void UFighterStateComponent::OnCurrentWindowDurationFinished()
 {
 	bIsHitboxActive = false;
+	if (CurrentWindow.IsGravityScaled)
+	{
+		AdjustGravity(1.f);
+	}
 	TryDisableTick();
 	StartCurrentWindowWinddown();
+}
+
+void UFighterStateComponent::AdjustGravity(float Amount)
+{
+	UCharacterMovementComponent *MoveComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
+	if (MoveComponent != nullptr)
+	{
+		const AActor *CDO = GetDefault<AActor>(GetOwner()->GetClass());
+		if (CDO != nullptr)
+		{
+			UCharacterMovementComponent *CDMoveComponent = CDO->FindComponentByClass<UCharacterMovementComponent>();
+			if (CDMoveComponent != nullptr)
+			{
+				MoveComponent->GravityScale = CDMoveComponent->GravityScale * Amount;
+			}
+		}
+	}
 }
 
 void UFighterStateComponent::StartCurrentWindowWinddown()
@@ -486,6 +520,10 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
 		}
+		if (WindowEnd != EWindowEnd::WE_Finished && CurrentWindow.IsGravityScaled)
+		{
+			AdjustGravity(1.f);
+		}
 		if (MyMoveset != nullptr)
 		{
 			MyMoveset->OnWindowFinished(WindowEnd);
@@ -500,11 +538,18 @@ void UFighterStateComponent::PerformHitboxScan()
 	{
 		FMoveHitbox WorldHitbox;
 		WorldHitbox.Radius = CurrentWindow.Hitbox.Radius;
-		FTransform Transform = GetOwner()->GetActorTransform();
-		WorldHitbox.Origin = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.Origin);
-		WorldHitbox.End = Transform.TransformPositionNoScale(CurrentWindow.Hitbox.End);
+		WorldHitbox.Origin = CurrentWindow.Hitbox.Origin;
+		WorldHitbox.End = CurrentWindow.Hitbox.End;
+
+		//Make hitboxes relative to facing
+		if (MyFighter != nullptr)
+		{
+			WorldHitbox.Origin.X *= MyFighter->GetFacing();
+			WorldHitbox.End.X *= MyFighter->GetFacing();
+		}
 
 		FHitResult HitResult = MyFighterWorld->TraceHitbox(
+			GetOwner()->GetActorLocation(),
 			WorldHitbox,
 			ActorsToIgnore
 		);

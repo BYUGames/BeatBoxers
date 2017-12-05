@@ -1,4 +1,2 @@
-*	@BigDub	@miketowne
-*.cpp	@BigDub
-
-CODEOWNERS	@BigDub
+CODEOWNERS @BYUGames/bbgatekeepers
+BeatBoxers.uproject @BYUGames/bbgatekeepers

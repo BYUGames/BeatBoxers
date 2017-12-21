@@ -234,7 +234,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 			MyFighterState->SetWantsToCrouch(false);
 			if (Amount > 0)
 			{
-				MyFighterState->Jump();
+			//	MyFighterState->Jump();
 			}
 		}
 	}
@@ -300,7 +300,6 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 			CurrentStateClass.GetDefaultObject()->InputActionLight(this);
 		}
 	}
-	//TODO: change attack depending on input.
 }
 
 void UInputParserComponent::InputActionMedium(bool IsUp)

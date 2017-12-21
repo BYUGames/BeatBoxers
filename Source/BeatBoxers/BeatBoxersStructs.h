@@ -87,7 +87,10 @@ enum class EInputToken : uint8
 	IE_Heavy		UMETA(DisplayName = "Heavy"),
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashLeft		UMETA(DisplayName = "DashLeft"),
-	IE_DashRight	UMETA(DisplayName = "DashRight")
+	IE_DashRight	UMETA(DisplayName = "DashRight"),
+	IE_UpperLight	UMETA(DisplayName = "UpperLight"),
+	IE_ForwardLight	UMETA(DisplayName = "ForwardLight"),
+	IE_CrouchLight	UMETA(DisplayName = "CrouchLight")
 };
 
 UENUM(BlueprintType)

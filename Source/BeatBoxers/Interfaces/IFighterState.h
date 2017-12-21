@@ -60,6 +60,9 @@ public:
 
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void SetMoveDirection(float Direction) = 0;
+	
+	/** Interface to know direction of attack*/
+	virtual void SetVerticalDirection(float Direction) = 0;
 
 	/** Interface to Fighter function, blocks when it sees fit. */
 	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
@@ -90,6 +93,9 @@ public:
 
 	/** Get horizontal movement to expose to animation blueprint. */
 	virtual float GetCurrentHorizontalMovement() const = 0;
+
+	/** Get horizontal movement for direction of attack. */
+	virtual float GetCurrentVerticalDirection() const = 0;
 
 	virtual void EndSolo() = 0;
 };

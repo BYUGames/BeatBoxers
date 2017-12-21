@@ -216,6 +216,7 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(Amount);
+		MyFighterState->SetHorizontalDirection(Amount);
 	}
 }
 
@@ -277,7 +278,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	{
 		if (MyFighterState != nullptr)
 		{
-			if (MyFighterState->GetCurrentHorizontalMovement() > 0.0f)
+			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f)
 			{
 				CurrentStateClass.GetDefaultObject()->InputActionForwardLight(this);
 			}

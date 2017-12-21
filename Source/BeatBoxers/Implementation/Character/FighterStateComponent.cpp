@@ -302,6 +302,11 @@ void UFighterStateComponent::SetVerticalDirection(float Direction)
 	VerticalDirection = Direction;
 }
 
+void UFighterStateComponent::SetHorizontalDirection(float Direction)
+{
+	HorizontalDirection = Direction;
+}
+
 void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 {
 	if (IsInputBlocked() || MyFighter == nullptr) return;
@@ -769,6 +774,11 @@ float UFighterStateComponent::GetCurrentHorizontalMovement() const
 float UFighterStateComponent::GetCurrentVerticalDirection() const
 {
 	return VerticalDirection;
+}
+
+float UFighterStateComponent::GetCurrentHorizontalDirection() const
+{
+	return HorizontalDirection;
 }
 
 void UFighterStateComponent::EndSolo()

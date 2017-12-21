@@ -43,6 +43,7 @@ protected:
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
 	float VerticalDirection;
+	float HorizontalDirection;
 	float CurrentWindowAccuracy;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -114,6 +115,7 @@ public:
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetVerticalDirection(float Direction) override;
+	virtual void SetHorizontalDirection(float Direction) override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetWantsToCharge(bool WantsToCharge) override;
 	virtual void ApplyMovement(FMovement Movement) override;
@@ -125,6 +127,7 @@ public:
 	virtual EStance GetStance() const override;
 	virtual float GetCurrentHorizontalMovement() const override;
 	virtual float GetCurrentVerticalDirection() const override;
+	virtual float GetCurrentHorizontalDirection() const override;
 	virtual void EndSolo() override;
 	/** End IFighterState implmementation */
 

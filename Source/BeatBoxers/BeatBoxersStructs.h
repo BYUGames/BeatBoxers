@@ -129,6 +129,15 @@ struct FInputTokenBools
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool DashRight;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool UpperLight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ForwardLight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool CrouchLight;
+
 	bool FilterInputToken(EInputToken Token) const;
 };
 

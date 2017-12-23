@@ -129,6 +129,7 @@ public:
 	virtual void InputActionLight(bool IsUp) override;
 	virtual void InputActionMedium(bool IsUp) override;
 	virtual void InputActionHeavy(bool IsUp) override;
+	virtual void InputActionJump(bool IsUp) override;
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);

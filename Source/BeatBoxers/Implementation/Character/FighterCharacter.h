@@ -71,6 +71,7 @@ protected:
 	void InputActionLight();
 	void InputActionMedium();
 	void InputActionHeavy();
+	void InputActionJump();
 	void SetGravityScale(float scale);
 
 public:	

@@ -77,6 +77,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
 	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
 	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
 }
 
 
@@ -377,6 +378,14 @@ void AFighterCharacter::InputAxisVertical(float amount)
 	if (GetInputParser() != nullptr)
 	{
 		GetInputParser()->InputAxisVertical(amount);
+	}
+}
+
+void AFighterCharacter::InputActionJump()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionJump(true);
 	}
 }
 

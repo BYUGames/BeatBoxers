@@ -240,6 +240,14 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 }
 
+void UInputParserComponent::InputActionJump(bool IsUp)
+{
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->Jump();
+	}
+}
+
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)

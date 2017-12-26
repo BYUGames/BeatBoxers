@@ -43,6 +43,7 @@ public:
 	virtual float GetTimeToNextBeat() const = 0;
 
 	/** Allows objects to query total time between beats. */
+	UFUNCTION(BlueprintCallable)
 	virtual float GetTimeBetweenBeats() const = 0;
 
 	/** Returns a value [0..1] describing how accurate now is to the being in-sync with the next beat, 0 being barely missed the last beat, 1 being perfect timing. */

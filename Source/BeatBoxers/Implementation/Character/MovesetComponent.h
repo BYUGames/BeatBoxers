@@ -38,6 +38,7 @@ protected:
 	IMusicBox *MyMusicBox;
 
 	EInputToken BufferToken;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = InputInformation)
 	float BufferAccuracy;
 	float MoveAccuracy;
 

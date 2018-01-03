@@ -29,7 +29,7 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->JumpZVelocity = 840.f;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 0.f;
 	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
-
+	GetCharacterMovement()->MaxAcceleration = 99999.0f;
 	GetCapsuleComponent()->SetHiddenInGame(false);
 
 	JumpDelay = 0.2f;

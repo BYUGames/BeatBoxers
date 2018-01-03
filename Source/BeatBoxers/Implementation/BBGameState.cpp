@@ -1,8 +1,7 @@
 // copyright 2017 BYU Animation
 
 #include "BBGameState.h"
-#include "BBGameMode.h"
-#include "Runtime/Engine/Classes/Engine/World.h"
+
 
 ABBGameState::ABBGameState(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -54,4 +53,14 @@ void ABBGameState::OnMusicEnd()
 	{
 		MusicEndEvent.Broadcast();
 	}
+}
+
+void ABBGameState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime); // Call parent class tick function  
+
+	FVector p1Loc = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->GetActorLocation();
+	FVector p2Loc = UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()->GetActorLocation();
+	FVector camLoc = MainCamera->GetActorLocation();
+	MainCamera->SetActorLocation(FVector((p1Loc.X + p2Loc.X) / 2, camLoc.Y, (p1Loc.Z + p2Loc.Z) / 2 + 100));
 }

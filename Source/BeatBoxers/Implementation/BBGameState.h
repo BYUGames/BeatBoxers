@@ -6,7 +6,11 @@
 #include "GameFramework/GameState.h"
 #include "Camera/CameraActor.h"
 #include "Interfaces/IMusicBox.h"
+#include "BBGameMode.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "Engine.h"
 #include "BBGameState.generated.h"
+
 
 /**
  * 
@@ -25,6 +29,8 @@ protected:
 
 	UFUNCTION()
 	void OnMusicEnd();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	UPROPERTY(BlueprintAssignable)

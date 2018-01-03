@@ -191,6 +191,7 @@ void ABBGameMode::StartMatch()
 
 	if (GetGameState<ABBGameState>() != nullptr)
 	{
+		
 		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
 		GetGameState<ABBGameState>()->MainCamera = Cast<ACameraActor>(Camera);
 		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -201,7 +202,7 @@ void ABBGameMode::StartMatch()
 				PC->SetViewTarget(Camera);
 			}
 		}
-
+		
 		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
 		if (WorldMusicBox != nullptr)
 		{
@@ -216,7 +217,7 @@ void ABBGameMode::StartMatch()
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("Gamemode unable to get gamestate as ABBGameState."));
 	}
-
+	
 
 	if (GameState != nullptr)
 	{

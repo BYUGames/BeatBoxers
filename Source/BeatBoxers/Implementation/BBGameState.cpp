@@ -58,7 +58,6 @@ void ABBGameState::OnMusicEnd()
 void ABBGameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); // Call parent class tick function  
-
 	FVector p1Loc = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->GetActorLocation();
 	FVector p2Loc = UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()->GetActorLocation();
 	FVector camLoc = MainCamera->GetActorLocation();

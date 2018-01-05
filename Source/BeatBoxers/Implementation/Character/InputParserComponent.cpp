@@ -286,7 +286,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	{
 		if (MyFighterState != nullptr)
 		{
-			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f)
+			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() > 0.0f || MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() < 0.0f)
 			{
 				CurrentStateClass.GetDefaultObject()->InputActionForwardLight(this);
 			}

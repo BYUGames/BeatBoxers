@@ -227,6 +227,7 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	bool diff = BufferToken != Token.token;
 	BufferToken = Token.token;
 	BufferAccuracy = Token.accuracy;
+	MoveAccuracy = BufferAccuracy;
 	ProcessInputToken(Token.token, Token.accuracy);
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)

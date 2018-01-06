@@ -220,6 +220,7 @@ bool UFighterStateComponent::IsMidMove() const
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
 {
+
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
 	CurrentWindowAccuracy = Accuracy;
@@ -556,6 +557,10 @@ void UFighterStateComponent::PerformHitboxScan()
 		{
 			WorldHitbox.Origin.X *= MyFighter->GetFacing();
 			WorldHitbox.End.X *= MyFighter->GetFacing();
+			if (MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
+			{
+				MyFighter->InputOnBeatLogic();
+			}
 		}
 
 		FHitResult HitResult = MyFighterWorld->TraceHitbox(
@@ -572,6 +577,8 @@ void UFighterStateComponent::PerformHitboxScan()
 				ActorsToIgnore.Add(HitResult.Actor);
 				if (MyFighter != nullptr)
 				{
+				//	if (GEngine)
+				//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("HIT YOU WITH!!!! %f"), CurrentWindowAccuracy));
 					EHitResponse Response = MyFighterWorld->HitActor(
 						HitResult.Actor,
 						MyFighterWorld->GetDamageType(
@@ -590,6 +597,11 @@ void UFighterStateComponent::PerformHitboxScan()
 					switch (Response)
 					{
 					case EHitResponse::HE_Hit:
+
+						if (MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
+						{
+							MyFighter->HitOnBeatLogic();
+						}
 						bHasMoveWindowHit = true;
 						RelativeTransform = CurrentWindow.DefenderHit.SFX.RelativeTransform * ImpactTransform;
 						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)

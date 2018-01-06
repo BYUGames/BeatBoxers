@@ -43,6 +43,7 @@ protected:
 	float JumpDelay;
 
 	FTimerHandle TimerHandle_Jump;
+	FTimerHandle TimerHandle_Glow;
 
 	void OnJumpTimer();
 
@@ -116,6 +117,10 @@ public:
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
+	UFUNCTION(BlueprintImplementableEvent)
+	void HitOnBeatLogic() override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void InputOnBeatLogic() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
@@ -144,4 +149,5 @@ public:
 	virtual float GetHorizontalMovement() const;
 
 	void SetOpponent(TWeakObjectPtr<AActor> NewOpponent);
+
 };

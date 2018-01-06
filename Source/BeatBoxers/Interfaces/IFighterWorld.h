@@ -49,4 +49,6 @@ public:
 	virtual void AdjustLocation(AActor* ActorToAdjust) = 0;
 
 	virtual UObject* GetMusicBox() = 0;
+
+	virtual bool IsOnBeat(float Accuracy) = 0;
 };

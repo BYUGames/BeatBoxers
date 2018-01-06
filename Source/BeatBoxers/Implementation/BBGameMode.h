@@ -21,8 +21,6 @@ UCLASS()
 class BEATBOXERS_API ABBGameMode : public AGameMode, public IFighterWorld
 {
 	GENERATED_UCLASS_BODY()
-
-
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector InitialCameraLocation;
@@ -39,6 +37,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSoloEndEvent SoloEndEvent;
 
+	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
+	float AccuracyRestraint = 0.9f;
+
 	/** This actor must implement the IMusicBox interface. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> DefaultMusicBoxClass;
@@ -54,6 +55,7 @@ public:
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
+	virtual bool IsOnBeat(float Accuracy) override;
 	/** End IFighterWorld implementation */
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;

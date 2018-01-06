@@ -29,9 +29,9 @@ enum class EFilter : uint8
 UENUM(BlueprintType)
 enum class EHitResponse : uint8
 {
-	HE_Hit		UMETA(DisplayName = "Hit"),
-	HE_Blocked	UMETA(DisplayName = "Blocked"),
-	HE_Missed	UMETA(DisplayName = "Missed")
+	HE_Hit			UMETA(DisplayName = "Hit"),
+	HE_Blocked		UMETA(DisplayName = "Blocked"),
+	HE_Missed		UMETA(DisplayName = "Missed")
 };
 
 UENUM(BlueprintType)

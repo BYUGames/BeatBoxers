@@ -531,3 +531,4 @@ void AFighterCharacter::SetGravityScale(float scale)
 		}
 	}
 }
+

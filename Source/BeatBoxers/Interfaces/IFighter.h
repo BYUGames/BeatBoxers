@@ -69,4 +69,7 @@ public:
 
 	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
 
+	virtual void HitOnBeatLogic() = 0;
+
+	virtual void InputOnBeatLogic() = 0;
 };

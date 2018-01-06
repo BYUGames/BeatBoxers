@@ -113,8 +113,14 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		SourceController.Get()->PlayerState->Score += ScaledImpact.Damage;
 		AddSpecial(SourceController.Get()->PlayerState, ScaledImpact.SpecialGenerated);
 	}
-
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
+}
+
+bool ABBGameMode::IsOnBeat(float Accuracy)
+{
+	if (Accuracy >= AccuracyRestraint)
+		return true;
+	return false;
 }
 
 void ABBGameMode::AddSpecial(APlayerState *PlayerState, float Amount)

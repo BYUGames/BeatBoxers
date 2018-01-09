@@ -426,6 +426,7 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 
 void UFighterStateComponent::StartCurrentWindowDuration()
 {
+	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.AttackerMovement)
 	{
 		if (MyFighterWorld != nullptr)
@@ -494,7 +495,6 @@ void UFighterStateComponent::AdjustGravity(float Amount)
 void UFighterStateComponent::StartCurrentWindowWinddown()
 {
 	bHasMoveWindowHit = false;
-	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.Winddown <= 0)
 	{
 		// Window has no winddown.

@@ -117,10 +117,19 @@ public:
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
-	UFUNCTION(BlueprintImplementableEvent)
-	void HitOnBeatLogic() override;
-	UFUNCTION(BlueprintImplementableEvent)
-	void InputOnBeatLogic() override;
+
+	/** HitOnBeatLogic Description */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
+	void K2_HitOnBeatLogic();
+
+	void HitOnBeatLogic() override { K2_HitOnBeatLogic(); }
+
+	/** InputOnBeatLogic Description */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
+	void K2_InputOnBeatLogic();
+	
+	void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
+
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))

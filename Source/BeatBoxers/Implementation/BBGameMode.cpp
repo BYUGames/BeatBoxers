@@ -118,8 +118,21 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {
-	if (Accuracy >= AccuracyRestraint || 1.f - Accuracy >= AccuracyRestraint)
+	float AccInTime = -1;
+	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
+	if (MusicBox != nullptr)
+	{
+		AccInTime = Accuracy * MusicBox->GetTimeBetweenBeats();
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("ABBGameMode::IsOnBeat MusicBox nullptr."));
+	}
+	
+	if (AccInTime <= AccuracyWindowSize/2 || AccInTime >= 1 - AccuracyWindowSize/2)
+	{
 		return true;
+	}
 	return false;
 }
 

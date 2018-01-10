@@ -80,6 +80,22 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	FBufferInputToken bToken;
 	bToken.token = NewToken;
 	bToken.accuracy = calcAccuracy();
+	switch (NewToken)
+	{
+	case EInputToken::IE_DashLeft:
+	case EInputToken::IE_DashRight:
+		break;
+	default:
+		if (MyFighterWorld->IsOnBeat(bToken.accuracy))
+		{
+			MyFighter->InputOnBeatLogic();
+		}
+		else
+		{
+			MyFighter->MissBeat();
+		}
+		break;
+	}
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{

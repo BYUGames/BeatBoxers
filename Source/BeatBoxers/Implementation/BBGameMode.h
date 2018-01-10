@@ -37,6 +37,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSoloEndEvent SoloEndEvent;
 
+	UPROPERTY(BlueprintAssignable)
+	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
+
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
 	float AccuracyRestraint = 0.9f;
 
@@ -53,9 +56,12 @@ public:
 	virtual void EndSolo() override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
+	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
 	virtual bool IsOnBeat(float Accuracy) override;
+	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
+	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	/** End IFighterWorld implementation */
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;

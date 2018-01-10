@@ -33,4 +33,10 @@ public:
 
 	/** Uses an amount of the player's special. Returns false and does not modify special if there is not that much available, otherwise subtracts special amount and returns true. */
 	virtual bool UseSpecial(float Amount) = 0;
+
+	/** Returns the number of moves hit on the beat in the current combo. */
+	virtual int GetBeatCombo() const = 0;
+
+	/** Sets and returns the number of moves hit on the beat in the current combo. */
+	virtual int SetBeatCombo(int Combo) = 0;
 };

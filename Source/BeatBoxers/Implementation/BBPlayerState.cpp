@@ -32,3 +32,14 @@ bool ABBPlayerState::UseSpecial(float Amount)
 	}
 	return false;
 }
+
+int ABBPlayerState::GetBeatCombo() const
+{
+	return BeatCombo;
+}
+
+int ABBPlayerState::SetBeatCombo(int Combo)
+{
+	BeatCombo = Combo;
+	return BeatCombo;
+}

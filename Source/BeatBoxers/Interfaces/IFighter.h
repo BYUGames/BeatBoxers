@@ -65,11 +65,17 @@ public:
 
 	virtual FLandEvent& GetOnLandEvent() = 0;
 
+	/** Used to expose event to blueprints, fires when the moveset component recieves input from the input parser. */
 	virtual void OnInputReceived() = 0;
 
 	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
 
+	/** Called when an on-beat attack hits the opponent. */
 	virtual void HitOnBeatLogic() = 0;
 
+	/** Called when an attack input is on the beat. */
 	virtual void InputOnBeatLogic() = 0;
+
+	/** Called when an attack is off beat or misses the opponent. */
+	virtual void MissBeat() = 0;
 };

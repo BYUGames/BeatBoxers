@@ -348,16 +348,6 @@ void ABBGameMode::EndSolo()
 	}
 }
 
-FSoloStartEvent& ABBGameMode::GetOnSoloStartEvent()
-{
-	return SoloStartEvent;
-}
-
-FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
-{
-	return SoloEndEvent;
-}
-
 void ABBGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	AGameMode::InitGame(MapName, Options, ErrorMessage);
@@ -516,4 +506,61 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& I
 UObject* ABBGameMode::GetMusicBox()
 {
 		return GetGameState<ABBGameState>()->GetUMusicBox();
+}
+
+void ABBGameMode::PlayerHitOnBeat(APlayerController* PlayerController)
+{
+	if (PlayerController->PlayerState != nullptr)
+	{
+		ABBPlayerState* BBPlayerState = Cast<ABBPlayerState>(PlayerController->PlayerState);
+		if (BBPlayerState != nullptr)
+		{
+			int OldCombo = BBPlayerState->GetBeatCombo();
+			BBPlayerState->SetBeatCombo(OldCombo + 1);
+			if (PlayerBeatComboChangedEvent.IsBound())
+			{
+				PlayerBeatComboChangedEvent.Broadcast(PlayerController, OldCombo + 1);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode::PlayerHitOnBeat was given a nullptr for a player controller."));
+	}
+}
+
+void ABBGameMode::PlayerMissBeat(APlayerController* PlayerController)
+{
+	if (PlayerController->PlayerState != nullptr)
+	{
+		ABBPlayerState* BBPlayerState = Cast<ABBPlayerState>(PlayerController->PlayerState);
+		if (BBPlayerState != nullptr)
+		{
+			int OldCombo = BBPlayerState->GetBeatCombo();
+			BBPlayerState->SetBeatCombo(0);
+			if (PlayerBeatComboChangedEvent.IsBound())
+			{
+				PlayerBeatComboChangedEvent.Broadcast(PlayerController, 0);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode::PlayerMissBeat was given a nullptr for a player controller."));
+	}
+}
+
+FSoloStartEvent& ABBGameMode::GetOnSoloStartEvent()
+{
+	return SoloStartEvent;
+}
+
+FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
+{
+	return SoloEndEvent;
+}
+
+FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
+{
+	return PlayerBeatComboChangedEvent;
 }

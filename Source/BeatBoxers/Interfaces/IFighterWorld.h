@@ -7,6 +7,7 @@
 #include "IFighterWorld.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoloStartEvent, AActor*, ActorSoloing);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerBeatComboChangedEvent, APlayerController*, PlayerController, int, BeatCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSoloEndEvent);
 
 // This class does not need to be modified.
@@ -45,10 +46,19 @@ public:
 
 	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;
 
+	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() = 0;
+
 	/** Hook for grid positioning to be enforced. Called when movement ends. */
 	virtual void AdjustLocation(AActor* ActorToAdjust) = 0;
 
 	virtual UObject* GetMusicBox() = 0;
 
+	/** Determines if the given accuracy is considered on the beat. */
 	virtual bool IsOnBeat(float Accuracy) = 0;
+
+	/** Should be called when the given player hit the opponent on the beat. */
+	virtual void PlayerHitOnBeat(APlayerController* Player) = 0;
+
+	/** Should be called when the given player hits off beat or misses the opponent. */
+	virtual void PlayerMissBeat(APlayerController* Player) = 0;
 };

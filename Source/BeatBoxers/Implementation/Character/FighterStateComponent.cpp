@@ -517,6 +517,10 @@ void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 	if (bHasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Finished)
 	{
 		PlayerAttackerEffects(CurrentWindow.MissSFX);
+		if (MyFighter != nullptr)
+		{
+			MyFighter->MissBeat();
+		}
 	}
 	//Uses CurrentWindowEnd so landing interrutps can still play winddown.
 	EndWindow(CurrentWindowEnd);
@@ -557,10 +561,6 @@ void UFighterStateComponent::PerformHitboxScan()
 		{
 			WorldHitbox.Origin.X *= MyFighter->GetFacing();
 			WorldHitbox.End.X *= MyFighter->GetFacing();
-			if (MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
-			{
-				MyFighter->InputOnBeatLogic();
-			}
 		}
 
 		FHitResult HitResult = MyFighterWorld->TraceHitbox(
@@ -598,9 +598,12 @@ void UFighterStateComponent::PerformHitboxScan()
 					{
 					case EHitResponse::HE_Hit:
 
-						if (MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
+						if (MyFighterWorld != nullptr)
 						{
-							MyFighter->HitOnBeatLogic();
+							if (MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
+							{
+								MyFighter->HitOnBeatLogic();
+							}
 						}
 						bHasMoveWindowHit = true;
 						RelativeTransform = CurrentWindow.DefenderHit.SFX.RelativeTransform * ImpactTransform;

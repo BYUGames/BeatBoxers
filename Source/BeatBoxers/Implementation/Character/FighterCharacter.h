@@ -117,21 +117,19 @@ public:
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
+	virtual void HitOnBeatLogic() override;
+	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
+	virtual void MissBeat() override;
+
+	/** End IFighter implementation */
 
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
-
-	void HitOnBeatLogic() override { K2_HitOnBeatLogic(); }
-
 	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();
-	
-	void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
-
-	/** End IFighter implementation */
-
+	/** TODO: add desciption for this event */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
 	void K2_OnInputReceived();
 

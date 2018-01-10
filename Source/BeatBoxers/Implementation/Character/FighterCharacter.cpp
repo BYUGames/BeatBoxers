@@ -532,3 +532,19 @@ void AFighterCharacter::SetGravityScale(float scale)
 	}
 }
 
+void AFighterCharacter::HitOnBeatLogic()
+{
+	K2_HitOnBeatLogic();
+	if (GetFighterWorld() != nullptr)
+	{
+		GetFighterWorld()->PlayerHitOnBeat(Cast<APlayerController>(Controller));
+	}
+}
+
+void AFighterCharacter::MissBeat()
+{
+	if (GetFighterWorld() != nullptr)
+	{
+		GetFighterWorld()->PlayerMissBeat(Cast<APlayerController>(Controller));
+	}
+}

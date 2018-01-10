@@ -17,6 +17,7 @@ class BEATBOXERS_API ABBPlayerState : public APlayerState, public IFighterPlayer
 	
 protected:
 	float Special;
+	int BeatCombo;
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -38,4 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool UseSpecial(float Amount) override;
 	// End IBBPlayerStateInterface
+
+	virtual int GetBeatCombo() const override;
+
+	virtual int SetBeatCombo(int Combo) override;
 };

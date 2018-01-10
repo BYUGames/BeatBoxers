@@ -118,13 +118,13 @@ public:
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
 
-	/** HitOnBeatLogic Description */
+	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
 
 	void HitOnBeatLogic() override { K2_HitOnBeatLogic(); }
 
-	/** InputOnBeatLogic Description */
+	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();
 	

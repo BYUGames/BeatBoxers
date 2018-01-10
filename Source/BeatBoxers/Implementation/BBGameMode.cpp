@@ -118,7 +118,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {
-	if (Accuracy >= AccuracyRestraint)
+	if (Accuracy >= AccuracyRestraint || 1.f - Accuracy >= AccuracyRestraint)
 		return true;
 	return false;
 }

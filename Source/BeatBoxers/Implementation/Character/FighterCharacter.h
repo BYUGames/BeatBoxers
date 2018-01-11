@@ -120,7 +120,7 @@ public:
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;
-
+	virtual bool IsJumping() override;
 	/** End IFighter implementation */
 
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/

@@ -58,7 +58,7 @@ public:
 	/** Interrupts any ongoing move windows and starts a stun. */
 	virtual void StartStun(float Duration, bool WasBlocked) = 0;
 
-	/** Interface to Fighter function, blocks when it sees fit. */
+	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
 	virtual void SetMoveDirection(float Direction) = 0;
 	
 	/** Interface to set direction of Vertical controller input*/
@@ -67,7 +67,7 @@ public:
 	/** Interface to set direction of Horizontal controller input*/
 	virtual void SetHorizontalDirection(float Direction) = 0;
 
-	/** Interface to Fighter function, blocks when it sees fit. */
+	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
 	virtual void SetWantsToCrouch(bool WantsToCrouch) = 0;
 
 	/** Interface to Fighter function, enable charging when it sees fit. */
@@ -76,7 +76,7 @@ public:
 	/** Applied movement to character. A new call will override this. */
 	virtual void ApplyMovement(FMovement Movement) = 0;
 
-	/** Interface to Fighter function, blocks when it sees fit. */
+	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
 	virtual void Jump() = 0;
 
 	/** Receives pushed notifications from Fighter when landing on the ground. */

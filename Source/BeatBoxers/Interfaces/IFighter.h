@@ -78,4 +78,7 @@ public:
 
 	/** Called when an attack is off beat or misses the opponent. */
 	virtual void MissBeat() = 0;
+
+	/** Returns true if IFighter is in jumping process */
+	virtual bool IsJumping() = 0;
 };

@@ -317,10 +317,14 @@ void UFighterStateComponent::SetHorizontalDirection(float Direction)
 void UFighterStateComponent::SetWantsToCrouch(bool WantsToCrouch)
 {
 	if (IsInputBlocked() || MyFighter == nullptr) return;
-	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA)
+	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA || MyFighter->IsJumping())
 	{
 		MyFighter->SetWantsToCrouch(false);
 		return;
+	}
+	if (WantsToCrouch && MyFighter->GetStance() != EStance::SE_Crouching)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("In FighterStateComp SetWantsToCrouch"));
 	}
 	MyFighter->SetWantsToCrouch(WantsToCrouch);
 }
@@ -370,8 +374,8 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 void UFighterStateComponent::Jump()
 {
-	if (IsInputBlocked() || MyFighter == nullptr) return;
-
+	if (IsInputBlocked() || MyFighter == nullptr || MyFighter->IsJumping()) return;
+	SetWantsToCrouch(false);
 	MyFighter->Jump();
 }
 

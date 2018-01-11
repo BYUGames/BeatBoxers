@@ -309,6 +309,10 @@ void AFighterCharacter::SetWantsToCrouch(bool WantsToCrouch)
 {
 	if (WantsToCrouch)
 	{
+		if (!GetCharacterMovement()->IsCrouching())
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("In FighterCharacter SetWantsToCrouch!"));
+		}
 		Crouch();
 	}
 	else
@@ -324,21 +328,27 @@ void AFighterCharacter::SetMoveDirection(float Direction)
 
 void AFighterCharacter::Jump()
 {
-	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
-		&& GetCharacterMovement()->IsMovingOnGround()
-		&& !IsJumpProvidingForce())
+	if (!IsJumping())
 	{
+
 		if (StartJumpEvent.IsBound())
 		{
 			StartJumpEvent.Broadcast();
 		}
-		GetWorldTimerManager().SetTimer(
-			TimerHandle_Jump,
-			this,
-			&AFighterCharacter::OnJumpTimer,
-			JumpDelay,
-			false
-		);
+		if (JumpDelay <= 0.f)
+		{
+			OnJumpTimer();
+		}
+		else
+		{
+			GetWorldTimerManager().SetTimer(
+				TimerHandle_Jump,
+				this,
+				&AFighterCharacter::OnJumpTimer,
+				JumpDelay,
+				false
+			);
+		}
 	}
 }
 
@@ -547,4 +557,13 @@ void AFighterCharacter::MissBeat()
 	{
 		GetFighterWorld()->PlayerMissBeat(Cast<APlayerController>(Controller));
 	}
+}
+
+bool AFighterCharacter::IsJumping()
+{
+	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
+		&& GetCharacterMovement()->IsMovingOnGround()
+		&& !IsJumpProvidingForce())
+		return false;
+	return true;
 }

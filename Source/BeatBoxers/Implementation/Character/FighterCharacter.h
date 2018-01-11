@@ -123,6 +123,9 @@ public:
 	virtual bool IsJumping() override;
 	/** End IFighter implementation */
 
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Is Jumping"))
+	bool K2_IsJumping() { return IsJumping(); }
+
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();

@@ -254,7 +254,11 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 	for (int i = 0; i < CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
 	{
 		FDataTableRowHandle PossibleMove = CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
-		if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
+		if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
+		{
+			UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *CurrentState.RowName.ToString());
+		}
+		else if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
 		{
 			if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 			{

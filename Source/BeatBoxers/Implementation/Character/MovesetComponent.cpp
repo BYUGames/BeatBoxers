@@ -77,7 +77,7 @@ void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 		return;
 	}
 	bool RequiresLastWindowHit = 
-		(CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num() >= CurrentWindowInState)
+		(CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num() > CurrentWindowInState)
 		? CurrentState.GetRow<FMoveData>(cs)->MoveWindows[CurrentWindowInState].RequiresLastWindowHit
 		: false;
 	FMoveWindow *NextWindow =

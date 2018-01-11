@@ -63,23 +63,29 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 	else
 	{
 		SetState(NewState);
-		StartNextWindow();
+		//Requiring the last move window to have hit on the first window is nonsensical.
+		//Its also currently the only use of this parameter, so just pass true.
+		StartNextWindow(true);
 	}
 }
 
-void UMovesetComponent::StartNextWindow()
+void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 {
 	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent CurrentStateClass invalid when trying to start next window."), *GetNameSafe(GetOwner()));
 		return;
 	}
+	bool RequiresLastWindowHit = 
+		(CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num() >= CurrentWindowInState)
+		? CurrentState.GetRow<FMoveData>(cs)->MoveWindows[CurrentWindowInState].RequiresLastWindowHit
+		: false;
 	FMoveWindow *NextWindow =
 		(CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num() > CurrentWindowInState) ?
 		&CurrentState.GetRow<FMoveData>(cs)->MoveWindows[CurrentWindowInState++] :
 		nullptr;
 
-	if (NextWindow == nullptr)
+	if (NextWindow == nullptr || (!LastWindowHit && RequiresLastWindowHit))
 	{
 		// We've reached the end of this window list for this state.
 		if (CurrentState.GetRow<FMoveData>(cs)->MaxPostWait == 0)
@@ -252,17 +258,20 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 		{
 			if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 			{
-				if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
+				if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(Accuracy))
 				{
-					// Found a state that we can enter.
-					UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
-						*GetNameSafe(GetOwner()),
-						*CurrentState.RowName.ToString(),
-						*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
-						*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
-					);
-					GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
-					return;
+					if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
+					{
+						// Found a state that we can enter.
+						UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
+							*GetNameSafe(GetOwner()),
+							*CurrentState.RowName.ToString(),
+							*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
+							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
+						);
+						GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
+						return;
+					}
 				}
 			}
 		}
@@ -288,8 +297,11 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 	switch (WindowEnd)
 	{
 	case EWindowEnd::WE_LandSkip:
-	case EWindowEnd::WE_Finished:
-		StartNextWindow();
+	case EWindowEnd::WE_Missed:
+		StartNextWindow(false);
+		break;
+	case EWindowEnd::WE_Hit:
+		StartNextWindow(true);
 		break;
 	case EWindowEnd::WE_Stunned:
 	case EWindowEnd::WE_LandInt:

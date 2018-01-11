@@ -63,7 +63,8 @@ struct FStanceFilter
 UENUM(BlueprintType)
 enum class EWindowEnd : uint8
 {
-	WE_Finished		UMETA(DisplayName = "Finished Normally"),
+	WE_Hit		UMETA(DisplayName = "Finished and hit"),
+	WE_Missed		UMETA(DisplayName = "Finished and missed/blocked/no hitbox"),
 	WE_Stunned		UMETA(DisplayName = "Interrupted by Stun"),
 	WE_LandInt		UMETA(DisplayName = "Interrupted by Landing"),
 	WE_LandSkip		UMETA(DisplayName = "Ended Early by Landing")
@@ -88,9 +89,8 @@ enum class EInputToken : uint8
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashLeft		UMETA(DisplayName = "DashLeft"),
 	IE_DashRight	UMETA(DisplayName = "DashRight"),
-	IE_UpperLight	UMETA(DisplayName = "UpperLight"),
 	IE_ForwardLight	UMETA(DisplayName = "ForwardLight"),
-	IE_CrouchLight	UMETA(DisplayName = "CrouchLight")
+	IE_BackLight	UMETA(DisplayName = "BackLight"),
 };
 
 UENUM(BlueprintType)
@@ -130,13 +130,10 @@ struct FInputTokenBools
 	bool DashRight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool UpperLight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ForwardLight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CrouchLight;
+	bool BackLight;
 
 	bool FilterInputToken(EInputToken Token) const;
 };
@@ -177,6 +174,10 @@ struct FMovement
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 UseDeltaAsSpeed : 1;
+
+	/** Ignores Duration, assumes UseDeltaAsSpeed, applies a physics-based launch. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 UsePhysicsLaunch : 1;
 
 	bool IsValid() const;
 
@@ -223,6 +224,10 @@ struct FImpactData
 {
 	GENERATED_USTRUCT_BODY()
 
+	/** Whether this impact ends the current move window, skipping whatever duration or winddown remains. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 EndsCurrentWindow : 1;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMovement ImpartedMovement;
 
@@ -243,6 +248,10 @@ USTRUCT(BlueprintType)
 struct FMoveWindow
 {
 	GENERATED_USTRUCT_BODY()
+
+	/** Whether this window requires the last window to have hit. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 RequiresLastWindowHit : 1;
 
 	/** For convenience, how long this window lasts before enabling its hitbox and starting its duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -268,15 +277,15 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EFighterDamageType DamageTypeOverride;
 
-	/** Movement applied to the attacker when entering this window. */
+	/** Movement applied to the attacker as it enters windup. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMovement AttackerMovement;
 
-	/** Whether this window has an active hitbox. */
+	/** Whether this window has an active hitbox during it's duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsHitboxActive : 1;
 
-	/** Hitbox used during this window. */
+	/** Hitbox used during this window's duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMoveHitbox Hitbox;
 
@@ -284,7 +293,7 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 IsGravityScaled : 1;
 
-	/** Multipl of gravity during the windows duration. */
+	/** Multiplier of gravity for the attacker during the windows duration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float GravityScale;
 
@@ -296,15 +305,15 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefenderBlock;
 
-	/** Effects played when this window misses. Transform relative to attacker, attaches to attacker. */
+	/** Effects played when this duration ends without connecting. Transform relative to attacker, attaches to attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects MissSFX;
 
-	/** Effects played when entering this window. Transform relative to attacker, attaches to attacker. */
+	/** Effects played when entering this window's duration. Transform relative to attacker, attaches to attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
 
-	/** Whether landing on the ground during this window immediately ends it, still plays winddown. */
+	/** Whether landing on the ground during this window immediately ends it (combos off it can continue), still plays winddown. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingEndsWindow : 1;
 
@@ -312,7 +321,7 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
 
-	/** The animation montage to play in conjuction with this window. */
+	/** The animation montage to play in conjuction with this window, starts when entering windup. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UAnimMontage *AnimMontage;
 
@@ -340,6 +349,10 @@ public:
 	/** Which inputs will trigger this move, assuming stance and special conditions are met. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FInputTokenBools AllowedInputs;
+
+	/** Whether the move requires being on beat. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint16 bRequiresOnBeat: 1;
 
 	/** This is what allows or prevents this move in certain stances, like standing or crouching. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

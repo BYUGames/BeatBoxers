@@ -64,7 +64,7 @@ protected:
 	void GotoState(FDataTableRowHandle NewState);
 
 	/** Starts the next window in the current move. */
-	void StartNextWindow();
+	void StartNextWindow(bool LastWindowHit);
 
 	void BindMusicBox(IMusicBox *MusicBox);
 	void UnbindMusicBox(IMusicBox *MusicBox);

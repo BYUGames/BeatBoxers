@@ -87,12 +87,8 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 		break;
 	case EInputToken::IE_ForwardLight:
 		if (ForwardLight) return true;
-		break;
-	case EInputToken::IE_UpperLight:
-		if (UpperLight) return true;
-		break;
-	case EInputToken::IE_CrouchLight:
-		if (CrouchLight) return true;
+	case EInputToken::IE_BackLight:
+		if (BackLight) return true;
 		break;
 	default:
 		return false;

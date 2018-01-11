@@ -220,7 +220,6 @@ bool UFighterStateComponent::IsMidMove() const
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
 {
-
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	CurrentWindow = Window;
 	CurrentWindowAccuracy = Accuracy;
@@ -235,7 +234,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 			CurrentWindow.DefenderBlock.SFX = DefaultBlockEffects;
 		}
 	}
-	CurrentWindowEnd = EWindowEnd::WE_Finished;
+	CurrentWindowEnd = EWindowEnd::WE_Missed;
 
 	if (IsStunned())
 	{
@@ -243,6 +242,13 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 	}
 	else
 	{
+		if (CurrentWindow.AttackerMovement.IsValid())
+		{
+			if (MyFighterWorld != nullptr)
+			{
+				MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
+			}
+		}
 		if (Window.AnimMontage != nullptr && MyFighter != nullptr)
 		{
 			ACharacter *Character = Cast<ACharacter>(MyFighter);
@@ -427,13 +433,6 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 void UFighterStateComponent::StartCurrentWindowDuration()
 {
 	PlayerAttackerEffects(CurrentWindow.SFX);
-	if (CurrentWindow.AttackerMovement)
-	{
-		if (MyFighterWorld != nullptr)
-		{
-			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
-		}
-	}
 	if (CurrentWindow.Duration <= 0)
 	{
 		// Window has no duration.
@@ -514,7 +513,7 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 
 void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 {
-	if (bHasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Finished)
+	if (bHasMoveWindowHit == false && CurrentWindowEnd == EWindowEnd::WE_Missed)
 	{
 		PlayerAttackerEffects(CurrentWindow.MissSFX);
 		if (MyFighter != nullptr)
@@ -535,7 +534,7 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
 		}
-		if (WindowEnd != EWindowEnd::WE_Finished && CurrentWindow.IsGravityScaled)
+		if (CurrentWindow.IsGravityScaled)
 		{
 			AdjustGravity(1.f);
 		}
@@ -597,7 +596,7 @@ void UFighterStateComponent::PerformHitboxScan()
 					switch (Response)
 					{
 					case EHitResponse::HE_Hit:
-
+						CurrentWindowEnd = EWindowEnd::WE_Hit;
 						if (MyFighterWorld != nullptr)
 						{
 							if (MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
@@ -624,6 +623,10 @@ void UFighterStateComponent::PerformHitboxScan()
 								RelativeTransform.GetRotation().Rotator()
 							);
 						}
+						if (CurrentWindow.DefenderHit.EndsCurrentWindow)
+						{
+							EndWindow(EWindowEnd::WE_Hit);
+						}
 						if (CurrentWindow.BeginsSolo && MyFighterWorld != nullptr)
 						{
 							MyFighterWorld->StartSolo(TWeakObjectPtr<AActor>(GetOwner()));
@@ -648,6 +651,10 @@ void UFighterStateComponent::PerformHitboxScan()
 								RelativeTransform.GetLocation(),
 								RelativeTransform.GetRotation().Rotator()
 							);
+						}
+						if (CurrentWindow.DefenderBlock.EndsCurrentWindow)
+						{
+							EndWindow(EWindowEnd::WE_Missed);
 						}
 						break;
 					default:

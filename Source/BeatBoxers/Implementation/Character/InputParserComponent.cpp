@@ -302,17 +302,15 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	{
 		if (MyFighterState != nullptr)
 		{
-			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() > 0.0f || MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() < 0.0f)
+			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() > 0.0f
+				|| MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() < 0.0f)
 			{
 				CurrentStateClass.GetDefaultObject()->InputActionForwardLight(this);
 			}
-			else if (MyFighterState->GetCurrentVerticalDirection() > 0.0f)
+			else if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() < 0.0f
+				|| MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() > 0.0f)
 			{
-				CurrentStateClass.GetDefaultObject()->InputActionUpperLight(this);
-			}
-			else if (MyFighterState->GetCurrentVerticalDirection() < 0.0f)
-			{
-				CurrentStateClass.GetDefaultObject()->InputActionCrouchLight(this);
+				CurrentStateClass.GetDefaultObject()->InputActionBackLight(this);
 			}
 			else
 			{
@@ -376,18 +374,9 @@ void UInputParserState::InputActionUp(UInputParserComponent *Parser) { UE_LOG(Lo
 void UInputParserState::InputActionLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionLight()")); }
 void UInputParserState::InputActionMedium(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionMedium()")); }
 void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionHeavy()")); }
-void UInputParserState::InputActionUpperLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionUpperLight()")); }
 void UInputParserState::InputActionForwardLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionForwardLight()")); }
-void UInputParserState::InputActionCrouchLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionCrouchLight()")); }
+void UInputParserState::InputActionBackLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBackLight()")); }
 
-void UInputParserDefaultState::InputActionUpperLight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionUpperLight()"));
-	if (Parser != nullptr)
-	{
-		Parser->PushInputToken(EInputToken::IE_UpperLight);
-	}
-}
 void UInputParserDefaultState::InputActionForwardLight(UInputParserComponent *Parser)
 {
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionForwardLight()"));
@@ -396,12 +385,13 @@ void UInputParserDefaultState::InputActionForwardLight(UInputParserComponent *Pa
 		Parser->PushInputToken(EInputToken::IE_ForwardLight);
 	}
 }
-void UInputParserDefaultState::InputActionCrouchLight(UInputParserComponent *Parser)
+
+void UInputParserDefaultState::InputActionBackLight(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionCrouchLight()"));
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionBackLight()"));
 	if (Parser != nullptr)
 	{
-		Parser->PushInputToken(EInputToken::IE_CrouchLight);
+		Parser->PushInputToken(EInputToken::IE_BackLight);
 	}
 }
 

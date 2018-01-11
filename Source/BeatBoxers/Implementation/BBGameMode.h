@@ -41,7 +41,7 @@ public:
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
 
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
-	float AccuracyRestraint = 0.9f;
+	float AccuracyWindowSize = 0.1f;
 
 	/** This actor must implement the IMusicBox interface. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

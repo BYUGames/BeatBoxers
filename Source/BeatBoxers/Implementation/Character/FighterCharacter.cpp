@@ -459,6 +459,15 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 {
 	ACharacter::Landed(Result);
 
+	//enable collision with other pawns.
+	if (GetCapsuleComponent() != nullptr)
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		TSet<AActor*> Overlaps;
+		GetCapsuleComponent()->GetOverlappingActors(Overlaps, ACharacter::GetClass());
+		//TODO: some sort of pushing away if there are any overlaps.
+	}
+
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->OnLand();

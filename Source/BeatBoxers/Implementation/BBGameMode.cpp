@@ -23,6 +23,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
+	HitscanDistanceConstant = 100.f;
 	InitialCameraLocation = FVector(0, 800, 180);
 	InitialCameraLookAtLocation = FVector(0, 0, 180);
 	bDrawDebugTraces = true;
@@ -97,7 +98,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
-	if (ApplyMovementToActor(Actor, Source, SourceController, ScaledImpact.ImpartedMovement) == 1)
+	if (ApplyMovementToActor(Actor, Source, SourceController, ScaledImpact.ImpartedMovement) == 1 && !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
 		//The target is already pushed up against a wall, push back the source instead.
@@ -304,7 +305,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 {
 	if (!Movement.IsValid())
 	{
-		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply invalid movement to actor."));
+		//Invalid or no movement.
 		return -1;
 	}
 
@@ -331,15 +332,31 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	GetWorld()->LineTraceSingleByObjectType(
 		Result,
 		Target.Get()->GetActorLocation(),
-		Target.Get()->GetActorLocation() + FVector(NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y).GetSafeNormal() * 100.f,
+		Target.Get()->GetActorLocation() + FVector{1.f, 0.f, 0.f}.GetSafeNormal() * FMath::Sign(NonrelativeMovement.Delta.X) * HitscanDistanceConstant,
 		FCollisionObjectQueryParams::AllStaticObjects,
 		FCollisionQueryParams::DefaultQueryParam
 	);
 
-	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
-	if (TargetFighter != nullptr)
+	if (!Movement.UsePhysicsLaunch)
 	{
-		TargetFighter->ApplyMovement(NonrelativeMovement);
+		IFighter *TargetFighter = Cast<IFighter>(Target.Get());
+		if (TargetFighter != nullptr)
+		{
+			TargetFighter->ApplyMovement(NonrelativeMovement);
+		}
+	}
+	else
+	{
+		ACharacter* Character = Cast<ACharacter>(Target.Get());
+		if (Character != nullptr)
+		{
+			FVector Launch{NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y};
+			Character->LaunchCharacter(Launch, true, true);
+			if (Character->GetCapsuleComponent() != nullptr)
+			{
+				Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+			}
+		}
 	}
 
 	return Result.bBlockingHit;

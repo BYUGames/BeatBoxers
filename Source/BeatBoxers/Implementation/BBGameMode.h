@@ -22,6 +22,10 @@ class BEATBOXERS_API ABBGameMode : public AGameMode, public IFighterWorld
 {
 	GENERATED_UCLASS_BODY()
 public:
+	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HitscanDistanceConstant;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector InitialCameraLocation;
 

@@ -46,8 +46,14 @@ public:
 	/** A check to see if the character is currently attempting to charge. */
 	virtual bool IsCharging() const = 0;
 
-	/** A check to see if character is currently stunned. */
+	/** A check to see if the character is currently stunned or in knockdown. */
 	virtual bool IsStunned() const = 0;
+
+	/** A check to see if the character is currently in a knockdown state. */
+	virtual bool IsKnockedDown() const = 0;
+
+	/** A check to see if the character is in an invulnerable state. */
+	virtual bool IsInvulnerable() const = 0;
 
 	/** A check to see if character is currently in the middle of a move. */
 	virtual bool IsMidMove() const = 0;
@@ -90,6 +96,12 @@ public:
 
 	/** Uses an amount of the fighter's special. Returns false and does not modify special if there is not that much available, otherwise subtracts special amount and returns true, acts as an interface to the playerstate. */
 	virtual bool UseSpecial(float Amount) = 0;
+
+	/** Sets the fighterstate knockdown. */
+	virtual void Knockdown() = 0;
+
+	/** Starts the recovery window to leave knockdown. */
+	virtual void KnockdownRecovery(float Duration) = 0;
 
 	/** An interface to the Fighter's GetStance function. */
 	virtual EStance GetStance() const = 0;

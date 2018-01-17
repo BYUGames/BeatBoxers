@@ -38,6 +38,7 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 
 	InputBufferLength = 0.5f;
 	ComplexInputWindow = 0.5f;
+	RecoveryDuration = 0.6f;
 }
 
 // Called when the game starts or when spawned
@@ -277,6 +278,15 @@ bool AFighterCharacter::IsBlocking() const
 	return false;
 }
 
+bool AFighterCharacter::IsInvulnerable() const
+{
+	if (GetFighterState() != nullptr)
+	{
+		return GetFighterState()->IsInvulnerable();
+	}
+	return false;
+}
+
 EStance AFighterCharacter::GetStance() const
 {
 	if (GetCharacterMovement()->IsMovingOnGround())
@@ -471,6 +481,10 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->OnLand();
+		if (MyFighterState->IsKnockedDown())
+		{
+			MyFighterState->KnockdownRecovery(RecoveryDuration);
+		}
 	}
 	if (LandEvent.IsBound())
 	{
@@ -575,4 +589,21 @@ bool AFighterCharacter::IsJumping()
 		&& !IsJumpProvidingForce())
 		return false;
 	return true;
+}
+
+void AFighterCharacter::Knockdown()
+{
+	if (GetFighterState() != nullptr)
+	{
+		GetFighterState()->Knockdown();
+	}
+}
+
+bool AFighterCharacter::K2_IsKnockedDown()
+{
+	if (GetFighterState() == nullptr)
+	{
+		return false;
+	}
+	return GetFighterState()->IsKnockedDown();
 }

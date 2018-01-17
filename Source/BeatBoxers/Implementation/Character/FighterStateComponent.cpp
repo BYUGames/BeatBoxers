@@ -210,7 +210,17 @@ bool UFighterStateComponent::IsCharging() const
 
 bool UFighterStateComponent::IsStunned() const
 {
-	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun);
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun) || IsKnockedDown();
+}
+
+bool UFighterStateComponent::IsKnockedDown() const
+{
+	return bIsKnockedDown;
+}
+
+bool UFighterStateComponent::IsInvulnerable() const
+{
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable);
 }
 
 bool UFighterStateComponent::IsMidMove() const
@@ -832,4 +842,37 @@ void UFighterStateComponent::OnSoloStart(AActor *ActorSoloing)
 void UFighterStateComponent::OnSoloEnd()
 {
 	bIsFrozenForSolo = false;
+}
+
+void UFighterStateComponent::Knockdown()
+{
+	bIsKnockedDown = true;
+}
+
+void UFighterStateComponent::KnockdownRecovery(float Duration)
+{
+	StartInvulnerableTimer(Duration);
+}
+
+void UFighterStateComponent::StartInvulnerableTimer(float Duration)
+{
+	if (Duration <= 0)
+	{
+		OnInvulnerableTimer();
+	}
+	else
+	{
+		GetOwner()->GetWorldTimerManager().SetTimer(
+			TimerHandle_Invulnerable,
+			this,
+			&UFighterStateComponent::OnInvulnerableTimer,
+			Duration,
+			false
+		);
+	}
+}
+
+void UFighterStateComponent::OnInvulnerableTimer()
+{
+	bIsKnockedDown = false;
 }

@@ -40,6 +40,9 @@ public:
 	/** Interface for FighterState to see if character is attempting to block. */
 	virtual bool IsBlocking() const = 0;
 
+	/** Whether the fighter is currently invulnerable. */
+	virtual bool IsInvulnerable() const = 0;
+
 	/** Returns the current stance. */
 	virtual EStance GetStance() const = 0;
 
@@ -81,4 +84,7 @@ public:
 
 	/** Returns true if IFighter is in jumping process */
 	virtual bool IsJumping() = 0;
+
+	/** Knocksdown the fighter. */
+	virtual void Knockdown() = 0;
 };

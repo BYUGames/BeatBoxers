@@ -89,6 +89,9 @@ public:
 	FEffects DefaultBlockEffects;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float RecoveryDuration;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects JumpEffects;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -106,6 +109,7 @@ public:
 	virtual float GetOpponentDirection() const override;
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual bool IsBlocking() const override;
+	virtual bool IsInvulnerable() const override;
 	virtual EStance GetStance() const override;
 	virtual void SetFacing(float Sign) override;
 	virtual float GetFacing() const override { return Facing; }
@@ -121,10 +125,14 @@ public:
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;
 	virtual bool IsJumping() override;
+	virtual void Knockdown() override;
 	/** End IFighter implementation */
 
-	UFUNCTION(BlueprintCallable, meta=(DisplayName="Is Jumping"))
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))
 	bool K2_IsJumping() { return IsJumping(); }
+
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Knocked Down"))
+	bool K2_IsKnockedDown();
 
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))

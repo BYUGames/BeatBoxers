@@ -228,6 +228,10 @@ struct FImpactData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 EndsCurrentWindow : 1;
 
+	/** Whether this impact sets the target into a konckdown state. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 bKnocksDown : 1;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FMovement ImpartedMovement;
 

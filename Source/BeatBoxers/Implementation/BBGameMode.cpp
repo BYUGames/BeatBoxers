@@ -93,6 +93,11 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		);
 		return EHitResponse::HE_Missed;
 	}
+	if (Fighter->IsInvulnerable())
+	{
+		//TODO: Should this be a miss?
+		return EHitResponse::HE_Missed;
+	}
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
@@ -106,6 +111,14 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		{
 			//Don't do this for projectiles.
 			ApplyMovementToActor(Source, Source, SourceController, -ScaledImpact.ImpartedMovement);
+		}
+	}
+	if (ImpactData->bKnocksDown)
+	{
+		IFighter* Fighter = Cast<IFighter>(Actor.Get());
+		if (Fighter != nullptr)
+		{
+			Fighter->Knockdown();
 		}
 	}
 

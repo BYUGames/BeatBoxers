@@ -36,6 +36,7 @@ protected:
 	uint32 bIsCurrentStunBlock : 1;
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
+	uint32 bIsKnockedDown : 1;
 
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
@@ -55,6 +56,7 @@ protected:
 	FTimerHandle TimerHandle_Window;
 	FTimerHandle TimerHandle_Stun;
 	FTimerHandle TimerHandle_Movement;
+	FTimerHandle TimerHandle_Invulnerable;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -95,6 +97,12 @@ protected:
 	// Called when the movement timer expires.
 	void OnMovementTimer();
 
+	// Sets player invulnerable and sets the timer.
+	void StartInvulnerableTimer(float Duration);
+
+	// Called when knockdown timer expires.
+	void OnInvulnerableTimer();
+
 	bool MovementStep(float DeltaTime);
 
 	void AdjustGravity(float Scale);
@@ -110,6 +118,8 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual bool IsCharging() const override;
 	virtual bool IsStunned() const override;
+	virtual bool IsKnockedDown() const override;
+	virtual bool IsInvulnerable() const override;
 	virtual bool IsMidMove() const override;
 	virtual void StartMoveWindow(FMoveWindow& Window, float Accuracy) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
@@ -129,6 +139,8 @@ public:
 	virtual float GetCurrentVerticalDirection() const override;
 	virtual float GetCurrentHorizontalDirection() const override;
 	virtual void EndSolo() override;
+	virtual void Knockdown() override;
+	virtual void KnockdownRecovery(float Duration) override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

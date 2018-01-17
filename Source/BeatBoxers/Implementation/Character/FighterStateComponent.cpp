@@ -231,6 +231,7 @@ bool UFighterStateComponent::IsMidMove() const
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
 {
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
+	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UFighterStateComponent starting new move window with accuracy %f."), *GetNameSafe(GetOwner()), Accuracy);
 	CurrentWindow = Window;
 	CurrentWindowAccuracy = Accuracy;
 	if (CurrentWindow.IsHitboxActive)

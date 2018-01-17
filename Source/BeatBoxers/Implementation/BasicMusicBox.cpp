@@ -116,7 +116,7 @@ float ABasicMusicBox::K2_GetTimeBetweenBeats_Implementation() const
 
 float ABasicMusicBox::K2_GetBeatAccuracy_Implementation() const
 {
-	return GetTimeToNextBeat() / GetTimeBetweenBeats();
+	return FMath::Clamp(1.f - (GetTimeToNextBeat() / GetTimeBetweenBeats()), 0.f, 1.f);
 }
 
 int ABasicMusicBox::K2_StartMusic_Implementation()

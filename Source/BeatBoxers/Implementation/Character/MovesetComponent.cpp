@@ -236,6 +236,7 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	MoveAccuracy = BufferAccuracy;
 	ProcessInputToken(Token.token, Token.accuracy);
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
+	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UMovesetComponent recieved input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
 	{
 		MyFighter->OnInputReceived();
@@ -244,7 +245,7 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
-	UE_LOG(LogUMoveset, Log, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
+	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		GotoDefaultState();

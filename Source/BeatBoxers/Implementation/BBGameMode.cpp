@@ -136,16 +136,28 @@ bool ABBGameMode::IsOnBeat(float Accuracy)
 	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
 	if (MusicBox != nullptr)
 	{
-		AccInTime = Accuracy * MusicBox->GetTimeBetweenBeats();
+		AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
+		if (AccInTime <= AccuracyWindowSize/2 || AccInTime >= MusicBox->GetTimeBetweenBeats() - AccuracyWindowSize/2)
+		{
+			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? True, AccInTime +%f -%f.")
+				, Accuracy
+				, AccuracyWindowSize
+				, AccInTime
+				, MusicBox->GetTimeBetweenBeats() - AccInTime
+			);
+			return true;
+		}
+		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? False, AccInTime +%f -%f.")
+			, Accuracy
+			, AccuracyWindowSize
+			, AccInTime
+			, MusicBox->GetTimeBetweenBeats() - AccInTime
+		);
+		return false;
 	}
 	else
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("ABBGameMode::IsOnBeat MusicBox nullptr."));
-	}
-	
-	if (AccInTime <= AccuracyWindowSize/2 || AccInTime >= 1 - AccuracyWindowSize/2)
-	{
-		return true;
 	}
 	return false;
 }

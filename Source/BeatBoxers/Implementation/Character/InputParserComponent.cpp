@@ -80,6 +80,15 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	FBufferInputToken bToken;
 	bToken.token = NewToken;
 	bToken.accuracy = calcAccuracy();
+	if (MyMusicBox != nullptr)
+	{
+		UE_LOG(LogBeatTiming, Verbose, TEXT("%s UInputParserComponent Pushing input token with accuracy of %f. Time to next beat %f / %f.")
+			, *GetNameSafe(GetOwner())
+			, bToken.accuracy
+			, MyMusicBox->GetTimeToNextBeat()
+			, MyMusicBox->GetTimeBetweenBeats()
+			);
+	}
 	switch (NewToken)
 	{
 	case EInputToken::IE_DashLeft:

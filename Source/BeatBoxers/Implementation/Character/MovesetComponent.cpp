@@ -244,7 +244,7 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
+	UE_LOG(LogUMoveset, Log, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		GotoDefaultState();

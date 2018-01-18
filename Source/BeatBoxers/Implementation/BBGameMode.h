@@ -27,12 +27,6 @@ public:
 	float HitscanDistanceConstant;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector InitialCameraLocation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FVector InitialCameraLookAtLocation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bDrawDebugTraces;
 
 	UPROPERTY(BlueprintAssignable)
@@ -73,6 +67,9 @@ public:
 	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
 	virtual void HandleMatchIsWaitingToStart() override;
 	virtual void StartMatch() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void AdjustCamera();
 
 	UFUNCTION(BlueprintNativeEvent)
 	FImpactData GetScaledImpactData(const FImpactData& ImpactData, float Accuracy);

@@ -13,6 +13,7 @@
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "BBWorldSettings.h"
 
 ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -24,8 +25,6 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
 	HitscanDistanceConstant = 100.f;
-	InitialCameraLocation = FVector(0, 800, 180);
-	InitialCameraLookAtLocation = FVector(0, 0, 180);
 	bDrawDebugTraces = true;
 }
 
@@ -236,8 +235,19 @@ void ABBGameMode::StartMatch()
 
 	if (GetGameState<ABBGameState>() != nullptr)
 	{
-		
-		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(InitialCameraLocation, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator(), FActorSpawnParameters());
+		FVector InitialCameraLocation = FVector(0, 800, 180);
+		FVector InitialCameraLookAtLocation = FVector(0, 0, 180);
+		ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
+		if (Settings != nullptr)
+		{
+			InitialCameraLocation = Settings->InitialCameraLocation;
+			InitialCameraLookAtLocation = Settings->InitialCameraLookAtLocation;
+		}
+		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(
+			InitialCameraLocation
+			, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator()
+			, FActorSpawnParameters()
+			);
 		GetGameState<ABBGameState>()->MainCamera = Cast<ACameraActor>(Camera);
 		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
@@ -618,4 +628,84 @@ FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
 FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
 {
 	return PlayerBeatComboChangedEvent;
+}
+
+void ABBGameMode::AdjustCamera()
+{
+	ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
+	if (Settings != nullptr)
+	{
+		FVector Target;
+		FVector2D DesiredExtents;
+		if (GameState->PlayerArray.Num() > 1)
+		{
+			ABBPlayerState *BBPlayerState;
+			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
+			FVector p1loc, p2loc;
+			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
+			{
+				p1loc = BBPlayerState->MyPawn->GetActorLocation();
+			}
+			else
+			{
+				p1loc = Settings->InitialCameraLookAtLocation;
+			}
+			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
+			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
+			{
+				p2loc = BBPlayerState->MyPawn->GetActorLocation();
+			}
+			else
+			{
+				p2loc = Settings->InitialCameraLookAtLocation;
+			}
+			FVector Diff = p1loc - p2loc;
+			Target = p2loc + (Diff / 2.f);
+			DesiredExtents = FVector2D{ FMath::Abs(Diff.X), FMath::Abs(Diff.Z) };
+		}
+		else if (GameState->PlayerArray.Num() == 1)
+		{
+			ABBPlayerState *BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
+			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
+			{
+				Target = BBPlayerState->MyPawn->GetActorLocation();
+				DesiredExtents = FVector2D{ 0.f, 0.f };
+			}
+		}
+
+		DesiredExtents += Settings->CameraPadding;
+
+		FVector CamPos;
+		CamPos.X = FMath::Clamp(Target.X, Settings->CameraBounds.Min.X, Settings->CameraBounds.Max.X);
+		CamPos.Z = FMath::Clamp(Target.Z, Settings->CameraBounds.Min.Z, Settings->CameraBounds.Max.Z);
+
+		float FOV = GetDefault<APlayerCameraManager>()->DefaultFOV;
+		APlayerController *Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (Controller != nullptr && Controller->PlayerCameraManager != nullptr)
+		{
+			FOV = Controller->PlayerCameraManager->GetFOVAngle();
+		}
+
+		CamPos.Y = FMath::Clamp(
+			FMath::Max(DesiredExtents.X, DesiredExtents.Y) / 2.f / FMath::Tan(FMath::DegreesToRadians(FOV / 2.f))
+			, Settings->CameraBounds.Min.Y
+			, Settings->CameraBounds.Max.Y
+			);
+
+		if (GetGameState<ABBGameState>() != nullptr)
+		{
+			ACameraActor *Cam = GetGameState<ABBGameState>()->MainCamera;
+			if (Cam != nullptr)
+			{
+				Cam->SetActorLocation(CamPos);
+			}
+		}
+	}
+}
+
+void ABBGameMode::Tick(float DeltaSeconds)
+{
+	AGameMode::Tick(DeltaSeconds);
+
+	AdjustCamera();
 }

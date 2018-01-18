@@ -30,8 +30,6 @@ protected:
 	UFUNCTION()
 	void OnMusicEnd();
 
-	virtual void Tick(float DeltaSeconds) override;
-
 public:
 	UPROPERTY(BlueprintAssignable)
 	FBeatEvent BeatEvent;

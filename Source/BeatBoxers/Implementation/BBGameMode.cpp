@@ -374,7 +374,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	ACharacter* Character = Cast<ACharacter>(Target.Get());
 	if (Character != nullptr)
 	{
-		Character->LaunchCharacter(FVector(0,0,0), true, true);
+		Character->LaunchCharacter(FVector(0.01,0.01,0.01), true, true);
 	}
 	if (!Movement.UsePhysicsLaunch)
 	{

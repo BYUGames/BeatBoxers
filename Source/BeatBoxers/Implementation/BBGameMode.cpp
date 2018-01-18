@@ -371,7 +371,11 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		FCollisionObjectQueryParams::AllStaticObjects,
 		FCollisionQueryParams::DefaultQueryParam
 	);
-
+	ACharacter* Character = Cast<ACharacter>(Target.Get());
+	if (Character != nullptr)
+	{
+		Character->LaunchCharacter(FVector(0,0,0), true, true);
+	}
 	if (!Movement.UsePhysicsLaunch)
 	{
 		IFighter *TargetFighter = Cast<IFighter>(Target.Get());
@@ -382,7 +386,6 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	}
 	else
 	{
-		ACharacter* Character = Cast<ACharacter>(Target.Get());
 		if (Character != nullptr)
 		{
 			FVector Launch{NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y};

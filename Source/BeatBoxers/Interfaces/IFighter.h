@@ -87,4 +87,7 @@ public:
 
 	/** Knocksdown the fighter. */
 	virtual void Knockdown() = 0;
+
+	/** Returns the music balance for this fighter. */
+	virtual FMusicBalanceParams GetMusicBalance() = 0;
 };

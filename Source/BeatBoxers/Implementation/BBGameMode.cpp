@@ -261,7 +261,24 @@ void ABBGameMode::StartMatch()
 		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
 		if (WorldMusicBox != nullptr)
 		{
-			WorldMusicBox->StartMusic();
+			UBBGameInstance *GameInstance = GetWorld()->GetGameInstance<UBBGameInstance>();
+			if (GameInstance != nullptr)
+			{
+				FMusicBalanceParams Params{};
+				AFighterCharacter *Fighter;
+				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player0Class.GetDefaultObject());
+				if (Fighter != nullptr)
+				{
+					Params += Fighter->FighterData.MusicBalance;
+				}
+				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player1Class.GetDefaultObject());
+				if (Fighter != nullptr)
+				{
+					Params += Fighter->FighterData.MusicBalance;
+				}
+
+				WorldMusicBox->StartMusic(GameInstance->NewGameData.SongName, Params);
+			}
 		}
 		else
 		{

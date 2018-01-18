@@ -29,7 +29,8 @@ public:
 	UBasicFretboardFeed* GetFretboardFeed();
 
 	/** Implementation of IMusicBox */
-	virtual int StartMusic() override;
+	virtual int StartMusic(FName Songname, FMusicBalanceParams MusicBalance) override;
+	virtual int ChangeBalance(FMusicBalanceParams MusicBalance) override;
 	virtual int PauseMusic() override;
 	virtual int ResumeMusic() override;
 	virtual int StopMusic() override;
@@ -74,7 +75,10 @@ public:
 	float K2_GetBeatAccuracy() const;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintCallable, meta=(displayname = "Start Music"))
-	int K2_StartMusic();
+	int K2_StartMusic(FName SongName, FMusicBalanceParams MusicBalance);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintCallable, meta=(displayname = "Change Music Balance"))
+	int K2_ChangeBalance(FMusicBalanceParams MusicBalance);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintCallable, meta = (displayname = "Resume Music"))
 	int K2_ResumeMusic();

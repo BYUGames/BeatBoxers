@@ -52,9 +52,15 @@ void ABasicMusicBox::EndMusic()
 	}
 }
 
-int ABasicMusicBox::StartMusic()
+int ABasicMusicBox::StartMusic(FName SongName, FMusicBalanceParams MusicBalanceParams)
 {
-	K2_StartMusic();
+	K2_StartMusic(SongName, MusicBalanceParams);
+	return true;
+}
+
+int ABasicMusicBox::ChangeBalance(FMusicBalanceParams MusicBalanceParams)
+{
+	K2_ChangeBalance(MusicBalanceParams);
 	return true;
 }
 
@@ -119,7 +125,13 @@ float ABasicMusicBox::K2_GetBeatAccuracy_Implementation() const
 	return FMath::Clamp(1.f - (GetTimeToNextBeat() / GetTimeBetweenBeats()), 0.f, 1.f);
 }
 
-int ABasicMusicBox::K2_StartMusic_Implementation()
+int ABasicMusicBox::K2_StartMusic_Implementation(FName SongName, FMusicBalanceParams MusicBalanceParams)
+{
+	//NOP
+	return true;
+}
+
+int ABasicMusicBox::K2_ChangeBalance_Implementation(FMusicBalanceParams MusicBalanceParams)
 {
 	//NOP
 	return true;

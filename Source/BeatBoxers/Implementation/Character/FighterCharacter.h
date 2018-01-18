@@ -128,6 +128,7 @@ public:
 	virtual void MissBeat() override;
 	virtual bool IsJumping() override;
 	virtual void Knockdown() override;
+	virtual FMusicBalanceParams GetMusicBalance() override { return FighterData.MusicBalance; }
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

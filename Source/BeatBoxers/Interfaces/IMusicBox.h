@@ -28,7 +28,10 @@ class BEATBOXERS_API IMusicBox
 public:
 
 	/** Called by the GameMode when the music box needs to start or restart the music. */
-	virtual int StartMusic() = 0;
+	virtual int StartMusic(FName SongName, FMusicBalanceParams MusicBalance) = 0;
+
+	/** Called by the GameMode when the music box needs adjust the music balance. */
+	virtual int ChangeBalance(FMusicBalanceParams MusicBalance) = 0;
 
 	/** Called by the GameMode if it needs to pause the music. */
 	virtual int PauseMusic() = 0;

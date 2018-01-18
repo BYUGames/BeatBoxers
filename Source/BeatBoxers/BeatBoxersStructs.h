@@ -196,6 +196,21 @@ struct FMovement
 };
 
 USTRUCT(BlueprintType)
+struct FMusicBalanceParams
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsMaestraOn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsRiffOn;
+
+	FMusicBalanceParams operator+(const FMusicBalanceParams& rhs);
+	FMusicBalanceParams& operator+=(const FMusicBalanceParams& rhs);
+};
+
+USTRUCT(BlueprintType)
 struct FMoveHitbox
 {
 	GENERATED_USTRUCT_BODY()
@@ -477,6 +492,9 @@ struct FFighterData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture *Portrait;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FMusicBalanceParams MusicBalance;
 };
 
 USTRUCT(BlueprintType)

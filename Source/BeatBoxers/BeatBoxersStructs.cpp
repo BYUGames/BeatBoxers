@@ -121,3 +121,18 @@ bool FEffects::IsValid() const
 {
 	return ParticleSystem != nullptr || SoundCue != nullptr;
 }
+
+FMusicBalanceParams FMusicBalanceParams::operator+(const FMusicBalanceParams& rhs)
+{
+	FMusicBalanceParams res;
+	res.bIsMaestraOn = bIsMaestraOn || rhs.bIsMaestraOn;
+	res.bIsRiffOn = bIsRiffOn || rhs.bIsRiffOn;
+	return res;
+}
+
+FMusicBalanceParams& FMusicBalanceParams::operator+=(const FMusicBalanceParams& rhs)
+{
+	bIsMaestraOn |= rhs.bIsMaestraOn;
+	bIsRiffOn |= rhs.bIsRiffOn;
+	return *this;
+}

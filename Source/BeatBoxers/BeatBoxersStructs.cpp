@@ -79,11 +79,11 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_Jump:
 		if (Jump) return true;
 		break;
-	case EInputToken::IE_DashLeft:
-		if (DashLeft) return true;
+	case EInputToken::IE_DashForward:
+		if (DashForward) return true;
 		break;
-	case EInputToken::IE_DashRight:
-		if (DashRight) return true;
+	case EInputToken::IE_DashBackward:
+		if (DashBackward) return true;
 		break;
 	case EInputToken::IE_ForwardLight:
 		if (ForwardLight) return true;

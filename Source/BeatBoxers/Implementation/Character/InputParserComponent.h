@@ -34,8 +34,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
 	virtual void InputActionForwardLight(UInputParserComponent *Parser);
 	virtual void InputActionBackLight(UInputParserComponent *Parser);
-	virtual void InputActionDashLeft(UInputParserComponent *Parser);
-	virtual void InputActionDashRight(UInputParserComponent * Parser);
+	virtual void InputActionDashForward(UInputParserComponent *Parser);
+	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
 
 UCLASS()
@@ -51,8 +51,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
 	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
-	virtual void InputActionDashLeft(UInputParserComponent *Parser) override;
-	virtual void InputActionDashRight(UInputParserComponent *Parser) override;
+	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
+	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };
 
 UCLASS()

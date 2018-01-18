@@ -91,8 +91,8 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	}
 	switch (NewToken)
 	{
-	case EInputToken::IE_DashLeft:
-	case EInputToken::IE_DashRight:
+	case EInputToken::IE_DashForward:
+	case EInputToken::IE_DashBackward:
 		break;
 	default:
 		if (MyFighterWorld->IsOnBeat(bToken.accuracy))
@@ -308,17 +308,31 @@ void UInputParserComponent::InputActionUp(bool IsUp)
 
 void UInputParserComponent::InputActionDashLeft(bool Isup)
 {
-	if (CurrentStateClass.Get() != nullptr)
+	if (MyFighter != nullptr && CurrentStateClass.Get() != nullptr)
 	{
-		CurrentStateClass.GetDefaultObject()->InputActionDashLeft(this);
+		if (MyFighter->GetOpponentDirection() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
 	}
 }
 
 void UInputParserComponent::InputActionDashRight(bool Isup)
 {
-	if (CurrentStateClass.Get() != nullptr)
+	if (MyFighter != nullptr && CurrentStateClass.Get() != nullptr)
 	{
-		CurrentStateClass.GetDefaultObject()->InputActionDashRight(this);
+		if (MyFighter->GetOpponentDirection() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
 	}
 }
 
@@ -402,24 +416,24 @@ void UInputParserState::InputActionMedium(UInputParserComponent *Parser) { UE_LO
 void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionHeavy()")); }
 void UInputParserState::InputActionForwardLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionForwardLight()")); }
 void UInputParserState::InputActionBackLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBackLight()")); }
-void UInputParserState::InputActionDashLeft(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashLeft()")); }
-void UInputParserState::InputActionDashRight(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashRight()")); }
+void UInputParserState::InputActionDashForward(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashForward()")); }
+void UInputParserState::InputActionDashBackwards(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashBackwards()")); }
 
-void UInputParserDefaultState::InputActionDashRight(UInputParserComponent *Parser)
+void UInputParserDefaultState::InputActionDashBackwards(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashRight()"));
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashBackwards()"));
 	if (Parser != nullptr)
 	{
-		Parser->PushInputToken(EInputToken::IE_DashRight);
+		Parser->PushInputToken(EInputToken::IE_DashBackward);
 	}
 }
 
-void UInputParserDefaultState::InputActionDashLeft(UInputParserComponent *Parser)
+void UInputParserDefaultState::InputActionDashForward(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashLeft()"));
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashForward()"));
 	if (Parser != nullptr)
 	{
-		Parser->PushInputToken(EInputToken::IE_DashLeft);
+		Parser->PushInputToken(EInputToken::IE_DashForward);
 	}
 }
 
@@ -493,7 +507,7 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
-		Parser->PushInputToken(EInputToken::IE_DashLeft);
+		Parser->PushInputToken(EInputToken::IE_DashForward);
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }
@@ -535,7 +549,7 @@ void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
-		Parser->PushInputToken(EInputToken::IE_DashRight);
+		Parser->PushInputToken(EInputToken::IE_DashBackward);
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }

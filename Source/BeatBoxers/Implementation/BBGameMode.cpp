@@ -125,6 +125,21 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	{
 		SourceController.Get()->PlayerState->Score += ScaledImpact.Damage;
 		AddSpecial(SourceController.Get()->PlayerState, ScaledImpact.SpecialGenerated);
+		APawn* mAPawn = Cast<APawn>(Actor.Get());
+		// Logic for applying damage to opponent
+		if (mAPawn != nullptr && mAPawn->Controller != nullptr)
+		{
+			APlayerController* mPlayerController = Cast<APlayerController>(mAPawn->Controller);
+			if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
+			{
+				ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
+				if (mBBPlayerState != nullptr)
+				{
+					mBBPlayerState->TakeDamage(ScaledImpact.Damage);
+					//TODO: check if the game is over
+				}
+			}
+		}
 	}
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }

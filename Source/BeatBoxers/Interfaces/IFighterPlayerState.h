@@ -39,4 +39,10 @@ public:
 
 	/** Sets and returns the number of moves hit on the beat in the current combo. */
 	virtual int SetBeatCombo(int Combo) = 0;
+
+	/** Decraments Amount from Health to a min of 0 */
+	virtual void TakeDamage(float Amount) = 0;
+
+	/** Returns Player Health*/
+	virtual float GetHealth() = 0;
 };

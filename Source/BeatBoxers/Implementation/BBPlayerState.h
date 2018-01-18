@@ -17,6 +17,7 @@ class BEATBOXERS_API ABBPlayerState : public APlayerState, public IFighterPlayer
 	
 protected:
 	float Special;
+	float Health = 100.0f;
 	int BeatCombo;
 
 public:
@@ -26,7 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APawn *MyPawn;
 
-	// Begin IBBPlayerStateInterface
+	// Begin IFighterPlayerState
 	UFUNCTION(BlueprintCallable)
 	virtual float GetSpecial() const override;
 
@@ -38,7 +39,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool UseSpecial(float Amount) override;
-	// End IBBPlayerStateInterface
+	
+	virtual void TakeDamage(float Amount) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetHealth() override;
+	// End IFighterPlayerState
 
 	virtual int GetBeatCombo() const override;
 

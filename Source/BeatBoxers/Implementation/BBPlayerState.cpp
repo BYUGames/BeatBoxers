@@ -43,3 +43,15 @@ int ABBPlayerState::SetBeatCombo(int Combo)
 	BeatCombo = Combo;
 	return BeatCombo;
 }
+
+void ABBPlayerState::TakeDamage(float Amount)
+{
+	Health -= Amount;
+	if (Health < 0)
+		Health = 0;
+}
+
+float ABBPlayerState::GetHealth()
+{
+	return Health;
+}

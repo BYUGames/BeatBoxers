@@ -79,6 +79,8 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
 	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
+	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
+	InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 }
 
 
@@ -383,6 +385,23 @@ void AFighterCharacter::OnJumpTimer()
 		);
 	}
 	ACharacter::Jump();
+}
+
+
+void AFighterCharacter::InputActionDashLeftButton()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionDashLeft(true);
+	}
+}
+
+void AFighterCharacter::InputActionDashRightButton()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionDashRight(true);
+	}
 }
 
 void AFighterCharacter::InputAxisHorizontal(float amount)

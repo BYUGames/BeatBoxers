@@ -73,6 +73,8 @@ protected:
 	void InputActionMedium();
 	void InputActionHeavy();
 	void InputActionJump();
+	void InputActionDashLeftButton();
+	void InputActionDashRightButton();
 	void SetGravityScale(float scale);
 
 public:	

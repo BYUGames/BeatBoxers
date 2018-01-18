@@ -306,6 +306,22 @@ void UInputParserComponent::InputActionUp(bool IsUp)
 	}
 }
 
+void UInputParserComponent::InputActionDashLeft(bool Isup)
+{
+	if (CurrentStateClass.Get() != nullptr)
+	{
+		CurrentStateClass.GetDefaultObject()->InputActionDashLeft(this);
+	}
+}
+
+void UInputParserComponent::InputActionDashRight(bool Isup)
+{
+	if (CurrentStateClass.Get() != nullptr)
+	{
+		CurrentStateClass.GetDefaultObject()->InputActionDashRight(this);
+	}
+}
+
 void UInputParserComponent::InputActionLight(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
@@ -386,6 +402,26 @@ void UInputParserState::InputActionMedium(UInputParserComponent *Parser) { UE_LO
 void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionHeavy()")); }
 void UInputParserState::InputActionForwardLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionForwardLight()")); }
 void UInputParserState::InputActionBackLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBackLight()")); }
+void UInputParserState::InputActionDashLeft(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashLeft()")); }
+void UInputParserState::InputActionDashRight(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashRight()")); }
+
+void UInputParserDefaultState::InputActionDashRight(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashRight()"));
+	if (Parser != nullptr)
+	{
+		Parser->PushInputToken(EInputToken::IE_DashRight);
+	}
+}
+
+void UInputParserDefaultState::InputActionDashLeft(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionDashLeft()"));
+	if (Parser != nullptr)
+	{
+		Parser->PushInputToken(EInputToken::IE_DashLeft);
+	}
+}
 
 void UInputParserDefaultState::InputActionForwardLight(UInputParserComponent *Parser)
 {

@@ -68,4 +68,10 @@ public:
 
 	/** Receives events relating to the Jump button. */
 	virtual void InputActionJump(bool IsUp) = 0;
+
+	/** Recives events related to the dash left button */
+	virtual void InputActionDashLeft(bool IsUp) = 0;
+
+	/** Recives events related to the dash right button */
+	virtual void InputActionDashRight(bool IsUp) = 0;
 };

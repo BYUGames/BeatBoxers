@@ -34,6 +34,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
 	virtual void InputActionForwardLight(UInputParserComponent *Parser);
 	virtual void InputActionBackLight(UInputParserComponent *Parser);
+	virtual void InputActionDashLeft(UInputParserComponent *Parser);
+	virtual void InputActionDashRight(UInputParserComponent * Parser);
 };
 
 UCLASS()
@@ -49,6 +51,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
 	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
+	virtual void InputActionDashLeft(UInputParserComponent *Parser) override;
+	virtual void InputActionDashRight(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -128,6 +132,8 @@ public:
 	virtual void InputActionMedium(bool IsUp) override;
 	virtual void InputActionHeavy(bool IsUp) override;
 	virtual void InputActionJump(bool IsUp) override;
+	virtual void InputActionDashLeft(bool IsUp) override;
+	virtual void InputActionDashRight(bool IsUp) override;
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);

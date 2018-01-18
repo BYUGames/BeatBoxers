@@ -34,6 +34,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
 	virtual void InputActionForwardLight(UInputParserComponent *Parser);
 	virtual void InputActionBackLight(UInputParserComponent *Parser);
+	virtual void InputActionDashForward(UInputParserComponent *Parser);
+	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
 
 UCLASS()
@@ -49,6 +51,8 @@ public:
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
 	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
+	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
+	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -128,6 +132,8 @@ public:
 	virtual void InputActionMedium(bool IsUp) override;
 	virtual void InputActionHeavy(bool IsUp) override;
 	virtual void InputActionJump(bool IsUp) override;
+	virtual void InputActionDashLeft(bool IsUp) override;
+	virtual void InputActionDashRight(bool IsUp) override;
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);
@@ -136,5 +142,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	float GetOpponentDirection();
 };
 

@@ -142,6 +142,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/** Gets the direciton of the opponent, return's 0 if MyFighter == nullptr */
 	float GetOpponentDirection();
+
+	/** Gets the dircetion the Fighter is facing, return's 0 if MyFighter == nullptr */
+	float GetFighterFacing();
 };
 

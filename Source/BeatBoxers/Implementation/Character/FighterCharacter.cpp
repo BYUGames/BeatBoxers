@@ -53,13 +53,17 @@ void AFighterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (MyOpponent != nullptr)
+	if (!(GetMovementComponent() != nullptr && GetMovementComponent()->IsFalling()
+		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned())))
 	{
-		float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);
-		if (NewFacing != 0 && NewFacing != Facing)
+		if (MyOpponent != nullptr)
 		{
-			Facing = NewFacing;
-			SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
+			float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);
+			if (NewFacing != 0 && NewFacing != Facing)
+			{
+				Facing = NewFacing;
+				SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
+			}
 		}
 	}
 }

@@ -38,35 +38,61 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 {
 	FHitResult Result;
 
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActors(IgnoreActors);
+	FCollisionQueryParams QParams;
+	QParams.AddIgnoredActors(IgnoreActors);
+
+	FCollisionResponseParams RParams;
+	RParams.CollisionResponse.Camera = ECR_Ignore;
+	RParams.CollisionResponse.Destructible = ECR_Ignore;
+	RParams.CollisionResponse.Pawn= ECR_Block;
+	RParams.CollisionResponse.PhysicsBody = ECR_Ignore;
+	RParams.CollisionResponse.Vehicle = ECR_Ignore;
+	RParams.CollisionResponse.Visibility = ECR_Ignore;
+	RParams.CollisionResponse.WorldDynamic = ECR_Ignore;
+	RParams.CollisionResponse.WorldStatic = ECR_Ignore;
 
 	FVector Origin = Source + FVector(Hitbox.Origin.X, 0, Hitbox.Origin.Y);
 	FVector End = Source + FVector(Hitbox.End.X, 0, Hitbox.End.Y);
 
-	GetWorld()->SweepSingleByObjectType(
-		Result,
-		Origin,
-		End,
-		FQuat::Identity,
-		FCollisionObjectQueryParams::AllDynamicObjects,
-		FCollisionShape::MakeSphere(Hitbox.Radius),
-		Params
+	GetWorld()->SweepSingleByChannel(
+		Result
+		, Origin
+		, End
+		, FQuat::Identity
+		, ECollisionChannel::ECC_Pawn
+		, FCollisionShape::MakeSphere(Hitbox.Radius)
+		, QParams
+		, RParams
 	);
 
 	if (bDrawDebugTraces)
 	{
+		DrawDebugSphere(
+			GetWorld()
+			, Origin
+			, Hitbox.Radius
+			, 8, FColor::White, false, -1.f, (uint8)'\000', 2.f
+		);
 		DrawDebugLine(
-			GetWorld(),
-			Origin,
-			End,
-			FColor::Red,
-			false,
-			-1.f,
-			(uint8)'\000',
-			Hitbox.Radius
+			GetWorld()
+			, FVector{ Origin.X, Origin.Y, Origin.Z + Hitbox.Radius }
+			, FVector{ End.X, End.Y, End.Z + Hitbox.Radius }
+			, FColor::White, false, -1.f, (uint8)'\000', 2.f
+		);
+		DrawDebugLine(
+			GetWorld()
+			, FVector{ Origin.X, Origin.Y, Origin.Z - Hitbox.Radius }
+			, FVector{ End.X, End.Y, End.Z - Hitbox.Radius }
+			, FColor::White, false, -1.f, (uint8)'\000', 2.f
+		);
+		DrawDebugSphere(
+			GetWorld()
+			, End
+			, Hitbox.Radius
+			, 8, FColor::White, false, -1.f, (uint8)'\000', 2.f
 		);
 	}
+
 	return Result;
 }
 

@@ -597,10 +597,7 @@ void ABBGameMode::HandleMatchIsWaitingToStart()
 
 FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& ImpactData, float Accuracy)
 {
-	FImpactData OutImpact = ImpactData;
-	OutImpact.Damage *= Accuracy;
-	OutImpact.SpecialGenerated *= Accuracy;
-	return OutImpact;
+	return ImpactData;
 }
 
 UObject* ABBGameMode::GetMusicBox()

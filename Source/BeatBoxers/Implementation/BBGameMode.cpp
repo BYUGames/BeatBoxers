@@ -136,13 +136,30 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 				if (mBBPlayerState != nullptr)
 				{
 					mBBPlayerState->TakeDamage(ScaledImpact.Damage);
-					//TODO: check if the game is over
+					if (mBBPlayerState->GetHealth() == 0)
+					{
+						EndRound();
+					}
 				}
 			}
 		}
 	}
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
+
+void ABBGameMode::EndRound()
+{
+	//TODO: All logic for Resetting the round.
+	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		IFighterPlayerState* mFigherState = Cast<IFighterPlayerState>(GameState->PlayerArray[i]);
+		if (mFigherState != nullptr)
+		{
+			mFigherState->ResetPlayerState();
+		}
+	}
+}
+
 
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {

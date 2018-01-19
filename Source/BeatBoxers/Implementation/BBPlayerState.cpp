@@ -55,3 +55,10 @@ float ABBPlayerState::GetHealth()
 {
 	return Health;
 }
+
+void ABBPlayerState::ResetPlayerState()
+{
+	Special = 0;
+	Health = 100.0f;
+	BeatCombo = 0;
+}

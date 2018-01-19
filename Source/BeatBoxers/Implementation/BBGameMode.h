@@ -85,4 +85,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
+
+	/** Does Logic for ending the round */
+	virtual void EndRound();
 };

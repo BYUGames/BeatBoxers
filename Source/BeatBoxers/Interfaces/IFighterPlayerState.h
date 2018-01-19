@@ -45,4 +45,7 @@ public:
 
 	/** Returns Player Health*/
 	virtual float GetHealth() = 0;
+
+	/** Resets Player state to original values */
+	virtual void ResetPlayerState() = 0;
 };

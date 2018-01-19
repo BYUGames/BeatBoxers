@@ -44,6 +44,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual float GetHealth() override;
+
+	virtual void ResetPlayerState() override;
 	// End IFighterPlayerState
 
 	virtual int GetBeatCombo() const override;

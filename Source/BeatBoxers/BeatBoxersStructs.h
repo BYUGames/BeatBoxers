@@ -344,6 +344,14 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UAnimMontage *AnimMontage;
 
+	/** If true, the player will ignore collisions during the window. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 IgnoreCollisions : 1;
+
+	/** If true, the player will be invincible during the window. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 Invincibility : 1;
+
 	FMoveWindow()
 	{
 		Interruptible = true;

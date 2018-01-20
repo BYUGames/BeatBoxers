@@ -90,4 +90,7 @@ public:
 
 	/** Returns the music balance for this fighter. */
 	virtual FMusicBalanceParams GetMusicBalance() = 0;
+
+	/** If DoesCollide is true then the player will collide with other players, if false it will ignore them. */
+	virtual void SetFighterCollisions(bool DoesCollide) = 0;
 };

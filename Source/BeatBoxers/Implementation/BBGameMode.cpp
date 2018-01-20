@@ -62,7 +62,7 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 		, Origin
 		, End
 		, FQuat::Identity
-		, ECollisionChannel::ECC_Pawn
+		, ECollisionChannel::ECC_GameTraceChannel1
 		, FCollisionShape::MakeSphere(Hitbox.Radius)
 		, QParams
 		, RParams

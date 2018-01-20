@@ -220,7 +220,7 @@ bool UFighterStateComponent::IsKnockedDown() const
 
 bool UFighterStateComponent::IsInvulnerable() const
 {
-	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable);
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || CurrentWindow.Invincibility;
 }
 
 bool UFighterStateComponent::IsMidMove() const
@@ -279,6 +279,10 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 			{
 				UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartMoveWindow unable to cast fighter to character."), *GetNameSafe(this));
 			}
+		}
+		if (CurrentWindow.IgnoreCollisions)
+		{
+			MyFighter->SetFighterCollisions(false);
 		}
 		StartCurrentWindowWindup();
 	}
@@ -485,6 +489,7 @@ void UFighterStateComponent::OnCurrentWindowDurationFinished()
 	{
 		AdjustGravity(1.f);
 	}
+
 	TryDisableTick();
 	StartCurrentWindowWinddown();
 }
@@ -556,6 +561,10 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 		if (MyMoveset != nullptr)
 		{
 			MyMoveset->OnWindowFinished(WindowEnd);
+		}
+		if (!MyFighter->IsJumping() && CurrentWindow.IgnoreCollisions)
+		{
+			MyFighter->SetFighterCollisions(true);
 		}
 	}
 }
@@ -876,4 +885,9 @@ void UFighterStateComponent::StartInvulnerableTimer(float Duration)
 void UFighterStateComponent::OnInvulnerableTimer()
 {
 	bIsKnockedDown = false;
+}
+
+bool UFighterStateComponent::IsIgnoringCollision()
+{
+	return bIsWindowActive && CurrentWindow.IgnoreCollisions;
 }

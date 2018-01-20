@@ -116,4 +116,9 @@ public:
 	virtual float GetCurrentHorizontalDirection() const = 0;
 
 	virtual void EndSolo() = 0;
+
+
+	/** Returns true if the current window is ignoring collisions. */
+	virtual bool IsIgnoringCollision() = 0;
+
 };

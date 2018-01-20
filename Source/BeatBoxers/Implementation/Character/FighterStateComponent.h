@@ -141,6 +141,7 @@ public:
 	virtual void EndSolo() override;
 	virtual void Knockdown() override;
 	virtual void KnockdownRecovery(float Duration) override;
+	virtual bool IsIgnoringCollision() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

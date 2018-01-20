@@ -390,6 +390,7 @@ void AFighterCharacter::OnJumpTimer()
 			RelativeTransform.GetRotation().Rotator()
 		);
 	}
+	SetFighterCollisions(false);
 	ACharacter::Jump();
 }
 
@@ -497,7 +498,10 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	//enable collision with other pawns.
 	if (GetCapsuleComponent() != nullptr)
 	{
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		if (FighterState != nullptr && !FighterState->IsIgnoringCollision())
+		{
+			SetFighterCollisions(true);
+		}
 		TSet<AActor*> Overlaps;
 		GetCapsuleComponent()->GetOverlappingActors(Overlaps, ACharacter::GetClass());
 		//TODO: some sort of pushing away if there are any overlaps.
@@ -631,4 +635,19 @@ bool AFighterCharacter::K2_IsKnockedDown()
 		return false;
 	}
 	return GetFighterState()->IsKnockedDown();
+}
+
+void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
+{
+	if (GetCapsuleComponent() != nullptr)
+	{
+		if (DoesCollide)
+		{
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		}
+		else
+		{
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		}
+	}	
 }

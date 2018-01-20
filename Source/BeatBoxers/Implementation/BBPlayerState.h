@@ -17,10 +17,13 @@ class BEATBOXERS_API ABBPlayerState : public APlayerState, public IFighterPlayer
 	
 protected:
 	float Special;
-	float Health = 100.0f;
+	float Health;
 	int BeatCombo;
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int RoundsWon;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MaxSpecial;
 
@@ -40,6 +43,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool UseSpecial(float Amount) override;
 	
+	virtual void SetHealth(float Amount);
+
 	virtual void TakeDamage(float Amount) override;
 
 	UFUNCTION(BlueprintCallable)

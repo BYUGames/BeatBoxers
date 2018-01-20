@@ -6,6 +6,8 @@ ABBPlayerState::ABBPlayerState(const class FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer)
 {
 	MaxSpecial = 100.f;
+	RoundsWon = 0;
+	Health = 100.f;
 }
 
 float ABBPlayerState::GetSpecial() const
@@ -61,4 +63,9 @@ void ABBPlayerState::ResetPlayerState()
 	Special = 0;
 	Health = 100.0f;
 	BeatCombo = 0;
+}
+
+void ABBPlayerState::SetHealth(float Amount)
+{
+	Health = Amount;
 }

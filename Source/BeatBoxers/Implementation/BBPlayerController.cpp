@@ -6,5 +6,5 @@
 ABBPlayerController::ABBPlayerController(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
+	bAutoManageActiveCameraTarget = false;
 }

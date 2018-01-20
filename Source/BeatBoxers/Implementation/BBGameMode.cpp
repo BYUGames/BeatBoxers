@@ -24,8 +24,11 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
+	DelayBetweenRounds = 2.f;
+	RoundsToWin = 2;
 	HitscanDistanceConstant = 100.f;
 	bDrawDebugTraces = true;
+	RoundTime = 90;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -164,6 +167,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 					mBBPlayerState->TakeDamage(ScaledImpact.Damage);
 					if (mBBPlayerState->GetHealth() == 0)
 					{
+						UE_LOG(LogBeatBoxers, Log, TEXT("A player has died."));
 						EndRound();
 					}
 				}
@@ -173,19 +177,65 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
 
-void ABBGameMode::EndRound()
+int ABBGameMode::GetWinnerIndex()
 {
-	//TODO: All logic for Resetting the round.
-	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
+	ABBPlayerState* Player0State = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
+	ABBPlayerState* Player1State = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
+	if (Player0State != nullptr)
 	{
-		IFighterPlayerState* mFigherState = Cast<IFighterPlayerState>(GameState->PlayerArray[i]);
-		if (mFigherState != nullptr)
+		if (Player1State != nullptr)
 		{
-			mFigherState->ResetPlayerState();
+			if (Player0State->GetHealth() == Player1State->GetHealth()) return -1;
+			return (Player0State->GetHealth() > Player1State->GetHealth()) ? 0 : 1;
 		}
+		return 0;
 	}
+	return -1;
 }
 
+void ABBGameMode::EndRound()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("Round ending."));
+
+	SetPlayerInput(false);
+	int Winner = GetWinnerIndex();
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RoundEnd))
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_RoundEnd);
+	}
+
+	if (Winner >= 0)
+	{
+		if (GameState->PlayerArray.Num() > Winner && GameState->PlayerArray[Winner] != nullptr)
+		{
+			ABBPlayerState *PlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[Winner]);
+			if (PlayerState != nullptr)
+			{
+				if (++(PlayerState->RoundsWon) >= RoundsToWin)
+				{
+					UE_LOG(LogBeatBoxers, Log, TEXT("Match ending."));
+					EndMatch();
+
+					if (MatchEndEvent.IsBound())
+					{
+						MatchEndEvent.Broadcast(Winner);
+					}
+					return;
+				}
+			}
+			else
+			{
+				UE_LOG(LogBeatBoxers, Warning, TEXT("Winner could not be cast."));
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeatBoxers, Warning, TEXT("Round had invalid winner %i."), Winner);
+		}
+	}
+
+	StartRoundWithDelay();
+}
 
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {
@@ -409,6 +459,10 @@ void ABBGameMode::StartMatch()
 		}
 		UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
 	}
+
+	SetPlayerInput(false);
+
+	StartRoundWithDelay();
 }
 
 int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
@@ -700,6 +754,21 @@ FSoloEndEvent& ABBGameMode::GetOnSoloEndEvent()
 	return SoloEndEvent;
 }
 
+FRoundStartEvent& ABBGameMode::GetOnRoundStartEvent()
+{
+	return RoundStartEvent;
+}
+
+FRoundEndEvent& ABBGameMode::GetOnRoundEndEvent()
+{
+	return RoundEndEvent;
+}
+
+FMatchEndEvent& ABBGameMode::GetOnMatchEndEvent()
+{
+	return MatchEndEvent;
+}
+
 FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
 {
 	return PlayerBeatComboChangedEvent;
@@ -783,4 +852,86 @@ void ABBGameMode::Tick(float DeltaSeconds)
 	AGameMode::Tick(DeltaSeconds);
 
 	AdjustCamera();
+}
+
+void ABBGameMode::StartRoundWithDelay()
+{
+	if (DelayBetweenRounds > 0)
+	{
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_StartNextRound
+			, this
+			, &ABBGameMode::StartRound
+			, DelayBetweenRounds
+			, false
+		);
+	}
+	else
+	{
+		StartRound();
+	}
+}
+
+void ABBGameMode::StartRound()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("Round starting."));
+	SetPlayerInput(true);
+	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		ABBPlayerState* PlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[i]);
+		if (PlayerState != nullptr)
+		{
+			PlayerState->ResetPlayerState();
+		}
+	}
+	if (RoundTime <= 0)
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("Game mode round time is invalid, proceeding with 90s."));
+		RoundTime = 90;
+	}
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_RoundEnd
+		, this
+		, &ABBGameMode::OnRoundTimeOut
+		, RoundTime
+		, false
+	);
+	if (RoundStartEvent.IsBound())
+	{
+		RoundStartEvent.Broadcast();
+	}
+}
+
+void ABBGameMode::OnRoundTimeOut()
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("Round time has run out."));
+	EndRound();
+}
+
+float ABBGameMode::GetTimeLeftInRound()
+{
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RoundEnd))
+	{
+		return GetWorldTimerManager().GetTimerRemaining(TimerHandle_RoundEnd);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void ABBGameMode::SetPlayerInput(bool IsEnabled)
+{
+	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (IsEnabled)
+		{
+			PlayerController->EnableInput(PlayerController);
+		}
+		else
+		{
+			PlayerController->DisableInput(PlayerController);
+		}
+	}
 }

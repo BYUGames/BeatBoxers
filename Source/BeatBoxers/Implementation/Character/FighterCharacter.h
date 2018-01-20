@@ -38,6 +38,9 @@ protected:
 	TWeakObjectPtr<AActor> MyOpponent;
 	float Facing;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float StartingHealth;
+
 	/** Windup for a jump. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float JumpDelay;

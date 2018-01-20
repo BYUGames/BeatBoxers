@@ -29,11 +29,30 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bDrawDebugTraces;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int RoundsToWin;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DelayBetweenRounds;
+
+	/** Round time in seconds. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int RoundTime;
+
 	UPROPERTY(BlueprintAssignable)
 	FSoloStartEvent SoloStartEvent;
 
 	UPROPERTY(BlueprintAssignable)
 	FSoloEndEvent SoloEndEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FRoundStartEvent RoundStartEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FRoundEndEvent RoundEndEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FMatchEndEvent MatchEndEvent;
 
 	UPROPERTY(BlueprintAssignable)
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
@@ -45,6 +64,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> DefaultMusicBoxClass;
 
+	FTimerHandle TimerHandle_RoundEnd;
+	FTimerHandle TimerHandle_StartNextRound;
+
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FVector Source, FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
@@ -54,6 +76,10 @@ public:
 	virtual void EndSolo() override;
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
+	virtual FRoundStartEvent& GetOnRoundStartEvent() override;
+	virtual FRoundEndEvent& GetOnRoundEndEvent() override;
+	virtual FMatchEndEvent& GetOnMatchEndEvent() override;
+	virtual float GetTimeLeftInRound() override;
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
@@ -61,6 +87,9 @@ public:
 	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	/** End IFighterWorld implementation */
+
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))
+	virtual float K2_GetTimeLeftInRound() { return GetTimeLeftInRound(); }
 
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
 
@@ -77,6 +106,9 @@ public:
 	UFUNCTION()
 	virtual void OnMusicEnd();
 
+	/** Callback for round timer. */
+	virtual void OnRoundTimeOut();
+
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
@@ -86,6 +118,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 
+	virtual int GetWinnerIndex();
+
+	virtual void StartRoundWithDelay();
+	virtual void StartRound();
 	/** Does Logic for ending the round */
 	virtual void EndRound();
+
+	/** Enables or disables player input. */
+	virtual void SetPlayerInput(bool IsEnabled);
 };

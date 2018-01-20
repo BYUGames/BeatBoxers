@@ -6,6 +6,9 @@
 #include "BeatBoxersStructs.h"
 #include "IFighterWorld.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRoundStartEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundEndEvent, int, WinnerIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchEndEvent, int, WinnerIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoloStartEvent, AActor*, ActorSoloing);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerBeatComboChangedEvent, APlayerController*, PlayerController, int, BeatCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSoloEndEvent);
@@ -45,6 +48,14 @@ public:
 	virtual FSoloStartEvent& GetOnSoloStartEvent() = 0;
 
 	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;
+
+	virtual FRoundStartEvent& GetOnRoundStartEvent() = 0;
+
+	virtual FRoundEndEvent& GetOnRoundEndEvent() = 0;
+
+	virtual FMatchEndEvent& GetOnMatchEndEvent() = 0;
+
+	virtual float GetTimeLeftInRound() = 0;
 
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() = 0;
 

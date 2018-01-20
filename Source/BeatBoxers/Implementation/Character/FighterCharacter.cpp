@@ -32,6 +32,8 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->MaxAcceleration = 99999.0f;
 	GetCapsuleComponent()->SetHiddenInGame(false);
 
+	StartingHealth = 100.f;
+
 	JumpDelay = 0.2f;
 
 	Facing = 1.f;

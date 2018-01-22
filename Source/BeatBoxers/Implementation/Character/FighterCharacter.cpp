@@ -535,7 +535,7 @@ void AFighterCharacter::SetFacing(float Sign)
 
 bool AFighterCharacter::K2_IsBlocking() const
 {
-	return IsBlocking();
+	return FighterState->IsBlockStunned();
 }
 
 FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
@@ -613,11 +613,11 @@ void AFighterCharacter::MissBeat()
 
 bool AFighterCharacter::IsJumping()
 {
-	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
-		&& GetCharacterMovement()->IsMovingOnGround()
-		&& !IsJumpProvidingForce())
-		return false;
-	return true;
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
+		|| !GetCharacterMovement()->IsMovingOnGround()
+		|| IsJumpProvidingForce())
+		return true;
+	return false;
 }
 
 void AFighterCharacter::Knockdown()
@@ -650,4 +650,9 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		}
 	}	
+}
+
+void AFighterCharacter::StartStun(float Duration, bool WasBlocked) 
+{
+	FighterState->StartStun(Duration, WasBlocked);
 }

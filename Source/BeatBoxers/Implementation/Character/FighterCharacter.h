@@ -133,6 +133,7 @@ public:
 	virtual void Knockdown() override;
 	virtual FMusicBalanceParams GetMusicBalance() override { return FighterData.MusicBalance; }
 	virtual void SetFighterCollisions(bool DoesCollide) override;
+	virtual void StartStun(float Duration, bool WasBlocked) override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))
@@ -167,7 +168,8 @@ public:
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
 	virtual float K2_GetFacing() const { return GetFacing(); }
 
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Blocking"))
+	/** If the character is stunned by blocking (not if he is blocking in the code)*/
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Block Stunned"))
 	virtual bool K2_IsBlocking() const;
 
 	UFUNCTION(BlueprintPure)

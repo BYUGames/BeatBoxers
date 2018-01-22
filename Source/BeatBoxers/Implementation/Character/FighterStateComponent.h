@@ -118,6 +118,7 @@ public:
 	virtual bool IsBlocking() const override;
 	virtual bool IsCharging() const override;
 	virtual bool IsStunned() const override;
+	virtual bool IsBlockStunned() const override;
 	virtual bool IsKnockedDown() const override;
 	virtual bool IsInvulnerable() const override;
 	virtual bool IsMidMove() const override;

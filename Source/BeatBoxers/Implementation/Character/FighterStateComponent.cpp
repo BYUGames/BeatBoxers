@@ -213,6 +213,11 @@ bool UFighterStateComponent::IsStunned() const
 	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun) || IsKnockedDown();
 }
 
+bool UFighterStateComponent::IsBlockStunned() const
+{
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun) && bIsCurrentStunBlock;
+}
+
 bool UFighterStateComponent::IsKnockedDown() const
 {
 	return bIsKnockedDown;
@@ -316,7 +321,9 @@ void UFighterStateComponent::SetMoveDirection(float Direction)
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);
 	}
-	MoveDirection = 0;
+	else {
+		MoveDirection = 0;
+	}
 }
 
 void UFighterStateComponent::SetVerticalDirection(float Direction)
@@ -692,9 +699,12 @@ void UFighterStateComponent::PerformHitboxScan()
 
 void UFighterStateComponent::OnStunFinished()
 {
-	if (MyInputParser != nullptr)
+	if (!bIsKnockedDown)
 	{
-		MyInputParser->OnControlReturned();
+		if (MyInputParser != nullptr)
+		{
+			MyInputParser->OnControlReturned();
+		}
 	}
 }
 
@@ -885,6 +895,13 @@ void UFighterStateComponent::StartInvulnerableTimer(float Duration)
 void UFighterStateComponent::OnInvulnerableTimer()
 {
 	bIsKnockedDown = false;
+	if (!IsStunned())
+	{
+		if (MyInputParser != nullptr)
+		{
+			MyInputParser->OnControlReturned();
+		}
+	}
 }
 
 bool UFighterStateComponent::IsIgnoringCollision()

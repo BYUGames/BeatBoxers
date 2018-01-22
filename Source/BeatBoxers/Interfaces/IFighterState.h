@@ -49,6 +49,9 @@ public:
 	/** A check to see if the character is currently stunned or in knockdown. */
 	virtual bool IsStunned() const = 0;
 
+	/** A check to see if the character is currently stunned by blocking. */
+	virtual bool IsBlockStunned() const = 0;
+
 	/** A check to see if the character is currently in a knockdown state. */
 	virtual bool IsKnockedDown() const = 0;
 

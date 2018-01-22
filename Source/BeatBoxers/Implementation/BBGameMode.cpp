@@ -141,13 +141,18 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			ApplyMovementToActor(Source, Source, SourceController, -ScaledImpact.ImpartedMovement);
 		}
 	}
-	if (ImpactData->bKnocksDown)
+	if (ImpactData->bKnocksDown && !WasBlocked)
 	{
 		IFighter* Fighter = Cast<IFighter>(Actor.Get());
 		if (Fighter != nullptr)
 		{
 			Fighter->Knockdown();
 		}
+	}
+	if (ImpactData->StunLength > 0) 
+	{
+		IFighter* Fighter = Cast<IFighter>(Actor.Get());
+		Fighter->StartStun(ImpactData->StunLength, WasBlocked);
 	}
 
 	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)

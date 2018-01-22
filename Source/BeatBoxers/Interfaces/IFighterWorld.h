@@ -67,6 +67,12 @@ public:
 	/** Determines if the given accuracy is considered on the beat. */
 	virtual bool IsOnBeat(float Accuracy) = 0;
 
+	/** Whether or not we are in the middle of a round. */
+	virtual bool IsInRound() = 0;
+
+	/** Get time until the next round starts. */
+	virtual float TimeToNextRound() = 0;
+
 	/** Should be called when the given player hit the opponent on the beat. */
 	virtual void PlayerHitOnBeat(APlayerController* Player) = 0;
 

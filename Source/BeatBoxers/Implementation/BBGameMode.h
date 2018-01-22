@@ -35,9 +35,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBetweenRounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DelayBeforeEnd;
+
 	/** Round time in seconds. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int RoundTime;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsInRound;
+
+	bool bReadyToEnd;
 
 	UPROPERTY(BlueprintAssignable)
 	FSoloStartEvent SoloStartEvent;
@@ -84,6 +92,8 @@ public:
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
 	virtual bool IsOnBeat(float Accuracy) override;
+	virtual bool IsInRound() override { return bIsInRound; }
+	virtual float TimeToNextRound() override;
 	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	/** End IFighterWorld implementation */
@@ -91,13 +101,20 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))
 	virtual float K2_GetTimeLeftInRound() { return GetTimeLeftInRound(); }
 
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Is In Round"))
+	virtual float K2_IsInRound() { return IsInRound(); }
+
 	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
 
 	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
 	virtual void HandleMatchIsWaitingToStart() override;
-	virtual void StartMatch() override;
+	virtual void HandleMatchHasStarted() override;
+	virtual void HandleMatchHasEnded() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual bool ReadyToEndMatch_Implementation() override;
 
+	virtual void SpawnPawns();
+	virtual void AttachOpponents();
 	virtual void AdjustCamera();
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -124,6 +141,8 @@ public:
 	virtual void StartRound();
 	/** Does Logic for ending the round */
 	virtual void EndRound();
+	virtual void EndGame(int Winner);
+
 
 	/** Enables or disables player input. */
 	virtual void SetPlayerInput(bool IsEnabled);

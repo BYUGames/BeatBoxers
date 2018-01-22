@@ -24,11 +24,14 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
-	DelayBetweenRounds = 2.f;
+	DelayBetweenRounds = 5.f;
 	RoundsToWin = 2;
 	HitscanDistanceConstant = 100.f;
 	bDrawDebugTraces = true;
+	bIsInRound = false;
+	bReadyToEnd = false;
 	RoundTime = 90;
+	DelayBeforeEnd = 5.f;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -70,6 +73,8 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 
 	if (bDrawDebugTraces)
 	{
+		FVector dir = (End - Origin).GetSafeNormal();
+		FVector op = FVector::CrossProduct(FVector{ 0, 1, 0 }, dir);
 		DrawDebugSphere(
 			GetWorld()
 			, Origin
@@ -78,14 +83,14 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 		);
 		DrawDebugLine(
 			GetWorld()
-			, FVector{ Origin.X, Origin.Y, Origin.Z + Hitbox.Radius }
-			, FVector{ End.X, End.Y, End.Z + Hitbox.Radius }
+			, Origin + (op * Hitbox.Radius)
+			, End + (op * Hitbox.Radius)
 			, FColor::White, false, -1.f, (uint8)'\000', 2.f
 		);
 		DrawDebugLine(
 			GetWorld()
-			, FVector{ Origin.X, Origin.Y, Origin.Z - Hitbox.Radius }
-			, FVector{ End.X, End.Y, End.Z - Hitbox.Radius }
+			, Origin - (op * Hitbox.Radius)
+			, End - (op * Hitbox.Radius)
 			, FColor::White, false, -1.f, (uint8)'\000', 2.f
 		);
 		DrawDebugSphere(
@@ -196,12 +201,18 @@ int ABBGameMode::GetWinnerIndex()
 void ABBGameMode::EndRound()
 {
 	UE_LOG(LogBeatBoxers, Log, TEXT("Round ending."));
-
-	SetPlayerInput(false);
-	int Winner = GetWinnerIndex();
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RoundEnd))
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_RoundEnd);
+	}
+	bIsInRound = false;
+
+	SetPlayerInput(false);
+
+	int Winner = GetWinnerIndex();
+	if (RoundEndEvent.IsBound())
+	{
+		RoundEndEvent.Broadcast(Winner);
 	}
 
 	if (Winner >= 0)
@@ -213,13 +224,8 @@ void ABBGameMode::EndRound()
 			{
 				if (++(PlayerState->RoundsWon) >= RoundsToWin)
 				{
-					UE_LOG(LogBeatBoxers, Log, TEXT("Match ending."));
-					EndMatch();
+					EndGame(Winner);
 
-					if (MatchEndEvent.IsBound())
-					{
-						MatchEndEvent.Broadcast(Winner);
-					}
 					return;
 				}
 			}
@@ -320,149 +326,6 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) co
 
 	if (DamageType == EFighterDamageType::DE_None) return true;
 	return false;
-}
-
-void ABBGameMode::StartMatch()
-{
-	Super::StartMatch();
-
-	UE_LOG(LogABBGameMode, Log, TEXT("Starting new match."));
-
-	UE_LOG(LogABBGameMode, Verbose, TEXT("\t%d players."), GameState->PlayerArray.Num());
-	for (int32 PlayerIndex = 0; PlayerIndex < GameState->PlayerArray.Num(); PlayerIndex++)
-	{
-		if (GameState->PlayerArray[PlayerIndex] != nullptr)
-		{
-			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d]->PlayerId = %d"), PlayerIndex, GameState->PlayerArray[PlayerIndex]->PlayerId);
-		}
-		else
-		{
-			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d] = nullptr"), PlayerIndex);
-		}
-	}
-
-	if (GetGameState<ABBGameState>() != nullptr)
-	{
-		FVector InitialCameraLocation = FVector(0, 800, 180);
-		FVector InitialCameraLookAtLocation = FVector(0, 0, 180);
-		ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
-		if (Settings != nullptr)
-		{
-			InitialCameraLocation = Settings->InitialCameraLocation;
-			InitialCameraLookAtLocation = Settings->InitialCameraLookAtLocation;
-		}
-		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(
-			InitialCameraLocation
-			, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator()
-			, FActorSpawnParameters()
-			);
-		GetGameState<ABBGameState>()->MainCamera = Cast<ACameraActor>(Camera);
-		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			APlayerController *PC = *ActorItr;
-			if (PC != nullptr)
-			{
-				PC->SetViewTarget(Camera);
-			}
-		}
-		
-		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
-		if (WorldMusicBox != nullptr)
-		{
-			UBBGameInstance *GameInstance = GetWorld()->GetGameInstance<UBBGameInstance>();
-			if (GameInstance != nullptr)
-			{
-				FMusicBalanceParams Params{};
-				AFighterCharacter *Fighter;
-				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player0Class.GetDefaultObject());
-				if (Fighter != nullptr)
-				{
-					Params += Fighter->FighterData.MusicBalance;
-				}
-				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player1Class.GetDefaultObject());
-				if (Fighter != nullptr)
-				{
-					Params += Fighter->FighterData.MusicBalance;
-				}
-
-				WorldMusicBox->StartMusic(GameInstance->NewGameData.SongName, Params);
-			}
-		}
-		else
-		{
-			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("Gamemode unable to get musicbox from gamestate."));
-		}
-	}
-	else
-	{
-		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("Gamemode unable to get gamestate as ABBGameState."));
-	}
-	
-
-	if (GameState != nullptr)
-	{
-		UE_LOG(LogABBGameMode, Verbose, TEXT("Begin attaching opponents."));
-		AActor *P1Char = nullptr, *P2Char = nullptr;
-		ABBPlayerState *BBPlayerState = nullptr;
-		if (GameState->PlayerArray.Num() >= 2)
-		{
-			if (GameState->PlayerArray[0] != nullptr)
-			{
-				BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
-				if (BBPlayerState != nullptr)
-				{
-					P1Char = BBPlayerState->MyPawn;
-				}
-				else
-				{
-					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate0 to BBPlayerstate"));
-				}
-			}
-			if (GameState->PlayerArray[1] != nullptr)
-			{
-				BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
-				if (BBPlayerState != nullptr)
-				{
-					P2Char = BBPlayerState->MyPawn;
-				}
-				else
-				{
-					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate1 to BBPlayerstate"));
-				}
-			}
-
-			if (P1Char != nullptr && P2Char != nullptr)
-			{
-				AFighterCharacter *Fighter = Cast<AFighterCharacter>(P1Char);
-				if (Fighter != nullptr)
-				{
-					Fighter->SetOpponent(P2Char);
-				}
-				else
-				{
-					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player0 to Fighter"));
-				}
-				Fighter = Cast<AFighterCharacter>(P2Char);
-				if (Fighter != nullptr)
-				{
-					Fighter->SetOpponent(P1Char);
-				}
-				else
-				{
-					UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player1 to Fighter"));
-				}
-			}
-		}
-		else
-		{
-			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("GameMode can't find at least two players."));
-		}
-		UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
-	}
-
-	SetPlayerInput(false);
-
-	StartRoundWithDelay();
 }
 
 int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
@@ -668,6 +531,7 @@ void ABBGameMode::OnMusicEnd()
 
 void ABBGameMode::HandleMatchIsWaitingToStart()
 {
+	bReadyToEnd = false;
 	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr)
 	{
 		FNewGameData NewGameData = GetWorld()->GetGameInstance<UBBGameInstance>()->NewGameData;
@@ -690,6 +554,116 @@ void ABBGameMode::HandleMatchIsWaitingToStart()
 
 
 	Super::HandleMatchIsWaitingToStart();
+}
+
+void ABBGameMode::HandleMatchHasStarted()
+{
+	GameSession->HandleMatchHasStarted();
+
+	UE_LOG(LogABBGameMode, Log, TEXT("New match started."));
+
+	UE_LOG(LogABBGameMode, Verbose, TEXT("\t%d players."), GameState->PlayerArray.Num());
+	for (int32 PlayerIndex = 0; PlayerIndex < GameState->PlayerArray.Num(); PlayerIndex++)
+	{
+		if (GameState->PlayerArray[PlayerIndex] != nullptr)
+		{
+			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d]->PlayerId = %d"), PlayerIndex, GameState->PlayerArray[PlayerIndex]->PlayerId);
+		}
+		else
+		{
+			UE_LOG(LogABBGameMode, Verbose, TEXT("\tPlayer[%d] = nullptr"), PlayerIndex);
+		}
+	}
+
+	if (GetGameState<ABBGameState>() != nullptr)
+	{
+		FVector InitialCameraLocation = FVector(0, 800, 180);
+		FVector InitialCameraLookAtLocation = FVector(0, 0, 180);
+		ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
+		if (Settings != nullptr)
+		{
+			InitialCameraLocation = Settings->InitialCameraLocation;
+			InitialCameraLookAtLocation = Settings->InitialCameraLookAtLocation;
+		}
+		ACameraActor* Camera = GetWorld()->SpawnActor<ACameraActor>(
+			InitialCameraLocation
+			, FRotationMatrix::MakeFromX(InitialCameraLookAtLocation - InitialCameraLocation).Rotator()
+			, FActorSpawnParameters()
+			);
+		GetGameState<ABBGameState>()->MainCamera = Cast<ACameraActor>(Camera);
+		for (TActorIterator<APlayerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			APlayerController *PC = *ActorItr;
+			if (PC != nullptr)
+			{
+				PC->SetViewTarget(Camera);
+			}
+		}
+		
+		IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
+		if (WorldMusicBox != nullptr)
+		{
+			UBBGameInstance *GameInstance = GetWorld()->GetGameInstance<UBBGameInstance>();
+			if (GameInstance != nullptr)
+			{
+				FMusicBalanceParams Params{};
+				AFighterCharacter *Fighter;
+				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player0Class.GetDefaultObject());
+				if (Fighter != nullptr)
+				{
+					Params += Fighter->FighterData.MusicBalance;
+				}
+				Fighter = Cast<AFighterCharacter>(GameInstance->NewGameData.Player1Class.GetDefaultObject());
+				if (Fighter != nullptr)
+				{
+					Params += Fighter->FighterData.MusicBalance;
+				}
+
+				WorldMusicBox->StartMusic(GameInstance->NewGameData.SongName, Params);
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("Gamemode unable to get musicbox from gamestate."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("Gamemode unable to get gamestate as ABBGameState."));
+	}
+	
+	SetPlayerInput(false);
+
+	StartRound();
+
+	// Make sure level streaming is up to date before triggering NotifyMatchStarted
+	GEngine->BlockTillLevelStreamingCompleted(GetWorld());
+
+	// First fire BeginPlay, if we haven't already in waiting to start match
+	GetWorldSettings()->NotifyBeginPlay();
+
+	// Then fire off match started
+	GetWorldSettings()->NotifyMatchStarted();
+
+	// if passed in bug info, send player to right location
+	const FString BugLocString = UGameplayStatics::ParseOption(OptionsString, TEXT("BugLoc"));
+	const FString BugRotString = UGameplayStatics::ParseOption(OptionsString, TEXT("BugRot"));
+	if( !BugLocString.IsEmpty() || !BugRotString.IsEmpty() )
+	{
+		for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
+		{
+			APlayerController* PlayerController = Iterator->Get();
+			if( PlayerController->CheatManager != nullptr )
+			{
+				PlayerController->CheatManager->BugItGoString( BugLocString, BugRotString );
+			}
+		}
+	}
+
+	if (IsHandlingReplays() && GetGameInstance() != nullptr)
+	{
+		GetGameInstance()->StartRecordingReplay(GetWorld()->GetMapName(), GetWorld()->GetMapName());
+	}
 }
 
 FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& ImpactData, float Accuracy)
@@ -875,7 +849,7 @@ void ABBGameMode::StartRoundWithDelay()
 void ABBGameMode::StartRound()
 {
 	UE_LOG(LogBeatBoxers, Log, TEXT("Round starting."));
-	SetPlayerInput(true);
+	bIsInRound = true;
 	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
 		ABBPlayerState* PlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[i]);
@@ -884,6 +858,8 @@ void ABBGameMode::StartRound()
 			PlayerState->ResetPlayerState();
 		}
 	}
+	SpawnPawns();
+	SetPlayerInput(true);
 	if (RoundTime <= 0)
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("Game mode round time is invalid, proceeding with 90s."));
@@ -925,13 +901,143 @@ void ABBGameMode::SetPlayerInput(bool IsEnabled)
 	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
 	{
 		APlayerController* PlayerController = Iterator->Get();
-		if (IsEnabled)
+		if (PlayerController->GetPawn() != nullptr)
 		{
-			PlayerController->EnableInput(PlayerController);
+			if (IsEnabled)
+			{
+				PlayerController->GetPawn()->EnableInput(PlayerController);
+			}
+			else
+			{
+				PlayerController->GetPawn()->DisableInput(PlayerController);
+			}
 		}
-		else
+	}
+}
+
+float ABBGameMode::TimeToNextRound()
+{
+	if (!bIsInRound && GetWorldTimerManager().IsTimerActive(TimerHandle_StartNextRound))
+	{
+		return GetWorldTimerManager().GetTimerRemaining(TimerHandle_StartNextRound);
+	}
+	return 0;
+}
+
+void ABBGameMode::AttachOpponents()
+{
+	if (GameState == nullptr)
+	{
+		UE_LOG(LogABBGameMode, Error, TEXT("GameState null when attach opponents was called."));
+		return;
+	}
+	UE_LOG(LogABBGameMode, Verbose, TEXT("Begin attaching opponents."));
+	AActor *P1Char = nullptr, *P2Char = nullptr;
+	ABBPlayerState *BBPlayerState = nullptr;
+	if (GameState->PlayerArray.Num() >= 2)
+	{
+		if (GameState->PlayerArray[0] != nullptr)
 		{
-			PlayerController->DisableInput(PlayerController);
+			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
+			if (BBPlayerState != nullptr)
+			{
+				P1Char = BBPlayerState->MyPawn;
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate0 to BBPlayerstate"));
+			}
 		}
+		if (GameState->PlayerArray[1] != nullptr)
+		{
+			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
+			if (BBPlayerState != nullptr)
+			{
+				P2Char = BBPlayerState->MyPawn;
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast playerstate1 to BBPlayerstate"));
+			}
+		}
+
+		if (P1Char != nullptr && P2Char != nullptr)
+		{
+			AFighterCharacter *Fighter = Cast<AFighterCharacter>(P1Char);
+			if (Fighter != nullptr)
+			{
+				Fighter->SetOpponent(P2Char);
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player0 to Fighter"));
+			}
+			Fighter = Cast<AFighterCharacter>(P2Char);
+			if (Fighter != nullptr)
+			{
+				Fighter->SetOpponent(P1Char);
+			}
+			else
+			{
+				UE_LOG(LogABBGameMode, Verbose, TEXT("Unable to cast player1 to Fighter"));
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("GameMode can't find at least two players."));
+	}
+	UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
+}
+
+void ABBGameMode::SpawnPawns()
+{
+	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController->GetPawn() != nullptr)
+		{
+			APawn *Pawn = PlayerController->GetPawn();
+			PlayerController->UnPossess();
+			Pawn->Destroy();
+		}
+		if ((PlayerController->GetPawn() == nullptr) && PlayerCanRestart(PlayerController))
+		{
+			RestartPlayer(PlayerController);
+		}
+	}
+	AttachOpponents();
+}
+
+bool ABBGameMode::ReadyToEndMatch_Implementation()
+{
+	return bReadyToEnd;
+}
+
+void ABBGameMode::EndGame(int Winner)
+{
+	UE_LOG(LogBeatBoxers, Log, TEXT("Match ending."));
+	if (MatchEndEvent.IsBound())
+	{
+		MatchEndEvent.Broadcast(Winner);
+	}
+	bReadyToEnd = true;
+}
+
+void ABBGameMode::HandleMatchHasEnded()
+{
+	if (DelayBeforeEnd > 0)
+	{
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_StartNextRound
+			, this
+			, &ABBGameMode::RestartGame
+			, DelayBeforeEnd
+			, false
+		);
+	}
+	else
+	{
+		RestartGame();
 	}
 }

@@ -37,6 +37,7 @@ protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;
 	float Facing;
+	bool bIsDead;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float StartingHealth;
@@ -52,6 +53,7 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	IFighter* GetSelfAsFighter();
 	const IFighter* GetSelfAsFighter() const;
@@ -130,6 +132,7 @@ public:
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;
 	virtual bool IsJumping() override;
+	virtual bool IsDead() override;
 	virtual void Knockdown() override;
 	virtual FMusicBalanceParams GetMusicBalance() override { return FighterData.MusicBalance; }
 	virtual void SetFighterCollisions(bool DoesCollide) override;
@@ -141,6 +144,9 @@ public:
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Knocked Down"))
 	bool K2_IsKnockedDown();
+
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Dead"))
+	bool K2_IsDead();
 
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
@@ -177,4 +183,6 @@ public:
 
 	void SetOpponent(TWeakObjectPtr<AActor> NewOpponent);
 
+	UFUNCTION()
+	void OnRoundEnd(int Winner);
 };

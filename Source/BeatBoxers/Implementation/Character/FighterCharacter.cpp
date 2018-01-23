@@ -1,6 +1,8 @@
 // copyright 2017 BYU Animation
 
 #include "FighterCharacter.h"
+#include "Implementation/BBGameState.h"
+#include "Implementation/BBGameMode.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundCue.h"
@@ -41,13 +43,48 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	InputBufferLength = 0.5f;
 	ComplexInputWindow = 0.5f;
 	RecoveryDuration = 0.6f;
+	bIsDead = false;
 }
 
 // Called when the game starts or when spawned
 void AFighterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	if (GameMode != nullptr)
+	{
+		auto BBGameMode = Cast<ABBGameMode>(GameMode);
+		if (BBGameMode != nullptr)
+		{
+			BBGameMode->GetOnRoundEndEvent().AddDynamic(this, &AFighterCharacter::OnRoundEnd);
+			BBGameMode->GetOnMatchEndEvent().AddDynamic(this, &AFighterCharacter::OnRoundEnd);
+		}
+		else
+		{
+			UE_LOG(LogAFighterCharacter, Error, TEXT("%s unable to bind to roundend matchend, could not cast gamemode"), *GetNameSafe(this));
+		}
+	}
+	else
+	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%s unable to bind to roundend matchend, could not get gamemode"), *GetNameSafe(this));
+	}
+}
+
+void AFighterCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	if (GameMode != nullptr)
+	{
+		auto BBGameMode = Cast<ABBGameMode>(GameMode);
+		if (BBGameMode != nullptr)
+		{
+			BBGameMode->GetOnRoundEndEvent().RemoveDynamic(this, &AFighterCharacter::OnRoundEnd);
+			BBGameMode->GetOnMatchEndEvent().RemoveDynamic(this, &AFighterCharacter::OnRoundEnd);
+		}
+	}
 }
 
 // Called every frame
@@ -655,4 +692,41 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 void AFighterCharacter::StartStun(float Duration, bool WasBlocked) 
 {
 	FighterState->StartStun(Duration, WasBlocked);
+}
+
+bool AFighterCharacter::IsDead()
+{
+	return bIsDead;
+}
+
+bool AFighterCharacter::K2_IsDead()
+{
+	return IsDead();
+}
+
+void AFighterCharacter::OnRoundEnd(int Winner)
+{
+	UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i)"), *GetNameSafe(this), Winner);
+	if (Winner >= 0)
+	{
+		auto GameStateBase = UGameplayStatics::GetGameState(GetWorld());
+		if (GameStateBase != nullptr)
+		{
+			auto GameState = Cast<ABBGameState>(GameStateBase);
+			if (GameState != nullptr && Winner < GameState->PlayerArray.Num())
+			{
+				if (Controller != nullptr && Controller->PlayerState != nullptr)
+				{
+					if (Controller->PlayerState == GameState->PlayerArray[Winner])
+					{
+						UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i) Is not Dead"), *GetNameSafe(this), Winner);
+						bIsDead = false;
+						return;
+					}
+				}
+			}
+		}
+		UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i) IsDead"), *GetNameSafe(this), Winner);
+		bIsDead = true;
+	}
 }

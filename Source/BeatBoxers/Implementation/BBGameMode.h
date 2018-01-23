@@ -143,6 +143,7 @@ public:
 	virtual void EndRound();
 	virtual void EndGame(int Winner);
 
+	virtual void PushMusicBalance();
 
 	/** Enables or disables player input. */
 	virtual void SetPlayerInput(bool IsEnabled);

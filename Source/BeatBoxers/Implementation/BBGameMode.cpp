@@ -218,12 +218,9 @@ void ABBGameMode::EndRound()
 	}
 
 	SetPlayerInput(false);
+	PushMusicBalance();
 
 	int Winner = GetWinnerIndex();
-	if (RoundEndEvent.IsBound())
-	{
-		RoundEndEvent.Broadcast(Winner);
-	}
 
 	if (Winner >= 0)
 	{
@@ -237,6 +234,13 @@ void ABBGameMode::EndRound()
 					EndGame(Winner);
 
 					return;
+				}
+				else
+				{
+					if (RoundEndEvent.IsBound())
+					{
+						RoundEndEvent.Broadcast(Winner);
+					}
 				}
 			}
 			else
@@ -1050,5 +1054,41 @@ void ABBGameMode::HandleMatchHasEnded()
 	else
 	{
 		RestartGame();
+	}
+}
+
+void ABBGameMode::PushMusicBalance()
+{
+	if (GameState == nullptr || GetMusicBox() == nullptr || GetGameInstance() == nullptr) return;
+	IMusicBox *MusicBox = Cast<IMusicBox>(GetMusicBox());
+	UBBGameInstance *GameInstance = Cast<UBBGameInstance>(GetGameInstance());
+	if (GameState->PlayerArray.Num() < 2 || MusicBox == nullptr || GameInstance == nullptr) return;
+	ABBPlayerState *PlayerStates[2];
+	AFighterCharacter *DefaultFighter[2];
+	FMusicBalanceParams MusicParams[2];
+	DefaultFighter[0] = Cast<AFighterCharacter>(GameInstance->NewGameData.Player0Class);
+	DefaultFighter[1] = Cast<AFighterCharacter>(GameInstance->NewGameData.Player1Class);
+	for (int i = 0; i < 2; i++)
+	{
+		PlayerStates[i] = Cast<ABBPlayerState>(GameState->PlayerArray[i]);
+		if (PlayerStates[i] == nullptr) return;
+		if (DefaultFighter[i] != nullptr)
+		{
+			MusicParams[i] = DefaultFighter[i]->GetMusicBalance();
+		}
+	}
+	int r0 = PlayerStates[0]->RoundsWon;
+	int r1 = PlayerStates[1]->RoundsWon;
+	if (r0 == r1)
+	{
+		MusicBox->ChangeBalance(MusicParams[0] + MusicParams[1]);
+	}
+	else if (r0 > r1)
+	{
+		MusicBox->ChangeBalance(MusicParams[0]);
+	}
+	else
+	{
+		MusicBox->ChangeBalance(MusicParams[1]);
 	}
 }

@@ -85,6 +85,9 @@ public:
 	/** Returns true if IFighter is in jumping process */
 	virtual bool IsJumping() = 0;
 
+	/** Returns if we're "dead" */
+	virtual bool IsDead() = 0;
+
 	/** Knocksdown the fighter. */
 	virtual void Knockdown() = 0;
 

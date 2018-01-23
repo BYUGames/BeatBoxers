@@ -360,7 +360,9 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
 	if (!Movement.IsValid())
 	{
-		UE_LOG(LogUFighterState, Warning, TEXT("%s UFighterStateComponent asked to apply invalid movement."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent stopping movement."), *GetNameSafe(GetOwner()));
+		bIsBeingMoved = false;
+		TryDisableTick();
 		return;
 	}
 

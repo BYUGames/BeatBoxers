@@ -136,6 +136,11 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
+	if (ImpactData->StunLength > 0) 
+	{
+		IFighter* Fighter = Cast<IFighter>(Actor.Get());
+		Fighter->StartStun(ImpactData->StunLength, WasBlocked);
+	}
 	if (ApplyMovementToActor(Actor, Source, SourceController, ScaledImpact.ImpartedMovement) == 1 && !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
@@ -153,11 +158,6 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		{
 			Fighter->Knockdown();
 		}
-	}
-	if (ImpactData->StunLength > 0) 
-	{
-		IFighter* Fighter = Cast<IFighter>(Actor.Get());
-		Fighter->StartStun(ImpactData->StunLength, WasBlocked);
 	}
 
 	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
@@ -205,12 +205,17 @@ int ABBGameMode::GetWinnerIndex()
 
 void ABBGameMode::EndRound()
 {
+	if (!bIsInRound)
+	{
+		return;
+	}
+	bIsInRound = false;
+
 	UE_LOG(LogBeatBoxers, Log, TEXT("Round ending."));
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RoundEnd))
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_RoundEnd);
 	}
-	bIsInRound = false;
 
 	SetPlayerInput(false);
 
@@ -369,13 +374,14 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		FCollisionQueryParams::DefaultQueryParam
 	);
 	ACharacter* Character = Cast<ACharacter>(Target.Get());
+	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
 	if (Character != nullptr)
 	{
-		Character->LaunchCharacter(FVector(0.01,0.01,0.01), true, true);
+		Character->LaunchCharacter(FVector(0.f,0.01f,0.f), true, true);
+		TargetFighter->ApplyMovement(FMovement{});
 	}
 	if (!Movement.UsePhysicsLaunch)
 	{
-		IFighter *TargetFighter = Cast<IFighter>(Target.Get());
 		if (TargetFighter != nullptr)
 		{
 			TargetFighter->ApplyMovement(NonrelativeMovement);

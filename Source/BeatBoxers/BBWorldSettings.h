@@ -16,16 +16,16 @@ class BEATBOXERS_API ABBWorldSettings : public AWorldSettings
 	
 public:
 	/** Maximum camera displacement. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=World)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FBox CameraBounds;
 
 	/** Padding to frame the subjects. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=World)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FVector2D CameraPadding;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=World)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FVector InitialCameraLocation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=World)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FVector InitialCameraLookAtLocation;
 };

@@ -706,7 +706,6 @@ bool AFighterCharacter::K2_IsDead()
 
 void AFighterCharacter::OnRoundEnd(int Winner)
 {
-	UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i)"), *GetNameSafe(this), Winner);
 	if (Winner >= 0)
 	{
 		auto GameStateBase = UGameplayStatics::GetGameState(GetWorld());
@@ -719,14 +718,12 @@ void AFighterCharacter::OnRoundEnd(int Winner)
 				{
 					if (Controller->PlayerState == GameState->PlayerArray[Winner])
 					{
-						UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i) Is not Dead"), *GetNameSafe(this), Winner);
 						bIsDead = false;
 						return;
 					}
 				}
 			}
 		}
-		UE_LOG(LogAFighterCharacter, Log, TEXT("%s AFighterCharacter::OnRoundEnd(%i) IsDead"), *GetNameSafe(this), Winner);
 		bIsDead = true;
 	}
 }

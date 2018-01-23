@@ -206,6 +206,8 @@ struct FMusicBalanceParams
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsRiffOn;
 
+	FMusicBalanceParams() : bIsMaestraOn(false), bIsRiffOn(false) {}
+
 	FMusicBalanceParams operator+(const FMusicBalanceParams& rhs);
 	FMusicBalanceParams& operator+=(const FMusicBalanceParams& rhs);
 };

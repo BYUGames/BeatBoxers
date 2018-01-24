@@ -764,7 +764,7 @@ FMoveHitbox AFighterCharacter::GetFighterHitbox()
 	return FMoveHitbox();
 }
 
-bool AFighterCharacter::HasActiveMoveWindowNotInWinddown()
+bool AFighterCharacter::CanClash()
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->HasActiveMoveWindow() && !MyFighterState->IsInWinddown();

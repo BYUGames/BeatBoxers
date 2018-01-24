@@ -1106,7 +1106,9 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AAc
 {
 	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
 	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
-	if (FighterA != nullptr && FighterB != nullptr && mFighterA != nullptr && mFighterB != nullptr && mFighterA->HasActiveMoveWindowNotInWinddown() && mFighterB->HasActiveMoveWindowNotInWinddown())
+	if (FighterA != nullptr && FighterB != nullptr 
+		&& mFighterA != nullptr && mFighterB != nullptr 
+		&& mFighterA->CanClash() && mFighterB->CanClash())
 	{
 		TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 		FMoveHitbox Hitbox;
@@ -1151,9 +1153,17 @@ void ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor
 {
 	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
 	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
+	
+	if (mFighterA->GetFighterCurrentWindowAccuracy() >= mFighterA->GetFighterCurrentWindowAccuracy())
+	{
+
+	}
+
 	if (mFighterA != nullptr && mFighterB != nullptr)
 	{
 		mFighterA->StartStun(.5, false);
 		mFighterB->StartStun(.5, false);
 	}
+
+
 }

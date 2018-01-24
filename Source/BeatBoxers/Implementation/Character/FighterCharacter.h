@@ -141,7 +141,7 @@ public:
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual float GetFighterCurrentWindowAccuracy() override;
 	virtual FMoveHitbox GetFighterHitbox() override;
-	virtual bool HasActiveMoveWindowNotInWinddown() override;
+	virtual bool CanClash() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

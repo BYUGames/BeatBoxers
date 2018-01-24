@@ -107,5 +107,5 @@ public:
 	virtual FMoveHitbox GetFighterHitbox() = 0;
 
 	/** Returns true if there is a current window active and not in the winddown state. */
-	virtual bool HasActiveMoveWindowNotInWinddown() = 0;
+	virtual bool CanClash() = 0;
 };

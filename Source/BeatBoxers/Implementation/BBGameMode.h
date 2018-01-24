@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBeforeEnd;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FImpactData DefaultClashImpact;
+
 	/** Round time in seconds. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int RoundTime;
@@ -115,18 +118,11 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual bool ReadyToEndMatch_Implementation() override;
 
-	virtual void SpawnPawns();
-	virtual void AttachOpponents();
-	virtual void AdjustCamera();
-
 	UFUNCTION(BlueprintNativeEvent)
 	FImpactData GetScaledImpactData(const FImpactData& ImpactData, float Accuracy);
 
 	UFUNCTION()
 	virtual void OnMusicEnd();
-
-	/** Callback for round timer. */
-	virtual void OnRoundTimeOut();
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() override;
@@ -136,6 +132,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
+
+
+protected:
+	virtual void SpawnPawns();
+	virtual void AttachOpponents();
+	virtual void AdjustCamera();
 
 	virtual int GetWinnerIndex();
 
@@ -149,4 +151,9 @@ public:
 
 	/** Enables or disables player input. */
 	virtual void SetPlayerInput(bool IsEnabled);
+
+	/** Callback for round timer. */
+	virtual void OnRoundTimeOut();
+
+	virtual FImpactData GetClashImpact(bool WinnerData) { return DefaultClashImpact; }
 };

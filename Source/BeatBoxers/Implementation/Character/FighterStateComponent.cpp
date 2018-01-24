@@ -181,24 +181,26 @@ bool UFighterStateComponent::IsInputBlocked() const
 bool UFighterStateComponent::IsBlocking() const
 {
 	float ToOpponent = (MyFighter != nullptr) ? MyFighter->GetOpponentDirection() : 0.f;
-	UE_LOG(LogUFighterState, VeryVerbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %f, %s, %s, %f"),
+	UE_LOG(LogUFighterState, VeryVerbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %d, %f, %s, %s, %f"),
 		*GetNameSafe(GetOwner()),
 		IsStunned(),
 		bIsCurrentStunBlock,
+		bIsBlockButtonDown,
 		IsInputBlocked(),
 		MoveDirection,
 		(MyFighter != nullptr) ? TEXT("Valid") : TEXT("nullptr"),
 		*GetEnumValueToString<EStance>(TEXT("EStance"), (MyFighter != nullptr) ? MyFighter->GetStance() : EStance::SE_NA),
 		ToOpponent
 	);
+	if (!IsInputBlocked() && bIsBlockButtonDown) return true;
 	if (IsStunned() && bIsCurrentStunBlock) return true;
-	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
-	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
+	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
+	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
-	if (ToOpponent == 0) return false;
+	//if (ToOpponent == 0) return false;
 
-	if (ToOpponent > 0 && MoveDirection < 0) return true;
-	if (ToOpponent < 0 && MoveDirection > 0) return true;
+	//if (ToOpponent > 0 && MoveDirection < 0) return true;
+	//if (ToOpponent < 0 && MoveDirection > 0) return true;
 
 	return false;
 }
@@ -316,7 +318,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 
 void UFighterStateComponent::SetMoveDirection(float Direction)
 {
-	if (!IsInputBlocked() && MyFighter != nullptr)
+	if (!IsInputBlocked() && MyFighter != nullptr && !MyFighter->IsBlocking())
 	{
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);
@@ -401,6 +403,16 @@ void UFighterStateComponent::Jump()
 	if (IsInputBlocked() || MyFighter == nullptr || MyFighter->IsJumping()) return;
 	SetWantsToCrouch(false);
 	MyFighter->Jump();
+}
+
+void UFighterStateComponent::Block()
+{
+	bIsBlockButtonDown = true;
+}
+
+void UFighterStateComponent::StopBlock()
+{
+	bIsBlockButtonDown = false;
 }
 
 void UFighterStateComponent::OnLand()

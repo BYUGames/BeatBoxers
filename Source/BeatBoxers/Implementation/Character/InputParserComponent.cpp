@@ -274,6 +274,22 @@ void UInputParserComponent::InputActionJump(bool IsUp)
 	}
 }
 
+void UInputParserComponent::InputActionBlock(bool IsUp)
+{
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->Block();
+	}
+}
+
+void UInputParserComponent::InputActionStopBlock(bool IsUp)
+{
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->StopBlock();
+	}
+}
+
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)

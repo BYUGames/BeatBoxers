@@ -34,6 +34,7 @@ protected:
 	uint32 bHasMoveWindowHit : 1;
 	uint32 bIsBeingMoved : 1;
 	uint32 bIsCurrentStunBlock : 1;
+	uint32 bIsBlockButtonDown : 1;
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
 	uint32 bIsKnockedDown : 1;
@@ -131,6 +132,8 @@ public:
 	virtual void SetWantsToCharge(bool WantsToCharge) override;
 	virtual void ApplyMovement(FMovement Movement) override;
 	virtual void Jump() override;
+	virtual void Block() override;
+	virtual void StopBlock() override;
 	virtual void OnLand() override;
 	virtual float GetSpecial() const override;
 	virtual void AddSpecial(float Amount) override;

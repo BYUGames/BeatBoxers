@@ -78,6 +78,8 @@ protected:
 	void InputActionMedium();
 	void InputActionHeavy();
 	void InputActionJump();
+	void InputActionBlock();
+	void InputActionStopBlock();
 	void InputActionDashLeftButton();
 	void InputActionDashRightButton();
 	void SetGravityScale(float scale);
@@ -174,9 +176,13 @@ public:
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Facing"))
 	virtual float K2_GetFacing() const { return GetFacing(); }
 
-	/** If the character is stunned by blocking (not if he is blocking in the code)*/
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get Is Block Stunned"))
+	/** If the character is blocking*/
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "Get is Blocking"))
 	virtual bool K2_IsBlocking() const;
+
+	/** If the character is stunned by blocking (not if he is blocking in the code)*/
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Block Stunned"))
+	virtual bool K2_IsBlockStunned() const;
 
 	UFUNCTION(BlueprintPure)
 	virtual float GetHorizontalMovement() const;

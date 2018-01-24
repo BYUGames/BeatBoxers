@@ -122,6 +122,8 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
 	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
+	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
+	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
 	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
 	InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 }
@@ -431,7 +433,6 @@ void AFighterCharacter::OnJumpTimer()
 	ACharacter::Jump();
 }
 
-
 void AFighterCharacter::InputActionDashLeftButton()
 {
 	if (GetInputParser() != nullptr)
@@ -469,6 +470,22 @@ void AFighterCharacter::InputActionJump()
 	if (GetInputParser() != nullptr)
 	{
 		GetInputParser()->InputActionJump(true);
+	}
+}
+
+void AFighterCharacter::InputActionBlock()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionBlock(true);
+	}
+}
+
+void AFighterCharacter::InputActionStopBlock()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionStopBlock(true);
 	}
 }
 
@@ -571,6 +588,11 @@ void AFighterCharacter::SetFacing(float Sign)
 }
 
 bool AFighterCharacter::K2_IsBlocking() const
+{
+	return FighterState->IsBlocking();
+}
+
+bool AFighterCharacter::K2_IsBlockStunned() const
 {
 	return FighterState->IsBlockStunned();
 }

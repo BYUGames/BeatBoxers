@@ -79,6 +79,9 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_Jump:
 		if (Jump) return true;
 		break;
+	case EInputToken::IE_Block:
+		if (Block) return true;
+		break;
 	case EInputToken::IE_DashForward:
 		if (DashForward) return true;
 		break;

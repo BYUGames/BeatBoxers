@@ -88,6 +88,12 @@ public:
 	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
 	virtual void Jump() = 0;
 
+	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
+	virtual void Block() = 0;
+
+	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
+	virtual void StopBlock() = 0;
+
 	/** Receives pushed notifications from Fighter when landing on the ground. */
 	virtual void OnLand() = 0;
 

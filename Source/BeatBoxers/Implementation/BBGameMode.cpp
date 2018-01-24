@@ -32,6 +32,14 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	bReadyToEnd = false;
 	RoundTime = 90;
 	DelayBeforeEnd = 5.f;
+	DefaultClashImpact.bKnocksDown = false;
+	DefaultClashImpact.Damage = 0.f;
+	DefaultClashImpact.ImpartedMovement.Delta = FVector2D(-100.f, 0.f);
+	DefaultClashImpact.ImpartedMovement.Duration = 0.2f;
+	DefaultClashImpact.ImpartedMovement.UseDeltaAsSpeed = false;
+	DefaultClashImpact.ImpartedMovement.IsRelativeToAttackerFacing = true;
+	DefaultClashImpact.ImpartedMovement.UsePhysicsLaunch = false;
+	DefaultClashImpact.StunLength = 0.5f;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -134,6 +142,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	if (CheckClash(Actor, Source))
 	{
+		UE_LOG(LogClashing, Log, TEXT("Clash detected between %s and %s."), *Actor.Get()->GetName(), *Source.Get()->GetName());
 		OnClash(Actor, Source);
 		return EHitResponse::HE_Clashed;
 	}
@@ -142,54 +151,20 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
-	if (ImpactData->StunLength > 0) 
-	{
-		IFighter* Fighter = Cast<IFighter>(Actor.Get());
-		Fighter->StartStun(ImpactData->StunLength, WasBlocked);
-	}
-	if (ApplyMovementToActor(Actor, Source, SourceController, ScaledImpact.ImpartedMovement) == 1 && !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
+
+	if (ApplyImpact(Actor, ScaledImpact, WasBlocked, SourceController, Source) == 1
+		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
 		//The target is already pushed up against a wall, push back the source instead.
-		if (Source.IsValid() && SourceController.IsValid() && Source.Get() == SourceController.Get()->GetPawn())
+		//Don't do this for projectiles.
+		if (Source.IsValid() && SourceController.IsValid()
+			&& Source.Get() == SourceController.Get()->GetPawn())
 		{
-			//Don't do this for projectiles.
-			ApplyMovementToActor(Source, Source, SourceController, -ScaledImpact.ImpartedMovement);
-		}
-	}
-	if (ImpactData->bKnocksDown && !WasBlocked)
-	{
-		IFighter* Fighter = Cast<IFighter>(Actor.Get());
-		if (Fighter != nullptr)
-		{
-			Fighter->Knockdown();
+			ApplyMovementToActor(Source, Source, SourceController, -ImpactData->ImpartedMovement);
 		}
 	}
 
-	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
-	{
-		SourceController.Get()->PlayerState->Score += ScaledImpact.Damage;
-		AddSpecial(SourceController.Get()->PlayerState, ScaledImpact.SpecialGenerated);
-		APawn* mAPawn = Cast<APawn>(Actor.Get());
-		// Logic for applying damage to opponent
-		if (mAPawn != nullptr && mAPawn->Controller != nullptr)
-		{
-			APlayerController* mPlayerController = Cast<APlayerController>(mAPawn->Controller);
-			if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
-			{
-				ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
-				if (mBBPlayerState != nullptr)
-				{
-					mBBPlayerState->TakeDamage(ScaledImpact.Damage);
-					if (mBBPlayerState->GetHealth() == 0)
-					{
-						UE_LOG(LogBeatBoxers, Log, TEXT("A player has died."));
-						EndRound();
-					}
-				}
-			}
-		}
-	}
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
 
@@ -1102,47 +1077,53 @@ void ABBGameMode::PushMusicBalance()
 	MusicBox->ChangeBalance(FinalParams);
 }
 
-bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB)
+bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActor> ActorB)
 {
-	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
-	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
-	if (FighterA != nullptr && FighterB != nullptr 
-		&& mFighterA != nullptr && mFighterB != nullptr 
-		&& mFighterA->CanClash() && mFighterB->CanClash())
+	if (ActorA.IsValid() && ActorB.IsValid())
 	{
-		TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
-		FMoveHitbox Hitbox;
-		Hitbox.Radius = mFighterA->GetFighterHitbox().Radius;
-		Hitbox.Origin = mFighterA->GetFighterHitbox().Origin;
-		Hitbox.End = mFighterA->GetFighterHitbox().End;
-
-		//Make hitboxes relative to facing
-		Hitbox.Origin.X *= mFighterA->GetFacing();
-		Hitbox.End.X *= mFighterA->GetFacing();
-
-		FHitResult HitResult = TraceHitbox(
-			FighterA->GetActorLocation(),
-			Hitbox,
-			ActorsToIgnore
-		);
-		if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+		IFighter* mFighterA = Cast<IFighter>(ActorA.Get());
+		IFighter* mFighterB = Cast<IFighter>(ActorB.Get());
+		if (mFighterA != nullptr && mFighterB != nullptr
+			&& mFighterA->CanClash() && mFighterB->CanClash())
 		{
-			Hitbox.Radius = mFighterB->GetFighterHitbox().Radius;
-			Hitbox.Origin = mFighterB->GetFighterHitbox().Origin;
-			Hitbox.End = mFighterB->GetFighterHitbox().End;
+			TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
+			ActorsToIgnore.Add(ActorA);
+			FMoveHitbox Hitbox;
+			Hitbox.Radius = mFighterA->GetFighterHitbox().Radius;
+			Hitbox.Origin = mFighterA->GetFighterHitbox().Origin;
+			Hitbox.End = mFighterA->GetFighterHitbox().End;
 
 			//Make hitboxes relative to facing
-			Hitbox.Origin.X *= mFighterB->GetFacing();
-			Hitbox.End.X *= mFighterB->GetFacing();
+			Hitbox.Origin.X *= mFighterA->GetFacing();
+			Hitbox.End.X *= mFighterA->GetFacing();
 
-			HitResult = TraceHitbox(
-				FighterB->GetActorLocation(),
+			FHitResult HitResult = TraceHitbox(
+				ActorA.Get()->GetActorLocation(),
 				Hitbox,
 				ActorsToIgnore
 			);
 			if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
 			{
-				return true;
+				ActorsToIgnore.Empty();
+				ActorsToIgnore.Add(ActorB);
+
+				Hitbox.Radius = mFighterB->GetFighterHitbox().Radius;
+				Hitbox.Origin = mFighterB->GetFighterHitbox().Origin;
+				Hitbox.End = mFighterB->GetFighterHitbox().End;
+
+				//Make hitboxes relative to facing
+				Hitbox.Origin.X *= mFighterB->GetFacing();
+				Hitbox.End.X *= mFighterB->GetFacing();
+
+				HitResult = TraceHitbox(
+					ActorB.Get()->GetActorLocation(),
+					Hitbox,
+					ActorsToIgnore
+				);
+				if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -1153,17 +1134,70 @@ void ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor
 {
 	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
 	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
-	
-	if (mFighterA->GetFighterCurrentWindowAccuracy() >= mFighterA->GetFighterCurrentWindowAccuracy())
-	{
-
-	}
 
 	if (mFighterA != nullptr && mFighterB != nullptr)
 	{
-		mFighterA->StartStun(.5, false);
-		mFighterB->StartStun(.5, false);
+		IFighter* winner = DetermineClashWinner(mFighterA, mFighterB);
+		// Passes the fighters themselves as the source so the clash impact will be relative to their facing.
+		ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
+		ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
+	}
+	else
+	{
+		UE_LOG(LogClashing, Warning, TEXT("ABBGameMode::OnClash given a nullptr for a Fighter."));
+	}
+}
+
+IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* FighterB)
+{
+	// Nobody wins for now.
+	return nullptr;
+}
+
+int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
+{
+	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
+
+	IFighter* Fighter = Cast<IFighter>(Actor.Get());
+	if (Fighter != nullptr)
+	{
+		if (ImpactData.StunLength > 0)
+		{
+			Fighter->StartStun(ImpactData.StunLength, WasBlocked);
+		}
+		if (ImpactData.bKnocksDown && !WasBlocked)
+		{
+			IFighter* Fighter = Cast<IFighter>(Actor.Get());
+			if (Fighter != nullptr)
+			{
+				Fighter->Knockdown();
+			}
+		}
+	}
+	
+	if (SourceController.IsValid() && SourceController.Get()->PlayerState != nullptr)
+	{
+		AddSpecial(SourceController.Get()->PlayerState, ImpactData.SpecialGenerated);
 	}
 
-
+	// Logic for applying damage to opponent
+	APawn* mAPawn = Cast<APawn>(Actor.Get());
+	if (mAPawn != nullptr && mAPawn->Controller != nullptr)
+	{
+		APlayerController* mPlayerController = Cast<APlayerController>(mAPawn->Controller);
+		if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
+		{
+			ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
+			if (mBBPlayerState != nullptr)
+			{
+				mBBPlayerState->TakeDamage(ImpactData.Damage);
+				if (mBBPlayerState->GetHealth() == 0)
+				{
+					UE_LOG(LogBeatBoxers, Log, TEXT("A player has died."));
+					EndRound();
+				}
+			}
+		}
+	}
+	return toRet;
 }

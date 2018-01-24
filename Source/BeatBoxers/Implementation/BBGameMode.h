@@ -38,6 +38,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBeforeEnd;
 
+	/** Defines the Effects of a Clash. Needs to always be relative. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefaultClashImpact;
 
@@ -155,5 +156,12 @@ protected:
 	/** Callback for round timer. */
 	virtual void OnRoundTimeOut();
 
-	virtual FImpactData GetClashImpact(bool WinnerData) { return DefaultClashImpact; }
+	/** If ForWinner is true, it will return the the ImpactData for the winner, otherwise it will return the Default/Looser data. */
+	virtual FImpactData GetClashImpact(bool ForWinner) { return DefaultClashImpact; }
+
+	/** Returns nullptr if no winner, otherwise Returns the pointer to the winner. */
+	virtual IFighter* DetermineClashWinner(IFighter* FighterA, IFighter* FighterB);
+
+	/** Returns -1 on error, 1 if theactor in question was backed against a wall, 0 otherwise. */
+	virtual int ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source);
 };

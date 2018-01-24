@@ -31,7 +31,8 @@ enum class EHitResponse : uint8
 {
 	HE_Hit			UMETA(DisplayName = "Hit"),
 	HE_Blocked		UMETA(DisplayName = "Blocked"),
-	HE_Missed		UMETA(DisplayName = "Missed")
+	HE_Missed		UMETA(DisplayName = "Missed"),
+	HE_Clashed		UMETA(DisplayName = "Clash")
 };
 
 UENUM(BlueprintType)

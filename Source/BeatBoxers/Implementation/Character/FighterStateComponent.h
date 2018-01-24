@@ -38,6 +38,8 @@ protected:
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
 	uint32 bIsKnockedDown : 1;
+	uint32 bIsInWinddown : 1;
+
 
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
@@ -146,6 +148,10 @@ public:
 	virtual void Knockdown() override;
 	virtual void KnockdownRecovery(float Duration) override;
 	virtual bool IsIgnoringCollision() override;
+	virtual float GetCurrentWindowAccuracy() override;
+	virtual FMoveHitbox GetHitbox() override;
+	virtual bool HasActiveMoveWindow() override;
+	virtual bool IsInWinddown() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

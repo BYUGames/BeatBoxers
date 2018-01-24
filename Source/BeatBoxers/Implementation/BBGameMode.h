@@ -96,6 +96,8 @@ public:
 	virtual float TimeToNextRound() override;
 	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
+	virtual void OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
+	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	/** End IFighterWorld implementation */
 
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))

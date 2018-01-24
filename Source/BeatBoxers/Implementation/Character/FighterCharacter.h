@@ -139,6 +139,9 @@ public:
 	virtual FMusicBalanceParams GetMusicBalance() override { return FighterData.MusicBalance; }
 	virtual void SetFighterCollisions(bool DoesCollide) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
+	virtual float GetFighterCurrentWindowAccuracy() override;
+	virtual FMoveHitbox GetFighterHitbox() override;
+	virtual bool HasActiveMoveWindowNotInWinddown() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

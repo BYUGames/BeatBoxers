@@ -922,3 +922,31 @@ bool UFighterStateComponent::IsIgnoringCollision()
 {
 	return bIsWindowActive && CurrentWindow.IgnoreCollisions;
 }
+
+float UFighterStateComponent::GetCurrentWindowAccuracy()
+{
+	if (bIsWindowActive)
+	{
+		return CurrentWindowAccuracy;
+	}
+	return -1;
+}
+
+FMoveHitbox UFighterStateComponent::GetHitbox()
+{
+	if (bIsWindowActive)
+	{
+		return CurrentWindow.Hitbox;
+	}
+	return FMoveHitbox();
+}
+
+bool UFighterStateComponent::HasActiveMoveWindow()
+{
+	return bIsWindowActive;
+}
+
+bool UFighterStateComponent::IsInWinddown()
+{
+	return bIsInWinddown;
+}

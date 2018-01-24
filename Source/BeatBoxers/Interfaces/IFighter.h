@@ -99,4 +99,13 @@ public:
 
 	/** Interrupts any ongoing move windows and starts a stun. */
 	virtual void StartStun(float Duration, bool WasBlocked) = 0;
+
+	/** Get accuracy of current move window, returns -1 if window is not active. */
+	virtual float GetFighterCurrentWindowAccuracy() = 0;
+
+	/** Returns the hitbox to of the current window, if not in a window returns default FMoveHitbox */
+	virtual FMoveHitbox GetFighterHitbox() = 0;
+
+	/** Returns true if there is a current window active and not in the winddown state. */
+	virtual bool HasActiveMoveWindowNotInWinddown() = 0;
 };

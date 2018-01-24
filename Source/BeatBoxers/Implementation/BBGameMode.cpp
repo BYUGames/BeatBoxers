@@ -132,6 +132,12 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		return EHitResponse::HE_Missed;
 	}
 
+	if (CheckClash(Actor, Source))
+	{
+		OnClash(Actor, Source);
+		return EHitResponse::HE_Clashed;
+	}
+
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
@@ -1094,4 +1100,60 @@ void ABBGameMode::PushMusicBalance()
 		FinalParams = MusicParams[1];
 	}
 	MusicBox->ChangeBalance(FinalParams);
+}
+
+bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB)
+{
+	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
+	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
+	if (FighterA != nullptr && FighterB != nullptr && mFighterA != nullptr && mFighterB != nullptr && mFighterA->HasActiveMoveWindowNotInWinddown() && mFighterB->HasActiveMoveWindowNotInWinddown())
+	{
+		TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
+		FMoveHitbox Hitbox;
+		Hitbox.Radius = mFighterA->GetFighterHitbox().Radius;
+		Hitbox.Origin = mFighterA->GetFighterHitbox().Origin;
+		Hitbox.End = mFighterA->GetFighterHitbox().End;
+
+		//Make hitboxes relative to facing
+		Hitbox.Origin.X *= mFighterA->GetFacing();
+		Hitbox.End.X *= mFighterA->GetFacing();
+
+		FHitResult HitResult = TraceHitbox(
+			FighterA->GetActorLocation(),
+			Hitbox,
+			ActorsToIgnore
+		);
+		if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+		{
+			Hitbox.Radius = mFighterB->GetFighterHitbox().Radius;
+			Hitbox.Origin = mFighterB->GetFighterHitbox().Origin;
+			Hitbox.End = mFighterB->GetFighterHitbox().End;
+
+			//Make hitboxes relative to facing
+			Hitbox.Origin.X *= mFighterB->GetFacing();
+			Hitbox.End.X *= mFighterB->GetFacing();
+
+			HitResult = TraceHitbox(
+				FighterB->GetActorLocation(),
+				Hitbox,
+				ActorsToIgnore
+			);
+			if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB)
+{
+	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
+	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
+	if (mFighterA != nullptr && mFighterB != nullptr)
+	{
+		mFighterA->StartStun(.5, false);
+		mFighterB->StartStun(.5, false);
+	}
 }

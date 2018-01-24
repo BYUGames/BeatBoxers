@@ -749,3 +749,24 @@ void AFighterCharacter::OnRoundEnd(int Winner)
 		bIsDead = true;
 	}
 }
+
+float AFighterCharacter::GetFighterCurrentWindowAccuracy()
+{
+	if (MyFighterState != nullptr)
+		return MyFighterState->GetCurrentWindowAccuracy();
+	return -1;
+}
+
+FMoveHitbox AFighterCharacter::GetFighterHitbox()
+{
+	if (MyFighterState != nullptr)
+		return MyFighterState->GetHitbox();
+	return FMoveHitbox();
+}
+
+bool AFighterCharacter::HasActiveMoveWindowNotInWinddown()
+{
+	if (MyFighterState != nullptr)
+		return MyFighterState->HasActiveMoveWindow() && !MyFighterState->IsInWinddown();
+	return false;
+}

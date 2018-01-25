@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartJumpEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLandEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FClashEvent);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
@@ -68,6 +69,8 @@ public:
 
 	virtual FLandEvent& GetOnLandEvent() = 0;
 
+	virtual FClashEvent& GetOnClashEvent() = 0;
+
 	/** Used to expose event to blueprints, fires when the moveset component recieves input from the input parser. */
 	virtual void OnInputReceived() = 0;
 
@@ -108,4 +111,7 @@ public:
 
 	/** Returns true if there is a current window active and not in the winddown state. */
 	virtual bool CanClash() = 0;
+
+	/** Trigger a clash on this fighter (should then broadcast it's clash event). */
+	virtual void Clash() = 0;
 };

@@ -607,6 +607,11 @@ FLandEvent& AFighterCharacter::GetOnLandEvent()
 	return LandEvent;
 }
 
+FClashEvent& AFighterCharacter::GetOnClashEvent()
+{
+	return ClashEvent;
+}
+
 void AFighterCharacter::SetOpponent(TWeakObjectPtr<AActor> NewOpponent)
 {
 	if (NewOpponent.IsValid())
@@ -767,6 +772,14 @@ FMoveHitbox AFighterCharacter::GetFighterHitbox()
 bool AFighterCharacter::CanClash()
 {
 	if (MyFighterState != nullptr)
-		return MyFighterState->HasActiveMoveWindow() && !MyFighterState->IsInWinddown();
+		return MyFighterState->DoesWindowUseHitbox() && MyFighterState->GetWindowStage() != EWindowStage::WE_Winddown;
 	return false;
+}
+
+void AFighterCharacter::Clash()
+{
+	if (ClashEvent.IsBound())
+	{
+		ClashEvent.Broadcast();
+	}
 }

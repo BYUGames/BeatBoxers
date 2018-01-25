@@ -91,6 +91,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLandEvent LandEvent;
 
+	UPROPERTY(BlueprintAssignable)
+	FClashEvent ClashEvent;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects DefaultHitEffects;
 
@@ -128,6 +131,7 @@ public:
 	virtual void Jump() override;
 	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
 	virtual FLandEvent& GetOnLandEvent() override;
+	virtual FClashEvent& GetOnClashEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
 	virtual void HitOnBeatLogic() override;
@@ -142,6 +146,7 @@ public:
 	virtual float GetFighterCurrentWindowAccuracy() override;
 	virtual FMoveHitbox GetFighterHitbox() override;
 	virtual bool CanClash() override;
+	virtual void Clash() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

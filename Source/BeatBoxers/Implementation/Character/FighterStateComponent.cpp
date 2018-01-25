@@ -18,7 +18,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	PrimaryComponentTick.bCanEverTick = true;
 	
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
-	bIsWindowActive = false;
+	CurrentWindowStage = EWindowStage::WE_None;
 	bIsHitboxActive = false;
 }
 
@@ -45,7 +45,7 @@ void UFighterStateComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	bool action = false;
-	if (bIsWindowActive && CurrentWindow.IsHitboxActive && bIsHitboxActive)
+	if (IsMidMove() && CurrentWindow.IsHitboxActive && bIsHitboxActive)
 	{
 		action = true;
 		PerformHitboxScan();
@@ -232,7 +232,7 @@ bool UFighterStateComponent::IsInvulnerable() const
 
 bool UFighterStateComponent::IsMidMove() const
 {
-	return bIsWindowActive;
+	return CurrentWindowStage != EWindowStage::WE_None;
 }
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
@@ -260,37 +260,6 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 	}
 	else
 	{
-		if (CurrentWindow.AttackerMovement.IsValid())
-		{
-			if (MyFighterWorld != nullptr)
-			{
-				MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
-			}
-		}
-		if (Window.AnimMontage != nullptr && MyFighter != nullptr)
-		{
-			ACharacter *Character = Cast<ACharacter>(MyFighter);
-			if (Character != nullptr)
-			{
-				float Duration = Character->PlayAnimMontage(Window.AnimMontage);
-				if (Duration == 0.f)
-				{
-					UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartMoveWindow PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(Window.AnimMontage));
-				}
-				else
-				{
-					UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartMoveWindow PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(Window.AnimMontage), Duration);
-				}
-			}
-			else
-			{
-				UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartMoveWindow unable to cast fighter to character."), *GetNameSafe(this));
-			}
-		}
-		if (CurrentWindow.IgnoreCollisions)
-		{
-			MyFighter->SetFighterCollisions(false);
-		}
 		StartCurrentWindowWindup();
 	}
 }
@@ -298,7 +267,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
 	bIsCurrentStunBlock = WasBlocked;
-	if (bIsWindowActive && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	if (IsMidMove() && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
 	{
 		ACharacter *Character = Cast<ACharacter>(MyFighter);
 		if (Character != nullptr)
@@ -417,7 +386,7 @@ void UFighterStateComponent::StopBlock()
 
 void UFighterStateComponent::OnLand()
 {
-	if (bIsWindowActive)
+	if (IsMidMove())
 	{
 		if (CurrentWindow.LandingInterrupts)
 		{
@@ -444,9 +413,41 @@ void UFighterStateComponent::OnLand()
 
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
-	bIsWindowActive = true;
+	CurrentWindowStage = EWindowStage::WE_Windup;
 	ActorsToIgnore.Empty();
 	ActorsToIgnore.Add(GetOwner());
+
+	if (CurrentWindow.AttackerMovement.IsValid())
+	{
+		if (MyFighterWorld != nullptr)
+		{
+			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
+		}
+	}
+	if (CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	{
+		ACharacter *Character = Cast<ACharacter>(MyFighter);
+		if (Character != nullptr)
+		{
+			float Duration = Character->PlayAnimMontage(CurrentWindow.AnimMontage);
+			if (Duration == 0.f)
+			{
+				UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(CurrentWindow.AnimMontage));
+			}
+			else
+			{
+				UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(CurrentWindow.AnimMontage), Duration);
+			}
+		}
+		else
+		{
+			UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup unable to cast fighter to character."), *GetNameSafe(this));
+		}
+	}
+	if (CurrentWindow.IgnoreCollisions)
+	{
+		MyFighter->SetFighterCollisions(false);
+	}
 
 	if (CurrentWindow.Windup <= 0)
 	{
@@ -472,6 +473,7 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 
 void UFighterStateComponent::StartCurrentWindowDuration()
 {
+	CurrentWindowStage = EWindowStage::WE_Duration;
 	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.Duration <= 0)
 	{
@@ -534,6 +536,7 @@ void UFighterStateComponent::AdjustGravity(float Amount)
 
 void UFighterStateComponent::StartCurrentWindowWinddown()
 {
+	CurrentWindowStage = EWindowStage::WE_Winddown;
 	bHasMoveWindowHit = false;
 	if (CurrentWindow.Winddown <= 0)
 	{
@@ -568,9 +571,9 @@ void UFighterStateComponent::OnCurrentWindowWinddownFinished()
 
 void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 {
-	if (bIsWindowActive)
+	if (IsMidMove())
 	{
-		bIsWindowActive = false;
+		CurrentWindowStage = EWindowStage::WE_None;
 		if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
@@ -773,7 +776,7 @@ void UFighterStateComponent::PlayerAttackerEffects(FEffects& Effects)
 
 void UFighterStateComponent::TryDisableTick()
 {
-	if ((!bIsWindowActive || !CurrentWindow.IsHitboxActive || !bIsHitboxActive) && !bIsBeingMoved)
+	if ((!IsMidMove() || !CurrentWindow.IsHitboxActive || !bIsHitboxActive) && !bIsBeingMoved)
 	{
 		SetComponentTickEnabled(false);
 	}
@@ -918,35 +921,35 @@ void UFighterStateComponent::OnInvulnerableTimer()
 	}
 }
 
-bool UFighterStateComponent::IsIgnoringCollision()
+bool UFighterStateComponent::IsIgnoringCollision() const
 {
-	return bIsWindowActive && CurrentWindow.IgnoreCollisions;
+	return IsMidMove() && CurrentWindow.IgnoreCollisions;
 }
 
-float UFighterStateComponent::GetCurrentWindowAccuracy()
+float UFighterStateComponent::GetCurrentWindowAccuracy() const
 {
-	if (bIsWindowActive)
+	if (IsMidMove())
 	{
 		return CurrentWindowAccuracy;
 	}
 	return -1;
 }
 
-FMoveHitbox UFighterStateComponent::GetHitbox()
+bool UFighterStateComponent::DoesWindowUseHitbox() const
 {
-	if (bIsWindowActive)
+	return IsMidMove() && CurrentWindow.IsHitboxActive;
+}
+
+FMoveHitbox UFighterStateComponent::GetHitbox() const
+{
+	if (DoesWindowUseHitbox())
 	{
 		return CurrentWindow.Hitbox;
 	}
 	return FMoveHitbox();
 }
 
-bool UFighterStateComponent::HasActiveMoveWindow()
+EWindowStage UFighterStateComponent::GetWindowStage() const
 {
-	return bIsWindowActive;
-}
-
-bool UFighterStateComponent::IsInWinddown()
-{
-	return bIsInWinddown;
+	return CurrentWindowStage;
 }

@@ -19,6 +19,15 @@ static FORCEINLINE FString GetEnumValueToString(const FString& Name, TEnum Value
 }
 
 UENUM(BlueprintType)
+enum class EWindowStage : uint8
+{
+	WE_Windup			UMETA(DisplayName = "Wind up")
+	, WE_Duration		UMETA(DisplayName = "Duration")
+	, WE_Winddown		UMETA(DisplayName = "Wind down")
+	, WE_None			UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
 enum class EFilter : uint8
 {
 	FE_Allowed		UMETA(DisplayName = "Allowed"),

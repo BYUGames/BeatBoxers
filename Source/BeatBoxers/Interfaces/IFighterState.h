@@ -127,17 +127,17 @@ public:
 	virtual void EndSolo() = 0;
 
 	/** Returns true if the current window is ignoring collisions. */
-	virtual bool IsIgnoringCollision() = 0;
+	virtual bool IsIgnoringCollision() const = 0;
 
 	/** Get accuracy of current move window, returns -1 if window is not active. */
-	virtual float GetCurrentWindowAccuracy() = 0;
+	virtual float GetCurrentWindowAccuracy() const = 0;
+
+	/** Returns true if in a move and the current move uses a hitbox, or false if not in a move or the move does not use a hitbox. */
+	virtual bool DoesWindowUseHitbox() const = 0;
 
 	/** Returns the hitbox to of the current window, if not in a window returns default FMoveHitbox */
-	virtual FMoveHitbox GetHitbox() = 0;
+	virtual FMoveHitbox GetHitbox() const = 0;
 
-	/** Returns true if there is a current window active. */
-	virtual bool HasActiveMoveWindow() = 0;
-
-	/** Returns true if in winddown. */
-	virtual bool IsInWinddown() = 0;
+	/** Returns stage of current window. */
+	virtual EWindowStage GetWindowStage() const = 0;
 };

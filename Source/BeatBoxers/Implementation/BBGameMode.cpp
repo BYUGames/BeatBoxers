@@ -1141,11 +1141,36 @@ void ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor
 		// Passes the fighters themselves as the source so the clash impact will be relative to their facing.
 		ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
 		ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
+
+		mFighterA->Clash();
+		mFighterB->Clash();
+
+		FTransform ImpactTransform = FTransform::Identity;
+		ImpactTransform.SetTranslation((FighterA.Get()->GetActorLocation() + FighterB.Get()->GetActorLocation()) / 2.f);
+		FTransform RelativeTransform = DefaultClashImpact.SFX.RelativeTransform * ImpactTransform;
+		if (DefaultClashImpact.SFX.ParticleSystem != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(),
+				DefaultClashImpact.SFX.ParticleSystem,
+				RelativeTransform
+			);
+		}
+		if (DefaultClashImpact.SFX.SoundCue != nullptr)
+		{
+			UGameplayStatics::SpawnSoundAtLocation(
+				GetWorld(),
+				DefaultClashImpact.SFX.SoundCue,
+				RelativeTransform.GetLocation(),
+				RelativeTransform.GetRotation().Rotator()
+			);
+		}
 	}
 	else
 	{
 		UE_LOG(LogClashing, Warning, TEXT("ABBGameMode::OnClash given a nullptr for a Fighter."));
 	}
+
 }
 
 IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* FighterB)

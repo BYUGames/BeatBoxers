@@ -29,7 +29,6 @@ protected:
 	IInputParser *MyInputParser;
 	IFighterPlayerState *MyFighterPlayerState;
 
-	uint32 bIsWindowActive : 1;
 	uint32 bIsHitboxActive : 1;
 	uint32 bHasMoveWindowHit : 1;
 	uint32 bIsBeingMoved : 1;
@@ -38,9 +37,8 @@ protected:
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
 	uint32 bIsKnockedDown : 1;
-	uint32 bIsInWinddown : 1;
 
-
+	EWindowStage CurrentWindowStage;
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
@@ -147,11 +145,11 @@ public:
 	virtual void EndSolo() override;
 	virtual void Knockdown() override;
 	virtual void KnockdownRecovery(float Duration) override;
-	virtual bool IsIgnoringCollision() override;
-	virtual float GetCurrentWindowAccuracy() override;
-	virtual FMoveHitbox GetHitbox() override;
-	virtual bool HasActiveMoveWindow() override;
-	virtual bool IsInWinddown() override;
+	virtual bool IsIgnoringCollision() const override;
+	virtual float GetCurrentWindowAccuracy() const override;
+	virtual bool DoesWindowUseHitbox() const override;
+	virtual FMoveHitbox GetHitbox() const override;
+	virtual EWindowStage GetWindowStage() const override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

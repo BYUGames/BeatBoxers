@@ -70,8 +70,10 @@ public:
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
 
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
-	float AccuracyWindowSize = 0.2f;
+	float BeforeBeatAccuracyWindow = 0.1f;
 
+	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
+	float AfterBeatAccuracyWindow = 0.2f;
 	/** This actor must implement the IMusicBox interface. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> DefaultMusicBoxClass;

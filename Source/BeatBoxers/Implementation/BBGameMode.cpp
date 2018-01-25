@@ -246,19 +246,21 @@ bool ABBGameMode::IsOnBeat(float Accuracy)
 	if (MusicBox != nullptr)
 	{
 		AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
-		if (AccInTime <= AccuracyWindowSize/2 || AccInTime >= MusicBox->GetTimeBetweenBeats() - AccuracyWindowSize/2)
+		if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow)
 		{
-			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? True, AccInTime +%f -%f.")
+			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
 				, Accuracy
-				, AccuracyWindowSize
+				, BeforeBeatAccuracyWindow
+				, AfterBeatAccuracyWindow
 				, AccInTime
 				, MusicBox->GetTimeBetweenBeats() - AccInTime
 			);
 			return true;
 		}
-		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? False, AccInTime +%f -%f.")
+		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? False, AccInTime +%f -%f.")
 			, Accuracy
-			, AccuracyWindowSize
+			, BeforeBeatAccuracyWindow
+			, AfterBeatAccuracyWindow
 			, AccInTime
 			, MusicBox->GetTimeBetweenBeats() - AccInTime
 		);

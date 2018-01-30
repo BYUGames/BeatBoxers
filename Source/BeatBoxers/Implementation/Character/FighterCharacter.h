@@ -77,6 +77,7 @@ protected:
 	void InputActionLight();
 	void InputActionMedium();
 	void InputActionHeavy();
+	void InputActionSpecial1();
 	void InputActionJump();
 	void InputActionBlock();
 	void InputActionStopBlock();

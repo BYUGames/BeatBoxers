@@ -96,6 +96,7 @@ enum class EInputToken : uint8
 	IE_Light		UMETA(DisplayName = "Light"),
 	IE_Medium		UMETA(DisplayName = "Medium"),
 	IE_Heavy		UMETA(DisplayName = "Heavy"),
+	IE_Special      UMETA(DisplayName = "Special"),
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashForward	UMETA(DisplayName = "DashForward"),
 	IE_DashBackward	UMETA(DisplayName = "DashBackward"),
@@ -130,6 +131,9 @@ struct FInputTokenBools
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Heavy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Special;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Jump;

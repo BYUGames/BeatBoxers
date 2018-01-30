@@ -121,6 +121,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
 	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
 	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
+	InputComponent->BindAction("Special", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
 	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
 	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
@@ -542,6 +543,14 @@ void AFighterCharacter::InputActionHeavy()
 	if (GetInputParser() != nullptr)
 	{
 		GetInputParser()->InputActionHeavy(true);
+	}
+}
+
+void AFighterCharacter::InputActionSpecial1()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionSpecial1(true);
 	}
 }
 

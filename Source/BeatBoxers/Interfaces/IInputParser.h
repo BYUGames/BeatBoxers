@@ -66,6 +66,9 @@ public:
 	/** Receives events relating to the heavy attack button. */
 	virtual void InputActionHeavy(bool IsUp) = 0;
 
+	/** Receives events relating to the first special attack button. */
+	virtual void InputActionSpecial1(bool IsUp) = 0;
+
 	/** Receives events relating to the Jump button. */
 	virtual void InputActionJump(bool IsUp) = 0;
 

@@ -414,6 +414,14 @@ void UInputParserComponent::InputActionHeavy(bool IsUp)
 	}
 }
 
+void UInputParserComponent::InputActionSpecial1(bool IsUp)
+{
+	if (CurrentStateClass.Get() != nullptr)
+	{
+		CurrentStateClass.GetDefaultObject()->InputActionSpecial1(this);
+	}
+}
+
 void UInputParserState::ChangeState(UInputParserComponent *Parser, TSubclassOf<UInputParserState> NewState)
 {
 	if (Parser != nullptr)
@@ -448,6 +456,7 @@ void UInputParserState::InputActionUp(UInputParserComponent *Parser) { UE_LOG(Lo
 void UInputParserState::InputActionLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionLight()")); }
 void UInputParserState::InputActionMedium(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionMedium()")); }
 void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionHeavy()")); }
+void UInputParserState::InputActionSpecial1(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial1()")); }
 void UInputParserState::InputActionForwardLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionForwardLight()")); }
 void UInputParserState::InputActionBackLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBackLight()")); }
 void UInputParserState::InputActionDashForward(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashForward()")); }
@@ -534,6 +543,15 @@ void UInputParserDefaultState::InputActionHeavy(UInputParserComponent *Parser)
 	}
 }
 
+void UInputParserDefaultState::InputActionSpecial1(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionSpecial1()"));
+	if (Parser != nullptr)
+	{
+		Parser->PushInputToken(EInputToken::IE_Special);
+	}
+}
+
 bool UPreLeftDashState::IsComplex() { return true; }
 
 void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
@@ -583,6 +601,16 @@ void UPreLeftDashState::InputActionHeavy(UInputParserComponent *Parser)
 	}
 }
 
+void UPreLeftDashState::InputActionSpecial1(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionSpecial1()"));
+	if (Parser != nullptr)
+	{
+		UInputParserDefaultState::InputActionSpecial1(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
+	}
+}
+
 bool UPreRightDashState::IsComplex() { return true; }
 
 void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
@@ -628,6 +656,16 @@ void UPreRightDashState::InputActionHeavy(UInputParserComponent *Parser)
 	if (Parser != nullptr)
 	{
 		UInputParserDefaultState::InputActionHeavy(Parser);
+		ChangeState(Parser, UInputParserDefaultState::StaticClass());
+	}
+}
+
+void UPreRightDashState::InputActionSpecial1(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionSpecial1()"));
+	if (Parser != nullptr)
+	{
+		UInputParserDefaultState::InputActionSpecial1(Parser);
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }

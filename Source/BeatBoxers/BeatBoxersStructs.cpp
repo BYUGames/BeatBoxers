@@ -76,8 +76,14 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_Heavy:
 		if (Heavy) return true;
 		break;
-	case EInputToken::IE_Special:
-		if (Special) return true;
+	case EInputToken::IE_Special1:
+		if (Special1) return true;
+		break;
+	case EInputToken::IE_Special2:
+		if (Special2) return true;
+		break;
+	case EInputToken::IE_Special3:
+		if (Special3) return true;
 		break;
 	case EInputToken::IE_Jump:
 		if (Jump) return true;

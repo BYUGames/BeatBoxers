@@ -33,6 +33,8 @@ public:
 	virtual void InputActionMedium(UInputParserComponent *Parser);
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
 	virtual void InputActionSpecial1(UInputParserComponent *Parser);
+	virtual void InputActionSpecial2(UInputParserComponent *Parser);
+	virtual void InputActionSpecial3(UInputParserComponent *Parser);
 	virtual void InputActionForwardLight(UInputParserComponent *Parser);
 	virtual void InputActionBackLight(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
@@ -51,6 +53,8 @@ public:
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
 	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
@@ -69,6 +73,8 @@ public:
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -83,6 +89,8 @@ public:
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -136,6 +144,8 @@ public:
 	virtual void InputActionMedium(bool IsUp) override;
 	virtual void InputActionHeavy(bool IsUp) override;
 	virtual void InputActionSpecial1(bool IsUp) override;
+	virtual void InputActionSpecial2(bool IsUp) override;
+	virtual void InputActionSpecial3(bool IsUp) override;
 	virtual void InputActionJump(bool IsUp) override;
 	virtual void InputActionBlock(bool IsUp) override;
 	virtual void InputActionStopBlock(bool IsUp) override;

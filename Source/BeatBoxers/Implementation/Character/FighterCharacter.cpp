@@ -748,7 +748,7 @@ void AFighterCharacter::StartStun(float Duration, bool WasBlocked)
 	FighterState->StartStun(Duration, WasBlocked);
 }
 
-bool AFighterCharacter::IsDead()
+bool AFighterCharacter::IsDead() const
 {
 	return bIsDead;
 }
@@ -782,21 +782,21 @@ void AFighterCharacter::OnRoundEnd(int Winner)
 	}
 }
 
-float AFighterCharacter::GetFighterCurrentWindowAccuracy()
+float AFighterCharacter::GetFighterCurrentWindowAccuracy() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->GetCurrentWindowAccuracy();
 	return -1;
 }
 
-FMoveHitbox AFighterCharacter::GetFighterHitbox()
+FMoveHitbox AFighterCharacter::GetFighterHitbox() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->GetHitbox();
 	return FMoveHitbox();
 }
 
-bool AFighterCharacter::CanClash()
+bool AFighterCharacter::CanClash() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->DoesWindowUseHitbox() && MyFighterState->GetWindowStage() != EWindowStage::WE_Winddown;
@@ -808,5 +808,22 @@ void AFighterCharacter::Clash()
 	if (ClashEvent.IsBound())
 	{
 		ClashEvent.Broadcast();
+	}
+}
+
+int AFighterCharacter::GetTimesHitThisKnockdown() const
+{
+	if (MyFighterState != nullptr)
+	{
+		return MyFighterState->GetTimesHitThisKnockdown();
+	}
+	return 0;
+}
+
+void AFighterCharacter::AddHit()
+{
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->AddHit();
 	}
 }

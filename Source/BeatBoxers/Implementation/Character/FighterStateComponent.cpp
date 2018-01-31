@@ -20,6 +20,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	CurrentWindowStage = EWindowStage::WE_None;
 	bIsHitboxActive = false;
+	TimesHitThisKnockdown = 0;
 }
 
 
@@ -883,11 +884,16 @@ void UFighterStateComponent::OnSoloEnd()
 
 void UFighterStateComponent::Knockdown()
 {
-	bIsKnockedDown = true;
+	if (!bIsKnockedDown)
+	{
+		TimesHitThisKnockdown = 0;
+		bIsKnockedDown = true;
+	}
 }
 
 void UFighterStateComponent::KnockdownRecovery(float Duration)
 {
+	TimesHitThisKnockdown = 0;
 	StartInvulnerableTimer(Duration);
 }
 
@@ -952,4 +958,17 @@ FMoveHitbox UFighterStateComponent::GetHitbox() const
 EWindowStage UFighterStateComponent::GetWindowStage() const
 {
 	return CurrentWindowStage;
+}
+
+int UFighterStateComponent::GetTimesHitThisKnockdown() const
+{
+	return TimesHitThisKnockdown;
+}
+
+void UFighterStateComponent::AddHit()
+{
+	if (bIsKnockedDown)
+	{
+		TimesHitThisKnockdown++;
+	}
 }

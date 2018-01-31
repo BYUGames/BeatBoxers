@@ -38,6 +38,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBeforeEnd;
 
+	/** For each subsequent hit after being knocked down, the impact will be scaled by this repeatedly. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float ComboImpactScaling;
+
 	/** Defines the Effects of a Clash. Needs to always be relative. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefaultClashImpact;
@@ -122,7 +126,7 @@ public:
 	virtual bool ReadyToEndMatch_Implementation() override;
 
 	UFUNCTION(BlueprintNativeEvent)
-	FImpactData GetScaledImpactData(const FImpactData& ImpactData, float Accuracy);
+	FImpactData GetScaledImpactData(AActor *Target, const FImpactData& ImpactData, float Accuracy);
 
 	UFUNCTION()
 	virtual void OnMusicEnd();

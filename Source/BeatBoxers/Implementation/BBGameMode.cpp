@@ -40,6 +40,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultClashImpact.ImpartedMovement.IsRelativeToAttackerFacing = true;
 	DefaultClashImpact.ImpartedMovement.UsePhysicsLaunch = false;
 	DefaultClashImpact.StunLength = 0.5f;
+	ComboImpactScaling = 0.8f;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -149,8 +150,13 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
+	if (Fighter != nullptr)
+	{
+		Fighter->AddHit();
+	}
+
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
-	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
+	FImpactData ScaledImpact = GetScaledImpactData(Actor.Get(), *ImpactData, Accuracy);
 
 	if (ApplyImpact(Actor, ScaledImpact, WasBlocked, SourceController, Source) == 1
 		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
@@ -665,8 +671,29 @@ void ABBGameMode::HandleMatchHasStarted()
 	}
 }
 
-FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& ImpactData, float Accuracy)
+FImpactData ABBGameMode::GetScaledImpactData_Implementation(AActor *Target, const FImpactData& ImpactData, float Accuracy)
 {
+	if (Target == nullptr)
+	{
+		return ImpactData;
+	}
+
+	float Scale = 1.f;
+	IFighter *Fighter = Cast<IFighter>(Target);
+	if (Fighter != nullptr)
+	{
+		int TimesHit = Fighter->GetTimesHitThisKnockdown();
+		Scale = FGenericPlatformMath::Pow(ComboImpactScaling, TimesHit);
+
+		FImpactData ScaledImpact = ImpactData;
+		ScaledImpact.Damage *= Scale;
+		if (ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
+		{
+			ScaledImpact.ImpartedMovement.Delta *= Scale;
+		}
+		return ScaledImpact;
+	}
+
 	return ImpactData;
 }
 

@@ -140,4 +140,10 @@ public:
 
 	/** Returns stage of current window. */
 	virtual EWindowStage GetWindowStage() const = 0;
+
+	/** Returns how many times the character has been hit during this knockdown. */
+	virtual int GetTimesHitThisKnockdown() const = 0;
+
+	/** Inform that it has been hit. */
+	virtual void AddHit() = 0;
 };

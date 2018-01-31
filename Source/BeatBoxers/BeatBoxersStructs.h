@@ -102,8 +102,6 @@ enum class EInputToken : uint8
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashForward	UMETA(DisplayName = "DashForward"),
 	IE_DashBackward	UMETA(DisplayName = "DashBackward"),
-	IE_ForwardLight	UMETA(DisplayName = "ForwardLight"),
-	IE_BackLight	UMETA(DisplayName = "BackLight"),
 	IE_Block        UMETA(DisplayName = "Block"),
 };
 
@@ -154,12 +152,6 @@ struct FInputTokenBools
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool DashBackward;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool ForwardLight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool BackLight;
 
 	bool FilterInputToken(EInputToken Token) const;
 };

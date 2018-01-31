@@ -374,27 +374,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (MyFighterState != nullptr)
-		{
-			if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() > 0.0f
-				|| MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() < 0.0f)
-			{
-				CurrentStateClass.GetDefaultObject()->InputActionForwardLight(this);
-			}
-			else if (MyFighterState->GetCurrentHorizontalDirection() > 0.0f && MyFighter->GetFacing() < 0.0f
-				|| MyFighterState->GetCurrentHorizontalDirection() < 0.0f && MyFighter->GetFacing() > 0.0f)
-			{
-				CurrentStateClass.GetDefaultObject()->InputActionBackLight(this);
-			}
-			else
-			{
-				CurrentStateClass.GetDefaultObject()->InputActionLight(this);
-			}
-		}
-		else
-		{
-			CurrentStateClass.GetDefaultObject()->InputActionLight(this);
-		}
+		CurrentStateClass.GetDefaultObject()->InputActionLight(this);
 	}
 }
 
@@ -498,23 +478,6 @@ void UInputParserDefaultState::InputActionDashForward(UInputParserComponent *Par
 	}
 }
 
-void UInputParserDefaultState::InputActionForwardLight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionForwardLight()"));
-	if (Parser != nullptr)
-	{
-		Parser->PushInputToken(EInputToken::IE_ForwardLight);
-	}
-}
-
-void UInputParserDefaultState::InputActionBackLight(UInputParserComponent *Parser)
-{
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionBackLight()"));
-	if (Parser != nullptr)
-	{
-		Parser->PushInputToken(EInputToken::IE_BackLight);
-	}
-}
 
 void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 {

@@ -55,8 +55,6 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
-	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
-	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
 	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };

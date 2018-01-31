@@ -35,8 +35,6 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser);
 	virtual void InputActionSpecial2(UInputParserComponent *Parser);
 	virtual void InputActionSpecial3(UInputParserComponent *Parser);
-	virtual void InputActionForwardLight(UInputParserComponent *Parser);
-	virtual void InputActionBackLight(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
 	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
@@ -95,7 +93,9 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser
 {
 	GENERATED_UCLASS_BODY()
-
+private:
+	// Stores the horizontal movement of the player
+	float HorizontalMovement;
 protected:
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -144,7 +144,7 @@ public:
 	virtual void InputActionSpecial1(bool IsUp) override;
 	virtual void InputActionSpecial2(bool IsUp) override;
 	virtual void InputActionSpecial3(bool IsUp) override;
-	virtual void InputActionJump(bool IsUp) override;
+	virtual void InputActionDodge(bool IsUp) override;
 	virtual void InputActionBlock(bool IsUp) override;
 	virtual void InputActionStopBlock(bool IsUp) override;
 	virtual void InputActionDashLeft(bool IsUp) override;

@@ -35,6 +35,7 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser);
 	virtual void InputActionSpecial2(UInputParserComponent *Parser);
 	virtual void InputActionSpecial3(UInputParserComponent *Parser);
+	virtual void InputActionSuper(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
 	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
@@ -53,6 +54,7 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
+	virtual void InputActionSuper(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
 	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };
@@ -145,10 +147,10 @@ public:
 	virtual void InputActionSpecial2(bool IsUp) override;
 	virtual void InputActionSpecial3(bool IsUp) override;
 	virtual void InputActionDodge(bool IsUp) override;
-	virtual void InputActionBlock(bool IsUp) override;
-	virtual void InputActionStopBlock(bool IsUp) override;
 	virtual void InputActionDashLeft(bool IsUp) override;
 	virtual void InputActionDashRight(bool IsUp) override;
+	virtual void InputActionSuper(bool IsUp) override;
+
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);

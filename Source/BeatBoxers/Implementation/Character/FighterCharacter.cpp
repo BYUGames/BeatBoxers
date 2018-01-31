@@ -125,8 +125,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Special2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
 	InputComponent->BindAction("Special3", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
 	InputComponent->BindAction("Dodge", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
-	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
-	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
+	InputComponent->BindAction("Super", IE_Pressed, this, &AFighterCharacter::InputActionSuper);
 	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
 	InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 }
@@ -476,21 +475,14 @@ void AFighterCharacter::InputActionDodge()
 	}
 }
 
-void AFighterCharacter::InputActionBlock()
+void AFighterCharacter::InputActionSuper()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionBlock(true);
+		GetInputParser()->InputActionSuper(true);
 	}
 }
 
-void AFighterCharacter::InputActionStopBlock()
-{
-	if (GetInputParser() != nullptr)
-	{
-		GetInputParser()->InputActionStopBlock(true);
-	}
-}
 
 void AFighterCharacter::InputActionUp()
 {

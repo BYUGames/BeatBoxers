@@ -80,9 +80,8 @@ protected:
 	void InputActionSpecial1();
 	void InputActionSpecial2();
 	void InputActionSpecial3();
+	void InputActionSuper();
 	void InputActionDodge();
-	void InputActionBlock();
-	void InputActionStopBlock();
 	void InputActionDashLeftButton();
 	void InputActionDashRightButton();
 	void SetGravityScale(float scale);

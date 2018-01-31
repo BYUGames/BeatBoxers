@@ -282,21 +282,6 @@ void UInputParserComponent::InputActionDodge(bool IsUp)
 	}
 }
 
-void UInputParserComponent::InputActionBlock(bool IsUp)
-{
-	if (MyFighterState != nullptr)
-	{
-		MyFighterState->Block();
-	}
-}
-
-void UInputParserComponent::InputActionStopBlock(bool IsUp)
-{
-	if (MyFighterState != nullptr)
-	{
-		MyFighterState->StopBlock();
-	}
-}
 
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
@@ -426,6 +411,14 @@ void UInputParserComponent::InputActionSpecial3(bool IsUp)
 	}
 }
 
+void UInputParserComponent::InputActionSuper(bool IsUp)
+{
+	if (CurrentStateClass.Get() != nullptr)
+	{
+		CurrentStateClass.GetDefaultObject()->InputActionSuper(this);
+	}
+}
+
 void UInputParserState::ChangeState(UInputParserComponent *Parser, TSubclassOf<UInputParserState> NewState)
 {
 	if (Parser != nullptr)
@@ -463,6 +456,7 @@ void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG
 void UInputParserState::InputActionSpecial1(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial1()")); }
 void UInputParserState::InputActionSpecial2(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial2()")); }
 void UInputParserState::InputActionSpecial3(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial3()")); }
+void UInputParserState::InputActionSuper(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSuper()")); }
 void UInputParserState::InputActionDashForward(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashForward()")); }
 void UInputParserState::InputActionDashBackwards(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashBackwards()")); }
 
@@ -554,6 +548,15 @@ void UInputParserDefaultState::InputActionSpecial3(UInputParserComponent *Parser
 	if (Parser != nullptr)
 	{
 		Parser->PushInputToken(EInputToken::IE_Special3);
+	}
+}
+
+void UInputParserDefaultState::InputActionSuper(UInputParserComponent *Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionSuper()"));
+	if (Parser != nullptr)
+	{
+		Parser->PushInputToken(EInputToken::IE_Super);
 	}
 }
 

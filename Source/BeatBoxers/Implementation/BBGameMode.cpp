@@ -46,6 +46,18 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
 {
 	// We might want to mess with this in a different gamemode, but here we don't care.
+	if (DesiredOverride == EFighterDamageType::DE_None)
+	{
+		switch (Stance)
+		{
+		case EStance::SE_Crouching:
+			return EFighterDamageType::DE_Low;
+		case EStance::SE_Standing:
+			return EFighterDamageType::DE_High;
+		case EStance::SE_Jumping:
+			return EFighterDamageType::DE_Overhead;
+		}
+	}
 	return DesiredOverride;
 }
 

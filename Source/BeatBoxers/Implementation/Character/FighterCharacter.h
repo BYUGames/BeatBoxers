@@ -80,7 +80,7 @@ protected:
 	void InputActionSpecial1();
 	void InputActionSpecial2();
 	void InputActionSpecial3();
-	void InputActionJump();
+	void InputActionDodge();
 	void InputActionBlock();
 	void InputActionStopBlock();
 	void InputActionDashLeftButton();

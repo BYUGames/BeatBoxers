@@ -124,7 +124,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Special1", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
 	InputComponent->BindAction("Special2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
 	InputComponent->BindAction("Special3", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
-	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
+	InputComponent->BindAction("Dodge", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
 	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
 	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
 	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
@@ -468,11 +468,11 @@ void AFighterCharacter::InputAxisVertical(float amount)
 	}
 }
 
-void AFighterCharacter::InputActionJump()
+void AFighterCharacter::InputActionDodge()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionJump(true);
+		GetInputParser()->InputActionDodge(true);
 	}
 }
 

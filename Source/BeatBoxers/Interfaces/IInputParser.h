@@ -76,7 +76,7 @@ public:
 	virtual void InputActionSpecial3(bool IsUp) = 0;
 
 	/** Receives events relating to the Jump button. */
-	virtual void InputActionJump(bool IsUp) = 0;
+	virtual void InputActionDodge(bool IsUp) = 0;
 
 	/** Receives events relating to pressing the Block button. */
 	virtual void InputActionBlock(bool IsUp) = 0;

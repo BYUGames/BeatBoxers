@@ -228,7 +228,7 @@ bool UFighterStateComponent::IsKnockedDown() const
 
 bool UFighterStateComponent::IsInvulnerable() const
 {
-	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || CurrentWindow.Invincibility;
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || (CurrentWindow.Invincibility && IsMidMove());
 }
 
 bool UFighterStateComponent::IsMidMove() const

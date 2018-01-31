@@ -238,6 +238,7 @@ void UInputParserComponent::OnControlReturned()
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {
+	HorizontalMovement = Amount;
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(Amount);
@@ -266,11 +267,18 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 }
 
-void UInputParserComponent::InputActionJump(bool IsUp)
+void UInputParserComponent::InputActionDodge(bool IsUp)
 {
 	if (MyFighterState != nullptr)
 	{
-		MyFighterState->Jump();
+		if (HorizontalMovement == 0 || FMath::Sign(GetFighterFacing()) ==  FMath::Sign(HorizontalMovement))
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
 	}
 }
 
@@ -455,8 +463,6 @@ void UInputParserState::InputActionHeavy(UInputParserComponent *Parser) { UE_LOG
 void UInputParserState::InputActionSpecial1(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial1()")); }
 void UInputParserState::InputActionSpecial2(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial2()")); }
 void UInputParserState::InputActionSpecial3(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial3()")); }
-void UInputParserState::InputActionForwardLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionForwardLight()")); }
-void UInputParserState::InputActionBackLight(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBackLight()")); }
 void UInputParserState::InputActionDashForward(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashForward()")); }
 void UInputParserState::InputActionDashBackwards(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashBackwards()")); }
 

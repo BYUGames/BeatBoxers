@@ -195,13 +195,13 @@ bool UFighterStateComponent::IsBlocking() const
 	);
 	if (!IsInputBlocked() && bIsBlockButtonDown) return true;
 	if (IsStunned() && bIsCurrentStunBlock) return true;
-	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
-	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
+	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
+	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
-	//if (ToOpponent == 0) return false;
+	if (ToOpponent == 0) return false;
 
-	//if (ToOpponent > 0 && MoveDirection < 0) return true;
-	//if (ToOpponent < 0 && MoveDirection > 0) return true;
+	if (ToOpponent > 0 && MoveDirection < 0) return true;
+	if (ToOpponent < 0 && MoveDirection > 0) return true;
 
 	return false;
 }
@@ -288,7 +288,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 
 void UFighterStateComponent::SetMoveDirection(float Direction)
 {
-	if (!IsInputBlocked() && MyFighter != nullptr && !MyFighter->IsBlocking())
+	if (!IsInputBlocked() && MyFighter != nullptr)
 	{
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);

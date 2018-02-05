@@ -257,6 +257,13 @@ void ABBGameMode::EndRound()
 	StartRoundWithDelay();
 }
 
+
+
+
+
+
+
+
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {
 	float AccInTime = -1;
@@ -1028,6 +1035,14 @@ void ABBGameMode::AttachOpponents()
 	UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
 }
 
+float ABBGameMode::GetScaledTime(float time) 
+{
+	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
+	float TimeBetweenBeats = MusicBox->GetTimeBetweenBeats();
+
+	return (TimeBetweenBeats*time);
+}
+
 void ABBGameMode::SpawnPawns()
 {
 	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
@@ -1229,7 +1244,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 	{
 		if (ImpactData.StunLength > 0)
 		{
-			Fighter->StartStun(ImpactData.StunLength, WasBlocked);
+			Fighter->StartStun(GetScaledTime(ImpactData.StunLength), WasBlocked);
 		}
 		if (ImpactData.bKnocksDown && !WasBlocked)
 		{
@@ -1267,3 +1282,4 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 	}
 	return toRet;
 }
+

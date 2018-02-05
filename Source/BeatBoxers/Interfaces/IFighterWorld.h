@@ -84,4 +84,6 @@ public:
 
 	/** Determines if there was a clash between two the Fighters, returns false if either of the Fighter's are NULL. */
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
+	//Gives the game mode a scaled time based on the beat
+	virtual float GetScaledTime(float time)  = 0;
 };

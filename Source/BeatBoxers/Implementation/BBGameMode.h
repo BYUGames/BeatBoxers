@@ -108,6 +108,7 @@ public:
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	virtual void OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
+	virtual float GetScaledTime(float time)  override;
 	/** End IFighterWorld implementation */
 
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))
@@ -140,6 +141,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 
+	
 
 protected:
 	virtual void SpawnPawns();

@@ -457,13 +457,16 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	}
 	else
 	{
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowWindupFinished,
-			CurrentWindow.Windup,
-			false
-		);
+		if (MyFighterWorld != nullptr) 
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowWindupFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Windup),
+				false
+			);
+		}
 	}
 }
 
@@ -496,13 +499,16 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 		{
 			AdjustGravity(CurrentWindow.GravityScale);
 		}
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowDurationFinished,
-			CurrentWindow.Duration,
-			false
-		);
+		if (MyFighterWorld != nullptr)
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowDurationFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Duration),
+				false
+			);
+		}
 	}
 }
 
@@ -546,13 +552,16 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 	}
 	else
 	{
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowWinddownFinished,
-			CurrentWindow.Winddown,
-			false
-		);
+		if (MyFighterWorld != nullptr)
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowWinddownFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Winddown),
+				false
+			);
+		}
 	}
 }
 

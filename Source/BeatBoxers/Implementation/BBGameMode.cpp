@@ -1162,7 +1162,6 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 			{
 				ActorsToIgnore.Empty();
 				ActorsToIgnore.Add(ActorB);
-
 				Hitbox.Radius = mFighterB->GetFighterHitbox().Radius;
 				Hitbox.Origin = mFighterB->GetFighterHitbox().Origin;
 				Hitbox.End = mFighterB->GetFighterHitbox().End;

@@ -172,6 +172,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
 	void K2_OnInputReceived();
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End windup of first move window"))
+	void EndWindupOfFirstWindow();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

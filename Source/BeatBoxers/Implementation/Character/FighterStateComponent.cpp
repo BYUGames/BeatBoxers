@@ -478,7 +478,7 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 
 void UFighterStateComponent::EndWindupOfFirstWindow()
 {
-	if (IsMidMove())
+	if (CurrentWindowStage == EWindowStage::WE_Windup)
 	{
 		if (CurrentWindow.CancelOnEndBeat && GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 		{

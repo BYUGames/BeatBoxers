@@ -354,6 +354,10 @@ struct FMoveWindow
 
 	/** Effects played when entering this window's duration. Transform relative to attacker, attaches to attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects WindupSFX;
+
+	/** Effects played when entering this window's duration. Transform relative to attacker, attaches to attacker. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
 
 	/** Whether landing on the ground during this window immediately ends it (combos off it can continue), still plays winddown. */

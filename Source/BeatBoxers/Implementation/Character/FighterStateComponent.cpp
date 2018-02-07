@@ -415,6 +415,7 @@ void UFighterStateComponent::OnLand()
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
 	CurrentWindowStage = EWindowStage::WE_Windup;
+	PlayerAttackerEffects(CurrentWindow.WindupSFX);
 	ActorsToIgnore.Empty();
 	ActorsToIgnore.Add(GetOwner());
 

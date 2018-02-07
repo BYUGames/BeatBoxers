@@ -476,6 +476,19 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 	StartCurrentWindowDuration();
 }
 
+void UFighterStateComponent::EndWindupOfFirstWindow()
+{
+	if (IsMidMove())
+	{
+		if (CurrentWindow.CancelOnEndBeat && GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+		{
+			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+			OnCurrentWindowWindupFinished();
+		}
+	}
+}
+
+
 void UFighterStateComponent::StartCurrentWindowDuration()
 {
 	CurrentWindowStage = EWindowStage::WE_Duration;

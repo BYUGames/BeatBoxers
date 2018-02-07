@@ -163,6 +163,9 @@ public:
 	UFUNCTION()
 	void OnSoloEnd();
 
+	UFUNCTION()
+	void EndWindupOfFirstWindow();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

@@ -413,13 +413,9 @@ void AFighterCharacter::Jump()
 
 void AFighterCharacter::EndWindupOfFirstWindow()
 {
-	if (FighterState->IsMidMove())
-	{
-		//if it's the windup of the first window
-			//clear the timer
-			//go onto next window (duration)
-	}
+	FighterState->EndWindupOfFirstWindow();
 }
+
 
 void AFighterCharacter::OnJumpTimer()
 {

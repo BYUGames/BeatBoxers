@@ -198,6 +198,10 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Block Stunned"))
 	virtual bool K2_IsBlockStunned() const;
 
+	/** If the character is stunned*/
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Stunned"))
+		virtual bool K2_IsStunned() const;
+
 	UFUNCTION(BlueprintPure)
 	virtual float GetHorizontalMovement() const;
 

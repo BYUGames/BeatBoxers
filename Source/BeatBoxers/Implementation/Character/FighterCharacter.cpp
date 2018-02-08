@@ -616,6 +616,12 @@ bool AFighterCharacter::K2_IsBlockStunned() const
 	return FighterState->IsBlockStunned();
 }
 
+bool AFighterCharacter::K2_IsStunned() const
+{
+	return FighterState->IsStunned();
+}
+
+
 FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
 {
 	return StartJumpEvent;

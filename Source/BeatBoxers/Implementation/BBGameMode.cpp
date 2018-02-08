@@ -24,14 +24,14 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
-	DelayBetweenRounds = 5.f;
+	DelayBetweenRounds = 2.f;
 	RoundsToWin = 2;
 	HitscanDistanceConstant = 100.f;
 	bDrawDebugTraces = true;
 	bIsInRound = false;
 	bReadyToEnd = false;
 	RoundTime = 90;
-	DelayBeforeEnd = 5.f;
+	DelayBeforeEnd = 2.f;
 	DefaultClashImpact.bKnocksDown = false;
 	DefaultClashImpact.Damage = 0.f;
 	DefaultClashImpact.ImpartedMovement.Delta = FVector2D(-100.f, 0.f);
@@ -40,11 +40,24 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultClashImpact.ImpartedMovement.IsRelativeToAttackerFacing = true;
 	DefaultClashImpact.ImpartedMovement.UsePhysicsLaunch = false;
 	DefaultClashImpact.StunLength = 0.5f;
+	ComboImpactScaling = 0.8f;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
 {
 	// We might want to mess with this in a different gamemode, but here we don't care.
+	if (DesiredOverride == EFighterDamageType::DE_None)
+	{
+		switch (Stance)
+		{
+		case EStance::SE_Crouching:
+			return EFighterDamageType::DE_Low;
+		case EStance::SE_Standing:
+			return EFighterDamageType::DE_High;
+		case EStance::SE_Jumping:
+			return EFighterDamageType::DE_Overhead;
+		}
+	}
 	return DesiredOverride;
 }
 
@@ -149,8 +162,13 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 
+	if (Fighter != nullptr)
+	{
+		Fighter->AddHit();
+	}
+
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
-	FImpactData ScaledImpact = GetScaledImpactData(*ImpactData, Accuracy);
+	FImpactData ScaledImpact = GetScaledImpactData(Actor.Get(), *ImpactData, Accuracy);
 
 	if (ApplyImpact(Actor, ScaledImpact, WasBlocked, SourceController, Source) == 1
 		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
@@ -239,6 +257,13 @@ void ABBGameMode::EndRound()
 	StartRoundWithDelay();
 }
 
+
+
+
+
+
+
+
 bool ABBGameMode::IsOnBeat(float Accuracy)
 {
 	float AccInTime = -1;
@@ -246,19 +271,21 @@ bool ABBGameMode::IsOnBeat(float Accuracy)
 	if (MusicBox != nullptr)
 	{
 		AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
-		if (AccInTime <= AccuracyWindowSize/2 || AccInTime >= MusicBox->GetTimeBetweenBeats() - AccuracyWindowSize/2)
+		if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow)
 		{
-			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? True, AccInTime +%f -%f.")
+			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
 				, Accuracy
-				, AccuracyWindowSize
+				, BeforeBeatAccuracyWindow
+				, AfterBeatAccuracyWindow
 				, AccInTime
 				, MusicBox->GetTimeBetweenBeats() - AccInTime
 			);
 			return true;
 		}
-		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with AccuracyWindowSize %f? False, AccInTime +%f -%f.")
+		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? False, AccInTime +%f -%f.")
 			, Accuracy
-			, AccuracyWindowSize
+			, BeforeBeatAccuracyWindow
+			, AfterBeatAccuracyWindow
 			, AccInTime
 			, MusicBox->GetTimeBetweenBeats() - AccInTime
 		);
@@ -421,6 +448,7 @@ void ABBGameMode::InitGameState()
 		{
 			GetGameState<ABBGameState>()->SetMusicBox(Object);
 			MusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+			MusicBox->GetOnBeatEvent().AddDynamic(this, &ABBGameMode::OnBeat);
 		}
 		else
 		{
@@ -663,8 +691,29 @@ void ABBGameMode::HandleMatchHasStarted()
 	}
 }
 
-FImpactData ABBGameMode::GetScaledImpactData_Implementation(const FImpactData& ImpactData, float Accuracy)
+FImpactData ABBGameMode::GetScaledImpactData_Implementation(AActor *Target, const FImpactData& ImpactData, float Accuracy)
 {
+	if (Target == nullptr)
+	{
+		return ImpactData;
+	}
+
+	float Scale = 1.f;
+	IFighter *Fighter = Cast<IFighter>(Target);
+	if (Fighter != nullptr)
+	{
+		int TimesHit = Fighter->GetTimesHitThisKnockdown();
+		Scale = FGenericPlatformMath::Pow(ComboImpactScaling, TimesHit);
+
+		FImpactData ScaledImpact = ImpactData;
+		ScaledImpact.Damage *= Scale;
+		if (ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
+		{
+			ScaledImpact.ImpartedMovement.Delta *= Scale;
+		}
+		return ScaledImpact;
+	}
+
 	return ImpactData;
 }
 
@@ -738,6 +787,11 @@ FRoundEndEvent& ABBGameMode::GetOnRoundEndEvent()
 FMatchEndEvent& ABBGameMode::GetOnMatchEndEvent()
 {
 	return MatchEndEvent;
+}
+
+FBeatWindowCloseEvent& ABBGameMode::GetOnBeatWindowCloseEvent()
+{
+	return BeatWindowCloseEvent;
 }
 
 FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
@@ -987,6 +1041,14 @@ void ABBGameMode::AttachOpponents()
 	UE_LOG(LogABBGameMode, Verbose, TEXT("End attaching opponents."));
 }
 
+float ABBGameMode::GetScaledTime(float time) 
+{
+	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
+	float TimeBetweenBeats = MusicBox->GetTimeBetweenBeats();
+
+	return (TimeBetweenBeats*time);
+}
+
 void ABBGameMode::SpawnPawns()
 {
 	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
@@ -1106,7 +1168,6 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 			{
 				ActorsToIgnore.Empty();
 				ActorsToIgnore.Add(ActorB);
-
 				Hitbox.Radius = mFighterB->GetFighterHitbox().Radius;
 				Hitbox.Origin = mFighterB->GetFighterHitbox().Origin;
 				Hitbox.End = mFighterB->GetFighterHitbox().End;
@@ -1188,7 +1249,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 	{
 		if (ImpactData.StunLength > 0)
 		{
-			Fighter->StartStun(ImpactData.StunLength, WasBlocked);
+			Fighter->StartStun(GetScaledTime(ImpactData.StunLength), WasBlocked);
 		}
 		if (ImpactData.bKnocksDown && !WasBlocked)
 		{
@@ -1225,4 +1286,29 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 		}
 	}
 	return toRet;
+}
+
+void ABBGameMode::OnBeat()
+{
+	if (AfterBeatAccuracyWindow > 0)
+	{
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_BeatWindowClose
+			, this
+			, &ABBGameMode::BeatWindowClose
+			, AfterBeatAccuracyWindow
+		);
+	}
+	else
+	{
+		BeatWindowClose();
+	}
+}
+
+void ABBGameMode::BeatWindowClose()
+{
+	if (BeatWindowCloseEvent.IsBound())
+	{
+		BeatWindowCloseEvent.Broadcast();
+	}
 }

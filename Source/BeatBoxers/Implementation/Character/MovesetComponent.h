@@ -91,5 +91,7 @@ public:
 	virtual void ReceiveInputToken(FBufferInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
 	virtual void OnSoloStart() override;
+	virtual int GetCurrentWindowInMove() const override;
+	virtual int GetWindowsInCurrentMove() const override;
 	/** End IMovesetImplementation */
 };

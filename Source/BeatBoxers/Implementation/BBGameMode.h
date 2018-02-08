@@ -38,6 +38,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBeforeEnd;
 
+	/** For each subsequent hit after being knocked down, the impact will be scaled by this repeatedly. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float ComboImpactScaling;
+
 	/** Defines the Effects of a Clash. Needs to always be relative. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefaultClashImpact;
@@ -67,10 +71,18 @@ public:
 	FMatchEndEvent MatchEndEvent;
 
 	UPROPERTY(BlueprintAssignable)
+	FBeatWindowCloseEvent BeatWindowCloseEvent;
+
+	UPROPERTY(BlueprintAssignable)
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
 
+	/** Maximum time, in seconds, a move can be early and still considered on beat. */
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
-	float AccuracyWindowSize = 0.2f;
+	float BeforeBeatAccuracyWindow = 0.1f;
+
+	/** Maximum time, in seconds, a move can be late and still considered on beat. */
+	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
+	float AfterBeatAccuracyWindow = 0.2f;
 
 	/** This actor must implement the IMusicBox interface. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -78,6 +90,7 @@ public:
 
 	FTimerHandle TimerHandle_RoundEnd;
 	FTimerHandle TimerHandle_StartNextRound;
+	FTimerHandle TimerHandle_BeatWindowClose;
 
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
@@ -91,6 +104,7 @@ public:
 	virtual FRoundStartEvent& GetOnRoundStartEvent() override;
 	virtual FRoundEndEvent& GetOnRoundEndEvent() override;
 	virtual FMatchEndEvent& GetOnMatchEndEvent() override;
+	virtual FBeatWindowCloseEvent&  GetOnBeatWindowCloseEvent() override;
 	virtual float GetTimeLeftInRound() override;
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
@@ -102,6 +116,7 @@ public:
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	virtual void OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
+	virtual float GetScaledTime(float time)  override;
 	/** End IFighterWorld implementation */
 
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))
@@ -120,10 +135,14 @@ public:
 	virtual bool ReadyToEndMatch_Implementation() override;
 
 	UFUNCTION(BlueprintNativeEvent)
-	FImpactData GetScaledImpactData(const FImpactData& ImpactData, float Accuracy);
+	FImpactData GetScaledImpactData(AActor *Target, const FImpactData& ImpactData, float Accuracy);
 
 	UFUNCTION()
 	virtual void OnMusicEnd();
+
+	UFUNCTION()
+	virtual void OnBeat();
+	virtual void BeatWindowClose();
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() override;
@@ -134,6 +153,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 
+	
 
 protected:
 	virtual void SpawnPawns();

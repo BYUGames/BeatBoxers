@@ -47,6 +47,7 @@ protected:
 	float VerticalDirection;
 	float HorizontalDirection;
 	float CurrentWindowAccuracy;
+	int TimesHitThisKnockdown;
 
 	UPROPERTY(EditDefaultsOnly)
 	FEffects DefaultHitEffects;
@@ -150,6 +151,8 @@ public:
 	virtual bool DoesWindowUseHitbox() const override;
 	virtual FMoveHitbox GetHitbox() const override;
 	virtual EWindowStage GetWindowStage() const override;
+	virtual int GetTimesHitThisKnockdown() const override;
+	virtual void AddHit() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;
@@ -159,6 +162,9 @@ public:
 
 	UFUNCTION()
 	void OnSoloEnd();
+
+	UFUNCTION()
+	void OnBeatWindowClose();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

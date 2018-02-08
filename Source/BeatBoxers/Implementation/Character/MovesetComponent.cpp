@@ -274,6 +274,15 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 							*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 						);
+
+						if (MyFighterWorld->IsOnBeat(Accuracy))
+						{
+							MyFighter->InputOnBeatLogic();
+						}
+						else
+						{
+							MyFighter->MissBeat();
+						}
 						GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
 						return;
 					}
@@ -371,4 +380,14 @@ void UMovesetComponent::UnbindMusicBox(IMusicBox *MusicBox)
 
 void UMovesetComponent::OnBeat()
 {
+}
+
+int UMovesetComponent::GetCurrentWindowInMove() const
+{
+	return CurrentWindowInState - 1;
+}
+
+int UMovesetComponent::GetWindowsInCurrentMove() const
+{
+	return CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num();
 }

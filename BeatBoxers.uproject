@@ -17,12 +17,12 @@
 	],
 	"Plugins": [
 		{
-			"Name": "HoudiniEngine",
-			"Enabled": false
-		},
-		{
 			"Name": "FMODStudio",
 			"Enabled": true
+		},
+		{
+			"Name": "HoudiniEngine",
+			"Enabled": false
 		}
 	]
 }

@@ -164,7 +164,7 @@ public:
 	void OnSoloEnd();
 
 	UFUNCTION()
-	void EndWindupOfFirstWindow();
+	void OnBeatWindowClose();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

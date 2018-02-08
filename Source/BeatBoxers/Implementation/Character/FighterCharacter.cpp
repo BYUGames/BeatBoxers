@@ -411,12 +411,6 @@ void AFighterCharacter::Jump()
 	}
 }
 
-void AFighterCharacter::EndWindupOfFirstWindow()
-{
-	FighterState->EndWindupOfFirstWindow();
-}
-
-
 void AFighterCharacter::OnJumpTimer()
 {
 	FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();

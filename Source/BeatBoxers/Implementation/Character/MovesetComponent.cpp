@@ -381,3 +381,13 @@ void UMovesetComponent::UnbindMusicBox(IMusicBox *MusicBox)
 void UMovesetComponent::OnBeat()
 {
 }
+
+int UMovesetComponent::GetCurrentWindowInMove() const
+{
+	return CurrentWindowInState - 1;
+}
+
+int UMovesetComponent::GetWindowsInCurrentMove() const
+{
+	return CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num();
+}

@@ -71,19 +71,26 @@ public:
 	FMatchEndEvent MatchEndEvent;
 
 	UPROPERTY(BlueprintAssignable)
+	FBeatWindowCloseEvent BeatWindowCloseEvent;
+
+	UPROPERTY(BlueprintAssignable)
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
 
+	/** Maximum time, in seconds, a move can be early and still considered on beat. */
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
 	float BeforeBeatAccuracyWindow = 0.1f;
 
+	/** Maximum time, in seconds, a move can be late and still considered on beat. */
 	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
 	float AfterBeatAccuracyWindow = 0.2f;
+
 	/** This actor must implement the IMusicBox interface. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> DefaultMusicBoxClass;
 
 	FTimerHandle TimerHandle_RoundEnd;
 	FTimerHandle TimerHandle_StartNextRound;
+	FTimerHandle TimerHandle_BeatWindowClose;
 
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
@@ -97,6 +104,7 @@ public:
 	virtual FRoundStartEvent& GetOnRoundStartEvent() override;
 	virtual FRoundEndEvent& GetOnRoundEndEvent() override;
 	virtual FMatchEndEvent& GetOnMatchEndEvent() override;
+	virtual FBeatWindowCloseEvent&  GetOnBeatWindowCloseEvent() override;
 	virtual float GetTimeLeftInRound() override;
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
@@ -131,6 +139,10 @@ public:
 
 	UFUNCTION()
 	virtual void OnMusicEnd();
+
+	UFUNCTION()
+	virtual void OnBeat();
+	virtual void BeatWindowClose();
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() override;

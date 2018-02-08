@@ -92,6 +92,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 	{
 		MyFighterWorld->GetOnSoloStartEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloEnd);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
 	}
 	if (!FighterWorld.IsValid())
 	{
@@ -107,6 +108,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 
 		MyFighterWorld->GetOnSoloStartEvent().AddDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().AddDynamic(this, &UFighterStateComponent::OnSoloEnd);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
 	}
 }
 
@@ -476,18 +478,20 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 	StartCurrentWindowDuration();
 }
 
-void UFighterStateComponent::EndWindupOfFirstWindow()
+void UFighterStateComponent::OnBeatWindowClose()
 {
 	if (CurrentWindowStage == EWindowStage::WE_Windup)
 	{
-		if (CurrentWindow.CancelOnEndBeat && GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+		if (MyMoveset != nullptr && MyMoveset->GetCurrentWindowInMove() == 0)
 		{
-			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
-			OnCurrentWindowWindupFinished();
+			if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+			{
+				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+				OnCurrentWindowWindupFinished();
+			}
 		}
 	}
 }
-
 
 void UFighterStateComponent::StartCurrentWindowDuration()
 {

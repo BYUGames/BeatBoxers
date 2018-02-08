@@ -448,6 +448,7 @@ void ABBGameMode::InitGameState()
 		{
 			GetGameState<ABBGameState>()->SetMusicBox(Object);
 			MusicBox->GetMusicEndEvent().AddDynamic(this, &ABBGameMode::OnMusicEnd);
+			MusicBox->GetOnBeatEvent().AddDynamic(this, &ABBGameMode::OnBeat);
 		}
 		else
 		{
@@ -786,6 +787,11 @@ FRoundEndEvent& ABBGameMode::GetOnRoundEndEvent()
 FMatchEndEvent& ABBGameMode::GetOnMatchEndEvent()
 {
 	return MatchEndEvent;
+}
+
+FBeatWindowCloseEvent& ABBGameMode::GetOnBeatWindowCloseEvent()
+{
+	return BeatWindowCloseEvent;
 }
 
 FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
@@ -1282,3 +1288,27 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 	return toRet;
 }
 
+void ABBGameMode::OnBeat()
+{
+	if (AfterBeatAccuracyWindow > 0)
+	{
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_BeatWindowClose
+			, this
+			, &ABBGameMode::BeatWindowClose
+			, AfterBeatAccuracyWindow
+		);
+	}
+	else
+	{
+		BeatWindowClose();
+	}
+}
+
+void ABBGameMode::BeatWindowClose()
+{
+	if (BeatWindowCloseEvent.IsBound())
+	{
+		BeatWindowCloseEvent.Broadcast();
+	}
+}

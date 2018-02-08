@@ -165,15 +165,14 @@ public:
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
+
 	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();
+
 	/** TODO: add desciption for this event */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
 	void K2_OnInputReceived();
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End windup of first move window"))
-	void EndWindupOfFirstWindow();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

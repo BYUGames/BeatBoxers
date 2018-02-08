@@ -48,4 +48,10 @@ public:
 
 	/** Function call to alert the moveset that it has entered it's solo. */
 	virtual void OnSoloStart() = 0;
+
+	/** Returns the index of the current window in the move. */
+	virtual int GetCurrentWindowInMove() const = 0;
+
+	/** Returns the number of windows in the current move. */
+	virtual int GetWindowsInCurrentMove() const = 0;
 };

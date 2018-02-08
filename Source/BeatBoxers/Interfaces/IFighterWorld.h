@@ -7,6 +7,7 @@
 #include "IFighterWorld.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRoundStartEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBeatWindowCloseEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundEndEvent, int, WinnerIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchEndEvent, int, WinnerIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoloStartEvent, AActor*, ActorSoloing);
@@ -55,6 +56,8 @@ public:
 
 	virtual FMatchEndEvent& GetOnMatchEndEvent() = 0;
 
+	virtual FBeatWindowCloseEvent& GetOnBeatWindowCloseEvent() = 0;
+
 	virtual float GetTimeLeftInRound() = 0;
 
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() = 0;
@@ -84,6 +87,10 @@ public:
 
 	/** Determines if there was a clash between two the Fighters, returns false if either of the Fighter's are NULL. */
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
-	//Gives the game mode a scaled time based on the beat
+
+	/** Gives the game mode a scaled time based on the beat */
 	virtual float GetScaledTime(float time)  = 0;
+
+	/**  */
+
 };

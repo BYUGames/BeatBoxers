@@ -24,14 +24,14 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	GameStateClass = ABBGameState::StaticClass();
 	DefaultMusicBoxClass = ABasicMusicBox::StaticClass();
 
-	DelayBetweenRounds = 5.f;
+	DelayBetweenRounds = 2.f;
 	RoundsToWin = 2;
 	HitscanDistanceConstant = 100.f;
 	bDrawDebugTraces = true;
 	bIsInRound = false;
 	bReadyToEnd = false;
 	RoundTime = 90;
-	DelayBeforeEnd = 5.f;
+	DelayBeforeEnd = 2.f;
 	DefaultClashImpact.bKnocksDown = false;
 	DefaultClashImpact.Damage = 0.f;
 	DefaultClashImpact.ImpartedMovement.Delta = FVector2D(-100.f, 0.f);

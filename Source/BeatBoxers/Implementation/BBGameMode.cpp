@@ -1266,7 +1266,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 		AddSpecial(SourceController.Get()->PlayerState, ImpactData.SpecialGenerated);
 	}
 
-	// Logic for applying damage to opponent
+	// Logic for applying damage and giving special to opponent
 	APawn* mAPawn = Cast<APawn>(Actor.Get());
 	if (mAPawn != nullptr && mAPawn->Controller != nullptr)
 	{
@@ -1277,6 +1277,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			if (mBBPlayerState != nullptr)
 			{
 				mBBPlayerState->TakeDamage(ImpactData.Damage);
+				AddSpecial(mBBPlayerState, ImpactData.SpecialGenerated / 4.0);
 				if (mBBPlayerState->GetHealth() == 0)
 				{
 					UE_LOG(LogBeatBoxers, Log, TEXT("A player has died."));

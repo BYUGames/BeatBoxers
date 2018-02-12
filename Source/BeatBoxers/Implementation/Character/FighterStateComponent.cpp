@@ -349,6 +349,9 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 		UCharacterMovementComponent *MovementComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
 		if (MovementComponent != nullptr && MovementComponent->IsMovingOnGround())
 		{
+			UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent ApplyMovement set falling."), *GetNameSafe(GetOwner()));
+			// This is actually redundant since the gamemode applies an effectively zero launch to the character prior to calling this.
+			// That call sets the move mode to falling.
 			MovementComponent->SetMovementMode(EMovementMode::MOVE_Falling);
 		}
 	}
@@ -915,6 +918,15 @@ void UFighterStateComponent::Knockdown()
 	{
 		TimesHitThisKnockdown = 0;
 		bIsKnockedDown = true;
+	}
+	if (GetOwner() != nullptr
+		&& Cast<AFighterCharacter>(GetOwner()) != nullptr
+		&& Cast<AFighterCharacter>(GetOwner())->GetCharacterMovement() != nullptr
+		&& Cast<AFighterCharacter>(GetOwner())->GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Falling
+		)
+	{
+		// If we're not going to land, start the timer immediately.
+		KnockdownRecovery(Cast<AFighterCharacter>(GetOwner())->RecoveryDuration);
 	}
 }
 

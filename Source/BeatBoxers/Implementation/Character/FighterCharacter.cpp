@@ -567,6 +567,7 @@ void AFighterCharacter::InputActionSpecial3()
 void AFighterCharacter::Landed(const FHitResult& Result)
 {
 	ACharacter::Landed(Result);
+	UE_LOG(LogKnockdown, Verbose, TEXT("Fighter %s landed"), *GetName());
 
 	//enable collision with other pawns.
 	if (GetCapsuleComponent() != nullptr)
@@ -585,6 +586,7 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 		MyFighterState->OnLand();
 		if (MyFighterState->IsKnockedDown())
 		{
+			UE_LOG(LogKnockdown, Verbose, TEXT("Fighter %s starting knockdown recovery."), *GetName());
 			MyFighterState->KnockdownRecovery(RecoveryDuration);
 		}
 	}

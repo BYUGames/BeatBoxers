@@ -390,7 +390,8 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
 	if (Character != nullptr)
 	{
-		Character->LaunchCharacter(FVector(0.f,0.01f,0.f), true, true);
+		// If you pass a zero vector it doesn't do anything.
+		Character->LaunchCharacter(FVector(0.f,0.f,1.f), true, true);
 		TargetFighter->ApplyMovement(FMovement{});
 	}
 	if (!Movement.UsePhysicsLaunch)
@@ -1256,6 +1257,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			IFighter* Fighter = Cast<IFighter>(Actor.Get());
 			if (Fighter != nullptr)
 			{
+				UE_LOG(LogKnockdown, Verbose, TEXT("Knocking down fighter %s"), *Actor->GetName());
 				Fighter->Knockdown();
 			}
 		}

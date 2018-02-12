@@ -32,8 +32,10 @@ public:
 	virtual void InputActionLight(UInputParserComponent *Parser);
 	virtual void InputActionMedium(UInputParserComponent *Parser);
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
-	virtual void InputActionForwardLight(UInputParserComponent *Parser);
-	virtual void InputActionBackLight(UInputParserComponent *Parser);
+	virtual void InputActionSpecial1(UInputParserComponent *Parser);
+	virtual void InputActionSpecial2(UInputParserComponent *Parser);
+	virtual void InputActionSpecial3(UInputParserComponent *Parser);
+	virtual void InputActionSuper(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
 	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
@@ -49,8 +51,10 @@ public:
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
-	virtual void InputActionForwardLight(UInputParserComponent *Parser) override;
-	virtual void InputActionBackLight(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
+	virtual void InputActionSuper(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
 	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };
@@ -66,6 +70,9 @@ public:
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -79,13 +86,18 @@ public:
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
+	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInputParser
 {
 	GENERATED_UCLASS_BODY()
-
+private:
+	// Stores the horizontal movement of the player
+	float HorizontalMovement;
 protected:
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -131,11 +143,14 @@ public:
 	virtual void InputActionLight(bool IsUp) override;
 	virtual void InputActionMedium(bool IsUp) override;
 	virtual void InputActionHeavy(bool IsUp) override;
-	virtual void InputActionJump(bool IsUp) override;
-	virtual void InputActionBlock(bool IsUp) override;
-	virtual void InputActionStopBlock(bool IsUp) override;
+	virtual void InputActionSpecial1(bool IsUp) override;
+	virtual void InputActionSpecial2(bool IsUp) override;
+	virtual void InputActionSpecial3(bool IsUp) override;
+	virtual void InputActionDodge(bool IsUp) override;
 	virtual void InputActionDashLeft(bool IsUp) override;
 	virtual void InputActionDashRight(bool IsUp) override;
+	virtual void InputActionSuper(bool IsUp) override;
+
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);

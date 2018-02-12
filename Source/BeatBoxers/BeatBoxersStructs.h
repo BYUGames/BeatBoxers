@@ -96,11 +96,13 @@ enum class EInputToken : uint8
 	IE_Light		UMETA(DisplayName = "Light"),
 	IE_Medium		UMETA(DisplayName = "Medium"),
 	IE_Heavy		UMETA(DisplayName = "Heavy"),
+	IE_Special1     UMETA(DisplayName = "Special1"),
+	IE_Special2     UMETA(DisplayName = "Special2"),
+	IE_Special3     UMETA(DisplayName = "Special3"),
+	IE_Super		UMETA(DisplayName = "Super"),
 	IE_Jump			UMETA(DisplayName = "Jump"),
 	IE_DashForward	UMETA(DisplayName = "DashForward"),
 	IE_DashBackward	UMETA(DisplayName = "DashBackward"),
-	IE_ForwardLight	UMETA(DisplayName = "ForwardLight"),
-	IE_BackLight	UMETA(DisplayName = "BackLight"),
 	IE_Block        UMETA(DisplayName = "Block"),
 };
 
@@ -132,6 +134,18 @@ struct FInputTokenBools
 	bool Heavy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Special1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Special2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Special3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Super;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Jump;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -142,12 +156,6 @@ struct FInputTokenBools
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool DashBackward;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool ForwardLight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool BackLight;
 
 	bool FilterInputToken(EInputToken Token) const;
 };
@@ -304,6 +312,10 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Interruptible : 1;
 
+	/** Whether this window's startlag can be canceled at the end of the beat window. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 CancelOnEndBeat : 1;
+
 	/** Whether or not landing a blow during this window starts the character's solo. If the blow is blocked the solo does not start. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 BeginsSolo : 1;
@@ -343,6 +355,10 @@ struct FMoveWindow
 	/** Effects played when this duration ends without connecting. Transform relative to attacker, attaches to attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects MissSFX;
+
+	/** Effects played when entering this window's duration. Transform relative to attacker, attaches to attacker. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FEffects WindupSFX;
 
 	/** Effects played when entering this window's duration. Transform relative to attacker, attaches to attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

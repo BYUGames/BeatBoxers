@@ -121,9 +121,11 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
 	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
 	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
-	InputComponent->BindAction("Jump", IE_Pressed, this, &AFighterCharacter::InputActionJump);
-	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
-	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
+	InputComponent->BindAction("Special1", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
+	InputComponent->BindAction("Special2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
+	InputComponent->BindAction("Special3", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
+	InputComponent->BindAction("Dodge", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
+	InputComponent->BindAction("Super", IE_Pressed, this, &AFighterCharacter::InputActionSuper);
 	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
 	InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 }
@@ -465,29 +467,22 @@ void AFighterCharacter::InputAxisVertical(float amount)
 	}
 }
 
-void AFighterCharacter::InputActionJump()
+void AFighterCharacter::InputActionDodge()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionJump(true);
+		GetInputParser()->InputActionDodge(true);
 	}
 }
 
-void AFighterCharacter::InputActionBlock()
+void AFighterCharacter::InputActionSuper()
 {
 	if (GetInputParser() != nullptr)
 	{
-		GetInputParser()->InputActionBlock(true);
+		GetInputParser()->InputActionSuper(true);
 	}
 }
 
-void AFighterCharacter::InputActionStopBlock()
-{
-	if (GetInputParser() != nullptr)
-	{
-		GetInputParser()->InputActionStopBlock(true);
-	}
-}
 
 void AFighterCharacter::InputActionUp()
 {
@@ -545,6 +540,30 @@ void AFighterCharacter::InputActionHeavy()
 	}
 }
 
+void AFighterCharacter::InputActionSpecial1()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionSpecial1(true);
+	}
+}
+
+void AFighterCharacter::InputActionSpecial2()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionSpecial2(true);
+	}
+}
+
+void AFighterCharacter::InputActionSpecial3()
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputActionSpecial3(true);
+	}
+}
+
 void AFighterCharacter::Landed(const FHitResult& Result)
 {
 	ACharacter::Landed(Result);
@@ -596,6 +615,12 @@ bool AFighterCharacter::K2_IsBlockStunned() const
 {
 	return FighterState->IsBlockStunned();
 }
+
+bool AFighterCharacter::K2_IsStunned() const
+{
+	return FighterState->IsStunned();
+}
+
 
 FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
 {
@@ -721,7 +746,7 @@ void AFighterCharacter::StartStun(float Duration, bool WasBlocked)
 	FighterState->StartStun(Duration, WasBlocked);
 }
 
-bool AFighterCharacter::IsDead()
+bool AFighterCharacter::IsDead() const
 {
 	return bIsDead;
 }
@@ -755,21 +780,21 @@ void AFighterCharacter::OnRoundEnd(int Winner)
 	}
 }
 
-float AFighterCharacter::GetFighterCurrentWindowAccuracy()
+float AFighterCharacter::GetFighterCurrentWindowAccuracy() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->GetCurrentWindowAccuracy();
 	return -1;
 }
 
-FMoveHitbox AFighterCharacter::GetFighterHitbox()
+FMoveHitbox AFighterCharacter::GetFighterHitbox() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->GetHitbox();
 	return FMoveHitbox();
 }
 
-bool AFighterCharacter::CanClash()
+bool AFighterCharacter::CanClash() const
 {
 	if (MyFighterState != nullptr)
 		return MyFighterState->DoesWindowUseHitbox() && MyFighterState->GetWindowStage() != EWindowStage::WE_Winddown;
@@ -781,5 +806,22 @@ void AFighterCharacter::Clash()
 	if (ClashEvent.IsBound())
 	{
 		ClashEvent.Broadcast();
+	}
+}
+
+int AFighterCharacter::GetTimesHitThisKnockdown() const
+{
+	if (MyFighterState != nullptr)
+	{
+		return MyFighterState->GetTimesHitThisKnockdown();
+	}
+	return 0;
+}
+
+void AFighterCharacter::AddHit()
+{
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->AddHit();
 	}
 }

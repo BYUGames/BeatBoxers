@@ -74,7 +74,7 @@ public:
 	/** Used to expose event to blueprints, fires when the moveset component recieves input from the input parser. */
 	virtual void OnInputReceived() = 0;
 
-	virtual FDataTableRowHandle GetDefaultMoveState() = 0;
+	virtual FDataTableRowHandle GetDefaultMoveState() const = 0;
 
 	/** Called when an on-beat attack hits the opponent. */
 	virtual void HitOnBeatLogic() = 0;
@@ -89,13 +89,13 @@ public:
 	virtual bool IsJumping() = 0;
 
 	/** Returns if we're "dead" */
-	virtual bool IsDead() = 0;
+	virtual bool IsDead() const = 0;
 
 	/** Knocksdown the fighter. */
 	virtual void Knockdown() = 0;
 
 	/** Returns the music balance for this fighter. */
-	virtual FMusicBalanceParams GetMusicBalance() = 0;
+	virtual FMusicBalanceParams GetMusicBalance() const = 0;
 
 	/** If DoesCollide is true then the player will collide with other players, if false it will ignore them. */
 	virtual void SetFighterCollisions(bool DoesCollide) = 0;
@@ -104,14 +104,20 @@ public:
 	virtual void StartStun(float Duration, bool WasBlocked) = 0;
 
 	/** Get accuracy of current move window, returns -1 if window is not active. */
-	virtual float GetFighterCurrentWindowAccuracy() = 0;
+	virtual float GetFighterCurrentWindowAccuracy() const = 0;
 
 	/** Returns the hitbox to of the current window, if not in a window returns default FMoveHitbox */
-	virtual FMoveHitbox GetFighterHitbox() = 0;
+	virtual FMoveHitbox GetFighterHitbox() const = 0;
 
 	/** Returns true if there is a current window active and not in the winddown state. */
-	virtual bool CanClash() = 0;
+	virtual bool CanClash() const = 0;
 
 	/** Trigger a clash on this fighter (should then broadcast it's clash event). */
 	virtual void Clash() = 0;
+
+	/** Returns how many times the character has been hit during this knockdown. */
+	virtual int GetTimesHitThisKnockdown() const = 0;
+
+	/** Inform that it has been hit. */
+	virtual void AddHit() = 0;
 };

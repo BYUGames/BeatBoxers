@@ -20,6 +20,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	CurrentWindowStage = EWindowStage::WE_None;
 	bIsHitboxActive = false;
+	TimesHitThisKnockdown = 0;
 }
 
 
@@ -91,6 +92,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 	{
 		MyFighterWorld->GetOnSoloStartEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloEnd);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
 	}
 	if (!FighterWorld.IsValid())
 	{
@@ -106,6 +108,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 
 		MyFighterWorld->GetOnSoloStartEvent().AddDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().AddDynamic(this, &UFighterStateComponent::OnSoloEnd);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
 	}
 }
 
@@ -194,13 +197,13 @@ bool UFighterStateComponent::IsBlocking() const
 	);
 	if (!IsInputBlocked() && bIsBlockButtonDown) return true;
 	if (IsStunned() && bIsCurrentStunBlock) return true;
-	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
-	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
+	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
+	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
-	//if (ToOpponent == 0) return false;
+	if (ToOpponent == 0) return false;
 
-	//if (ToOpponent > 0 && MoveDirection < 0) return true;
-	//if (ToOpponent < 0 && MoveDirection > 0) return true;
+	if (ToOpponent > 0 && MoveDirection < 0) return true;
+	if (ToOpponent < 0 && MoveDirection > 0) return true;
 
 	return false;
 }
@@ -227,7 +230,7 @@ bool UFighterStateComponent::IsKnockedDown() const
 
 bool UFighterStateComponent::IsInvulnerable() const
 {
-	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || CurrentWindow.Invincibility;
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || (CurrentWindow.Invincibility && IsMidMove());
 }
 
 bool UFighterStateComponent::IsMidMove() const
@@ -287,7 +290,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 
 void UFighterStateComponent::SetMoveDirection(float Direction)
 {
-	if (!IsInputBlocked() && MyFighter != nullptr && !MyFighter->IsBlocking())
+	if (!IsInputBlocked() && MyFighter != nullptr)
 	{
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);
@@ -414,6 +417,7 @@ void UFighterStateComponent::OnLand()
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
 	CurrentWindowStage = EWindowStage::WE_Windup;
+	PlayerAttackerEffects(CurrentWindow.WindupSFX);
 	ActorsToIgnore.Empty();
 	ActorsToIgnore.Add(GetOwner());
 
@@ -456,19 +460,37 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	}
 	else
 	{
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowWindupFinished,
-			CurrentWindow.Windup,
-			false
-		);
+		if (MyFighterWorld != nullptr) 
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowWindupFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Windup),
+				false
+			);
+		}
 	}
 }
 
 void UFighterStateComponent::OnCurrentWindowWindupFinished()
 {
 	StartCurrentWindowDuration();
+}
+
+void UFighterStateComponent::OnBeatWindowClose()
+{
+	if (CurrentWindowStage == EWindowStage::WE_Windup)
+	{
+		if (MyMoveset != nullptr && MyMoveset->GetCurrentWindowInMove() == 0)
+		{
+			if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+			{
+				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+				OnCurrentWindowWindupFinished();
+			}
+		}
+	}
 }
 
 void UFighterStateComponent::StartCurrentWindowDuration()
@@ -495,13 +517,16 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 		{
 			AdjustGravity(CurrentWindow.GravityScale);
 		}
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowDurationFinished,
-			CurrentWindow.Duration,
-			false
-		);
+		if (MyFighterWorld != nullptr)
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowDurationFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Duration),
+				false
+			);
+		}
 	}
 }
 
@@ -545,13 +570,16 @@ void UFighterStateComponent::StartCurrentWindowWinddown()
 	}
 	else
 	{
-		GetOwner()->GetWorldTimerManager().SetTimer(
-			TimerHandle_Window,
-			this,
-			&UFighterStateComponent::OnCurrentWindowWinddownFinished,
-			CurrentWindow.Winddown,
-			false
-		);
+		if (MyFighterWorld != nullptr)
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(
+				TimerHandle_Window,
+				this,
+				&UFighterStateComponent::OnCurrentWindowWinddownFinished,
+				MyFighterWorld->GetScaledTime(CurrentWindow.Winddown),
+				false
+			);
+		}
 	}
 }
 
@@ -883,11 +911,16 @@ void UFighterStateComponent::OnSoloEnd()
 
 void UFighterStateComponent::Knockdown()
 {
-	bIsKnockedDown = true;
+	if (!bIsKnockedDown)
+	{
+		TimesHitThisKnockdown = 0;
+		bIsKnockedDown = true;
+	}
 }
 
 void UFighterStateComponent::KnockdownRecovery(float Duration)
 {
+	TimesHitThisKnockdown = 0;
 	StartInvulnerableTimer(Duration);
 }
 
@@ -952,4 +985,17 @@ FMoveHitbox UFighterStateComponent::GetHitbox() const
 EWindowStage UFighterStateComponent::GetWindowStage() const
 {
 	return CurrentWindowStage;
+}
+
+int UFighterStateComponent::GetTimesHitThisKnockdown() const
+{
+	return TimesHitThisKnockdown;
+}
+
+void UFighterStateComponent::AddHit()
+{
+	if (bIsKnockedDown)
+	{
+		TimesHitThisKnockdown++;
+	}
 }

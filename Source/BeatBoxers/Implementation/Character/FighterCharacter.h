@@ -77,9 +77,11 @@ protected:
 	void InputActionLight();
 	void InputActionMedium();
 	void InputActionHeavy();
-	void InputActionJump();
-	void InputActionBlock();
-	void InputActionStopBlock();
+	void InputActionSpecial1();
+	void InputActionSpecial2();
+	void InputActionSpecial3();
+	void InputActionSuper();
+	void InputActionDodge();
 	void InputActionDashLeftButton();
 	void InputActionDashRightButton();
 	void SetGravityScale(float scale);
@@ -133,20 +135,22 @@ public:
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual FClashEvent& GetOnClashEvent() override;
 	virtual void OnInputReceived() override;
-	virtual FDataTableRowHandle GetDefaultMoveState() override { return DefaultMoveState; }
+	virtual FDataTableRowHandle GetDefaultMoveState() const override { return DefaultMoveState; }
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;
 	virtual bool IsJumping() override;
-	virtual bool IsDead() override;
+	virtual bool IsDead() const override;
 	virtual void Knockdown() override;
-	virtual FMusicBalanceParams GetMusicBalance() override { return FighterData.MusicBalance; }
+	virtual FMusicBalanceParams GetMusicBalance() const override { return FighterData.MusicBalance; }
 	virtual void SetFighterCollisions(bool DoesCollide) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
-	virtual float GetFighterCurrentWindowAccuracy() override;
-	virtual FMoveHitbox GetFighterHitbox() override;
-	virtual bool CanClash() override;
+	virtual float GetFighterCurrentWindowAccuracy() const override;
+	virtual FMoveHitbox GetFighterHitbox() const override;
+	virtual bool CanClash() const override;
 	virtual void Clash() override;
+	virtual int GetTimesHitThisKnockdown() const override;
+	virtual void AddHit() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))
@@ -161,9 +165,11 @@ public:
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
+
 	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();
+
 	/** TODO: add desciption for this event */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
 	void K2_OnInputReceived();
@@ -191,6 +197,10 @@ public:
 	/** If the character is stunned by blocking (not if he is blocking in the code)*/
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Block Stunned"))
 	virtual bool K2_IsBlockStunned() const;
+
+	/** If the character is stunned*/
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Stunned"))
+		virtual bool K2_IsStunned() const;
 
 	UFUNCTION(BlueprintPure)
 	virtual float GetHorizontalMovement() const;

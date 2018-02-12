@@ -66,14 +66,20 @@ public:
 	/** Receives events relating to the heavy attack button. */
 	virtual void InputActionHeavy(bool IsUp) = 0;
 
+	/** Receives events relating to the first special attack button. */
+	virtual void InputActionSpecial1(bool IsUp) = 0;
+
+	/** Receives events relating to the second special attack button. */
+	virtual void InputActionSpecial2(bool IsUp) = 0;
+
+	/** Receives events relating to the third special attack button. */
+	virtual void InputActionSpecial3(bool IsUp) = 0;
+
+	/** Recives events related to the Super */
+	virtual void InputActionSuper(bool IsUp) = 0;
+
 	/** Receives events relating to the Jump button. */
-	virtual void InputActionJump(bool IsUp) = 0;
-
-	/** Receives events relating to pressing the Block button. */
-	virtual void InputActionBlock(bool IsUp) = 0;
-
-	/** Receives events relating to releasing the Block button. */
-	virtual void InputActionStopBlock(bool IsUp) = 0;
+	virtual void InputActionDodge(bool IsUp) = 0;
 
 	/** Recives events related to the dash left button */
 	virtual void InputActionDashLeft(bool IsUp) = 0;

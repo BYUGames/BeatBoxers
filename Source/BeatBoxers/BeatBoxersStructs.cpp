@@ -76,6 +76,18 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_Heavy:
 		if (Heavy) return true;
 		break;
+	case EInputToken::IE_Special1:
+		if (Special1) return true;
+		break;
+	case EInputToken::IE_Special2:
+		if (Special2) return true;
+		break;
+	case EInputToken::IE_Special3:
+		if (Special3) return true;
+		break;
+	case EInputToken::IE_Super:
+		if (Super) return true;
+		break;
 	case EInputToken::IE_Jump:
 		if (Jump) return true;
 		break;
@@ -87,12 +99,6 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 		break;
 	case EInputToken::IE_DashBackward:
 		if (DashBackward) return true;
-		break;
-	case EInputToken::IE_ForwardLight:
-		if (ForwardLight) return true;
-		break;
-	case EInputToken::IE_BackLight:
-		if (BackLight) return true;
 		break;
 	default:
 		return false;

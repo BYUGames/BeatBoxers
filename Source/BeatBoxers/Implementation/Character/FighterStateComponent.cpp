@@ -923,9 +923,11 @@ void UFighterStateComponent::Knockdown()
 		&& Cast<AFighterCharacter>(GetOwner()) != nullptr
 		&& Cast<AFighterCharacter>(GetOwner())->GetCharacterMovement() != nullptr
 		&& Cast<AFighterCharacter>(GetOwner())->GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Falling
+		&& Cast<AFighterCharacter>(GetOwner())->GetCharacterMovement()->PendingLaunchVelocity.IsNearlyZero()
 		)
 	{
 		// If we're not going to land, start the timer immediately.
+		UE_LOG(LogKnockdown, Verbose, TEXT("%s immediate knockdown recovery."), *GetNameSafe(GetOwner()));
 		KnockdownRecovery(Cast<AFighterCharacter>(GetOwner())->RecoveryDuration);
 	}
 }

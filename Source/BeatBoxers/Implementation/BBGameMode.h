@@ -50,6 +50,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int RoundTime;
 
+	/** Game does not end. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bDebugMode;
+
+	/** Scales all impacts. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GlobalImpactScaling;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsInRound;
 
@@ -136,6 +144,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	FImpactData GetScaledImpactData(AActor *Target, const FImpactData& ImpactData, float Accuracy);
+
+	UFUNCTION(Exec)
+	void SetDebug(bool bIsDebug) { bDebugMode = bIsDebug; }
+
+	UFUNCTION(Exec)
+	void SetImpactScale(float Scale) { GlobalImpactScaling = Scale; }
 
 	UFUNCTION()
 	virtual void OnMusicEnd();

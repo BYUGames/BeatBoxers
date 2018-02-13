@@ -24,7 +24,9 @@ void UBBGameInstance::Init()
 
 void UBBGameInstance::LoadData(FString CSVFile, UDataTable *DataTable)
 {
-	if (DataTable != nullptr)
+	// A crucial part of this does not seem to work for shipping builds.
+	// Let's just not use this for now.
+	/*if (DataTable != nullptr)
 	{
 		FString CSVString;
 		FString CSVPath = FPaths::GameContentDir() + CSVFile;
@@ -60,5 +62,5 @@ void UBBGameInstance::LoadData(FString CSVFile, UDataTable *DataTable)
 	else
 	{
 		UE_LOG(LogBeatBoxers, Error, TEXT("null table reference given for %s"), *CSVFile);
-	}
+	}*/
 }

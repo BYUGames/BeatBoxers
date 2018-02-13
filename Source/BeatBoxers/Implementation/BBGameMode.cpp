@@ -30,6 +30,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	bDrawDebugTraces = true;
 	bIsInRound = false;
 	bReadyToEnd = false;
+	bDebugMode = false;
 	RoundTime = 90;
 	DelayBeforeEnd = 2.f;
 	DefaultClashImpact.bKnocksDown = false;
@@ -41,6 +42,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultClashImpact.ImpartedMovement.UsePhysicsLaunch = false;
 	DefaultClashImpact.StunLength = 0.5f;
 	ComboImpactScaling = 0.8f;
+	GlobalImpactScaling = 1.f;
 }
 
 EFighterDamageType ABBGameMode::GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const
@@ -204,7 +206,7 @@ int ABBGameMode::GetWinnerIndex()
 
 void ABBGameMode::EndRound()
 {
-	if (!bIsInRound)
+	if (!bIsInRound || bDebugMode)
 	{
 		return;
 	}
@@ -708,6 +710,7 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(AActor *Target, cons
 
 		FImpactData ScaledImpact = ImpactData;
 		ScaledImpact.Damage *= Scale;
+		ScaledImpact.ImpartedMovement.Delta *= GlobalImpactScaling;
 		if (ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 		{
 			ScaledImpact.ImpartedMovement.Delta *= Scale;

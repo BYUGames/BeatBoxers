@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "FighterCharacter.h"
+#include "../../Interfaces/IMusicBox.h"
 
 
 // Sets default values for this component's properties
@@ -92,7 +93,13 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 	{
 		MyFighterWorld->GetOnSoloStartEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloEnd);
-		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::SkipWindup);
+		if (MyFighterWorld->GetMusicBox() != nullptr
+			&& Cast<IMusicBox>(MyFighterWorld->GetMusicBox()) != nullptr)
+		{
+			auto MusicBox = Cast<IMusicBox>(MyFighterWorld->GetMusicBox());
+			MusicBox->GetOnBeatEvent().RemoveDynamic(this, &UFighterStateComponent::SkipWindupOnBeat);
+		}
 	}
 	if (!FighterWorld.IsValid())
 	{
@@ -108,7 +115,13 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 
 		MyFighterWorld->GetOnSoloStartEvent().AddDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().AddDynamic(this, &UFighterStateComponent::OnSoloEnd);
-		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::OnBeatWindowClose);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::SkipWindup);
+		if (MyFighterWorld->GetMusicBox() != nullptr
+			&& Cast<IMusicBox>(MyFighterWorld->GetMusicBox()) != nullptr)
+		{
+			auto MusicBox = Cast<IMusicBox>(MyFighterWorld->GetMusicBox());
+			MusicBox->GetOnBeatEvent().AddDynamic(this, &UFighterStateComponent::SkipWindupOnBeat);
+		}
 	}
 }
 
@@ -463,15 +476,30 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	}
 	else
 	{
-		if (MyFighterWorld != nullptr) 
+		if (
+			MyFighterWorld != nullptr
+			&& MyFighterWorld->GetMusicBox() != nullptr
+			&& Cast<IMusicBox>(MyFighterWorld->GetMusicBox()) != nullptr
+			)
 		{
-			GetOwner()->GetWorldTimerManager().SetTimer(
-				TimerHandle_Window,
-				this,
-				&UFighterStateComponent::OnCurrentWindowWindupFinished,
-				MyFighterWorld->GetScaledTime(CurrentWindow.Windup),
-				false
-			);
+			IMusicBox *MusicBox = Cast<IMusicBox>(MyFighterWorld->GetMusicBox());
+			float AccInTime = (1.f - CurrentWindowAccuracy) * MusicBox->GetTimeBetweenBeats();
+			if ((MyMoveset == nullptr || MyMoveset->GetCurrentWindowInMove() != 0)
+				|| MusicBox->GetTimeBetweenBeats() - AccInTime < CurrentWindow.Windup)
+			{
+				bSkipWindupOnBeat = false;
+				GetOwner()->GetWorldTimerManager().SetTimer(
+					TimerHandle_Window,
+					this,
+					&UFighterStateComponent::OnCurrentWindowWindupFinished,
+					MyFighterWorld->GetScaledTime(CurrentWindow.Windup),
+					false
+				);
+			}
+			else
+			{
+				bSkipWindupOnBeat = true;
+			}
 		}
 	}
 }
@@ -481,7 +509,16 @@ void UFighterStateComponent::OnCurrentWindowWindupFinished()
 	StartCurrentWindowDuration();
 }
 
-void UFighterStateComponent::OnBeatWindowClose()
+void UFighterStateComponent::SkipWindupOnBeat()
+{
+	if (bSkipWindupOnBeat)
+	{
+		bSkipWindupOnBeat = false;
+		SkipWindup();
+	}
+}
+
+void UFighterStateComponent::SkipWindup()
 {
 	if (CurrentWindowStage == EWindowStage::WE_Windup)
 	{
@@ -490,8 +527,8 @@ void UFighterStateComponent::OnBeatWindowClose()
 			if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 			{
 				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
-				OnCurrentWindowWindupFinished();
 			}
+			OnCurrentWindowWindupFinished();
 		}
 	}
 }

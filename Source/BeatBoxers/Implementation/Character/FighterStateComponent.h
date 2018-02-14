@@ -37,6 +37,7 @@ protected:
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
 	uint32 bIsKnockedDown : 1;
+	uint32 bSkipWindupOnBeat : 1;
 
 	EWindowStage CurrentWindowStage;
 	EWindowEnd CurrentWindowEnd;
@@ -164,7 +165,10 @@ public:
 	void OnSoloEnd();
 
 	UFUNCTION()
-	void OnBeatWindowClose();
+	void SkipWindupOnBeat();
+
+	UFUNCTION()
+	void SkipWindup();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

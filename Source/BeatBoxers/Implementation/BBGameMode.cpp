@@ -805,6 +805,10 @@ FPlayerBeatComboChangedEvent& ABBGameMode::GetOnPlayerBeatComboChangedEvent()
 
 void ABBGameMode::AdjustCamera()
 {
+	if (!bIsInRound) // Only Adjust camera if still playing.
+	{
+		return;
+	}
 	ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
 	if (Settings != nullptr)
 	{

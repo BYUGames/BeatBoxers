@@ -314,7 +314,7 @@ struct FMoveWindow
 
 	/** Whether this window's startlag can be canceled at the end of the beat window. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	uint32 CancelOnEndBeat : 1;
+	uint32 CrouchAttack : 1;
 
 	/** Whether or not landing a blow during this window starts the character's solo. If the blow is blocked the solo does not start. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

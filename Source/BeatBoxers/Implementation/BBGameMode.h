@@ -38,6 +38,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DelayBeforeEnd;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DelayBeforeCombat;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float FightStartTime;
+
 	/** For each subsequent hit after being knocked down, the impact will be scaled by this repeatedly. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ComboImpactScaling;
@@ -61,6 +67,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsInRound;
 
+	UPROPERTY(BlueprintReadOnly)
+	int RoundNumber;
+
 	bool bReadyToEnd;
 
 	UPROPERTY(BlueprintAssignable)
@@ -71,6 +80,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FRoundStartEvent RoundStartEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FCombatStartEvent CombatStartEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FFightStartedEvent FightStartedEvent;
 
 	UPROPERTY(BlueprintAssignable)
 	FRoundEndEvent RoundEndEvent;
@@ -99,6 +114,8 @@ public:
 	FTimerHandle TimerHandle_RoundEnd;
 	FTimerHandle TimerHandle_StartNextRound;
 	FTimerHandle TimerHandle_BeatWindowClose;
+	FTimerHandle TimerHandle_StartCombat;
+	FTimerHandle TimerHandle_FightStarted;
 
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
@@ -110,6 +127,8 @@ public:
 	virtual FSoloStartEvent& GetOnSoloStartEvent() override;
 	virtual FSoloEndEvent& GetOnSoloEndEvent() override;
 	virtual FRoundStartEvent& GetOnRoundStartEvent() override;
+	virtual FCombatStartEvent& GetOnCombatStartEvent() override;
+	virtual FFightStartedEvent& GetOnFightStartedEvent() override;
 	virtual FRoundEndEvent& GetOnRoundEndEvent() override;
 	virtual FMatchEndEvent& GetOnMatchEndEvent() override;
 	virtual FBeatWindowCloseEvent&  GetOnBeatWindowCloseEvent() override;
@@ -178,6 +197,10 @@ protected:
 
 	virtual void StartRoundWithDelay();
 	virtual void StartRound();
+	/** Enable input and start timer for round after round text and delay */
+	virtual void StartCombat();
+	/** Let blueprint know after the fight started (to hide fight text) */
+	virtual void StartedFight();
 	/** Does Logic for ending the round */
 	virtual void EndRound();
 	virtual void EndGame(int Winner);

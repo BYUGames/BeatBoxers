@@ -29,6 +29,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	HitscanDistanceConstant = 100.f;
 	bDrawDebugTraces = true;
 	bIsInRound = false;
+	RoundNumber = 0;
 	bReadyToEnd = false;
 	bDebugMode = false;
 	RoundTime = 90;
@@ -783,6 +784,16 @@ FRoundStartEvent& ABBGameMode::GetOnRoundStartEvent()
 	return RoundStartEvent;
 }
 
+FCombatStartEvent& ABBGameMode::GetOnCombatStartEvent()
+{
+	return CombatStartEvent;
+}
+
+FFightStartedEvent& ABBGameMode::GetOnFightStartedEvent()
+{
+	return FightStartedEvent;
+}
+
 FRoundEndEvent& ABBGameMode::GetOnRoundEndEvent()
 {
 	return RoundEndEvent;
@@ -909,6 +920,7 @@ void ABBGameMode::StartRound()
 {
 	UE_LOG(LogBeatBoxers, Log, TEXT("Round starting."));
 	bIsInRound = true;
+	RoundNumber++;
 	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
 		ABBPlayerState* PlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[i]);
@@ -918,6 +930,22 @@ void ABBGameMode::StartRound()
 		}
 	}
 	SpawnPawns();
+	SetPlayerInput(false);
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_StartCombat
+		, this
+		, &ABBGameMode::StartCombat
+		, DelayBeforeCombat
+		, false
+	);
+	if (RoundStartEvent.IsBound())
+	{
+		RoundStartEvent.Broadcast();
+	}
+}
+
+void ABBGameMode::StartCombat()
+{
 	SetPlayerInput(true);
 	if (RoundTime <= 0)
 	{
@@ -931,9 +959,24 @@ void ABBGameMode::StartRound()
 		, RoundTime
 		, false
 	);
-	if (RoundStartEvent.IsBound())
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_FightStarted
+		, this
+		, &ABBGameMode::StartedFight
+		, FightStartTime
+		, false
+	);
+	if (CombatStartEvent.IsBound())
 	{
-		RoundStartEvent.Broadcast();
+		CombatStartEvent.Broadcast();
+	}
+}
+
+void ABBGameMode::StartedFight()
+{
+	if (FightStartedEvent.IsBound())
+	{
+		FightStartedEvent.Broadcast();
 	}
 }
 
@@ -1089,6 +1132,7 @@ void ABBGameMode::EndGame(int Winner)
 		MatchEndEvent.Broadcast(Winner);
 	}
 	bReadyToEnd = true;
+	RoundNumber = 0;
 }
 
 void ABBGameMode::HandleMatchHasEnded()

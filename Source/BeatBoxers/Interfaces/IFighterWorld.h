@@ -7,6 +7,8 @@
 #include "IFighterWorld.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRoundStartEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombatStartEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFightStartedEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBeatWindowCloseEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundEndEvent, int, WinnerIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchEndEvent, int, WinnerIndex);
@@ -51,6 +53,10 @@ public:
 	virtual FSoloEndEvent& GetOnSoloEndEvent() = 0;
 
 	virtual FRoundStartEvent& GetOnRoundStartEvent() = 0;
+
+	virtual FCombatStartEvent& GetOnCombatStartEvent() = 0;
+
+	virtual FFightStartedEvent& GetOnFightStartedEvent() = 0;
 
 	virtual FRoundEndEvent& GetOnRoundEndEvent() = 0;
 

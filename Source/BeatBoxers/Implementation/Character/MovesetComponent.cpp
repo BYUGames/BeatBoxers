@@ -235,11 +235,22 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	BufferAccuracy = Token.accuracy;
 	MoveAccuracy = BufferAccuracy;
 	ProcessInputToken(Token.token, Token.accuracy);
+	ProcessDDRInputToken(Token.token);
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UMovesetComponent recieved input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
 	{
 		MyFighter->OnInputReceived();
+	}
+}
+
+void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
+{
+	FFretboardInputResult BGResult = BGFretboard->ReceiveInputToken(Token);
+	FFretboardInputResult SoloResult = SoloFretboard->ReceiveInputToken(Token);
+	if (BGResult.Accuracy > 0 || SoloResult.Accuracy > 0)
+	{
+		MyFighter->Clash();
 	}
 }
 

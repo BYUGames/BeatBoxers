@@ -146,4 +146,13 @@ public:
 
 	/** Inform that it has been hit. */
 	virtual void AddHit() = 0;
+
+	/** Checks to see if player is in DDR state */
+	virtual bool IsInDDR() = 0;
+
+	/** Inform's the state of fighter being in DDR state */
+	virtual void StartDDR() = 0;
+
+	/** Inform's the state of fighter leaving DDR state */
+	virtual void EndDDR() = 0;
 };

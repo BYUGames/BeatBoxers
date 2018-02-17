@@ -35,6 +35,14 @@ ENoteType UBBFunctionLibrary::GetNoteFromInput(EInputToken InputToken)
 		return ENoteType::NE_Medium;
 	case EInputToken::IE_Heavy:
 		return ENoteType::NE_Heavy;
+	case EInputToken::IE_Up:
+		return ENoteType::NE_Up;
+	case EInputToken::IE_Down:
+		return ENoteType::NE_Down;
+	case EInputToken::IE_Left:
+		return ENoteType::NE_Left;
+	case EInputToken::IE_Right:
+		return ENoteType::NE_Right;
 	default:
 		return ENoteType::NE_None;
 	}

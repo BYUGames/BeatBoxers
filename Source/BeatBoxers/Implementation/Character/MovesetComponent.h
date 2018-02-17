@@ -74,6 +74,8 @@ protected:
 
 	void ProcessInputToken(EInputToken Token, float Accuracy);
 
+	void ProcessDDRInputToken(EInputToken Token);
+
 public:	
 	UFUNCTION(BlueprintCallable)
 	UBasicFretboard* GetBGFretboard();

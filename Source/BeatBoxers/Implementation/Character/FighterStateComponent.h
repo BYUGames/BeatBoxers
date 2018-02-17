@@ -38,6 +38,7 @@ protected:
 	uint32 bWantsToCharge: 1;
 	uint32 bIsKnockedDown : 1;
 	uint32 bSkipWindupOnBeat : 1;
+	uint32 bIsInDDR : 1;
 
 	EWindowStage CurrentWindowStage;
 	EWindowEnd CurrentWindowEnd;
@@ -154,6 +155,11 @@ public:
 	virtual EWindowStage GetWindowStage() const override;
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
+	virtual bool IsInDDR() override;
+	UFUNCTION()
+	virtual void StartDDR() override;
+	UFUNCTION()
+	virtual void EndDDR() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

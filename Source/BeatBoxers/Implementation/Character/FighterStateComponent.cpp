@@ -959,6 +959,7 @@ void UFighterStateComponent::Knockdown()
 	{
 		TimesHitThisKnockdown = 0;
 		bIsKnockedDown = true;
+		StartDDR();
 	}
 	if (GetOwner() != nullptr
 		&& Cast<AFighterCharacter>(GetOwner()) != nullptr
@@ -1000,6 +1001,7 @@ void UFighterStateComponent::StartInvulnerableTimer(float Duration)
 void UFighterStateComponent::OnInvulnerableTimer()
 {
 	bIsKnockedDown = false;
+	EndDDR();
 	if (!IsStunned())
 	{
 		if (MyInputParser != nullptr)
@@ -1053,4 +1055,19 @@ void UFighterStateComponent::AddHit()
 	{
 		TimesHitThisKnockdown++;
 	}
+}
+
+bool UFighterStateComponent::IsInDDR()
+{
+	return bIsInDDR;
+}
+
+void UFighterStateComponent::StartDDR()
+{
+	bIsInDDR = true;
+}
+
+void UFighterStateComponent::EndDDR()
+{
+	bIsInDDR = false;
 }

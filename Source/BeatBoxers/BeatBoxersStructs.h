@@ -104,6 +104,10 @@ enum class EInputToken : uint8
 	IE_DashForward	UMETA(DisplayName = "DashForward"),
 	IE_DashBackward	UMETA(DisplayName = "DashBackward"),
 	IE_Block        UMETA(DisplayName = "Block"),
+	IE_Up			UMETA(DisplayName = "Up"),
+	IE_Down			UMETA(DisplayName = "Down"),
+	IE_Left			UMETA(DisplayName = "Left"),
+	IE_Right		UMETA(DisplayName = "Right")
 };
 
 UENUM(BlueprintType)
@@ -112,7 +116,11 @@ enum class ENoteType : uint8
 	NE_None		UMETA(DisplayName = "None"),
 	NE_Light	UMETA(DisplayName = "Light"),
 	NE_Medium	UMETA(DisplayName = "Medium"),
-	NE_Heavy	UMETA(DisplayName = "Heavy")
+	NE_Heavy	UMETA(DisplayName = "Heavy"),
+	NE_Up		UMETA(DisplayName = "Up"),
+	NE_Down		UMETA(DisplayName = "Down"),
+	NE_Left		UMETA(DisplayName = "Left"),
+	NE_Right	UMETA(DisplayName = "Right")
 };
 
 USTRUCT(BlueprintType)

@@ -246,12 +246,14 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 
 void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 {
-	//FFretboardInputResult BGResult = BGFretboard->ReceiveInputToken(Token);
-	//FFretboardInputResult SoloResult = SoloFretboard->ReceiveInputToken(Token);
-	//if (BGResult.Accuracy > 0 || SoloResult.Accuracy > 0)
-	//{
-	//	MyFighter->Clash();
-	//}
+	if (BGFretboard == nullptr || SoloFretboard == nullptr)
+		return;
+	FFretboardInputResult BGResult = BGFretboard->ReceiveInputToken(Token);
+	FFretboardInputResult SoloResult = SoloFretboard->ReceiveInputToken(Token);
+	if (BGResult.Accuracy > 0 || SoloResult.Accuracy > 0)
+	{
+		MyFighter->Clash();
+	}
 }
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)

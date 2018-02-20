@@ -27,21 +27,22 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->RotationRate.Yaw = -1.f;
-	GetCharacterMovement()->GravityScale = 2.f;
-	GetCharacterMovement()->JumpZVelocity = 840.f;
+	GetCharacterMovement()->GravityScale = 4.f;
+	GetCharacterMovement()->JumpZVelocity = 1600.0f;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 0.f;
 	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
 	GetCharacterMovement()->MaxAcceleration = 99999.0f;
+	GetCharacterMovement()->AirControl = 0.0f;
 	GetCapsuleComponent()->SetHiddenInGame(false);
 
 	StartingHealth = 100.f;
 
-	JumpDelay = 0.2f;
+	JumpDelay = 0.0f;
 
 	Facing = 1.f;
 
 	InputBufferLength = 0.5f;
-	ComplexInputWindow = 0.5f;
+	ComplexInputWindow = 0.25f;
 	RecoveryDuration = 0.6f;
 	bIsDead = false;
 }

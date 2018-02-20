@@ -64,6 +64,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float GlobalImpactScaling;
 
+	/** Scales all damage for easier testing. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GlobalDamageScaling;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsInRound;
 

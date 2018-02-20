@@ -1335,7 +1335,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
 			if (mBBPlayerState != nullptr)
 			{
-				mBBPlayerState->TakeDamage(ImpactData.Damage);
+				mBBPlayerState->TakeDamage(ImpactData.Damage * GlobalDamageScaling);
 				AddSpecial(mBBPlayerState, ImpactData.SpecialGenerated / 4.0);
 				if (mBBPlayerState->GetHealth() == 0)
 				{

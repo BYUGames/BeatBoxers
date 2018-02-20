@@ -293,6 +293,9 @@ struct FImpactData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FEffects SFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HitstopAmount;
 };
 
 USTRUCT(BlueprintType)

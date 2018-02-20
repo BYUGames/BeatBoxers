@@ -111,6 +111,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> DefaultMusicBoxClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UCameraShake> CameraShake;
+
 	FTimerHandle TimerHandle_RoundEnd;
 	FTimerHandle TimerHandle_StartNextRound;
 	FTimerHandle TimerHandle_BeatWindowClose;

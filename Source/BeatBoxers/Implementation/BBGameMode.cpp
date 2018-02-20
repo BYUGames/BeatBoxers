@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BBWorldSettings.h"
 
+
 ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -154,6 +155,11 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	{
 		//TODO: Should this be a miss?
 		return EHitResponse::HE_Missed;
+	}
+	
+	if (Hit.HitstopAmount > 0) {
+		//shake camera as part of hitstop
+		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
 	}
 
 	if (CheckClash(Actor, Source))

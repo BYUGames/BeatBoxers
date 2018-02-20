@@ -102,6 +102,7 @@ void AFighterCharacter::Tick(float DeltaTime)
 			{
 				Facing = NewFacing;
 				SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
+				SetActorRelativeScale3D(FVector(1, (Facing > 0) ? 1 : -1,1));
 			}
 		}
 	}

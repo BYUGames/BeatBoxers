@@ -1085,8 +1085,3 @@ void UFighterStateComponent::EndDDR()
 		}
 	}
 }
-
-void UFighterStateComponent::RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent)
-{
-	
-}

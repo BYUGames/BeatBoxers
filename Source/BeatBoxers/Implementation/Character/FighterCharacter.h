@@ -117,6 +117,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FDataTableRowHandle DefaultMoveState;
 
+	UPROPERTY(BlueprintAssignable)
+	FDDRToggleEvent DDRToggleEvent;
+
+	//UFUNCTION(BlueprintCallable)
+	//FDDRToggleEvent& GetDDRToggleEvent() {return DDRToggleEvent;}
+
 	/** IFighter implementation */
 	virtual void RegisterFighterState(TWeakObjectPtr<UObject> NewFighterState) override;
 	virtual void RegisterOpponent(TWeakObjectPtr<AActor> Opponent) override;
@@ -151,6 +157,7 @@ public:
 	virtual void Clash() override;
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
+	virtual FDDRToggleEvent& GetOnDDRToggleEvent() override { return DDRToggleEvent; }
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

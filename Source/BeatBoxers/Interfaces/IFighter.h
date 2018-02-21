@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
+#include "IFighterState.h"
 #include "IFighter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartJumpEvent);
@@ -120,4 +121,6 @@ public:
 
 	/** Inform that it has been hit. */
 	virtual void AddHit() = 0;
+
+	virtual FDDRToggleEvent& GetOnDDRToggleEvent() = 0;
 };

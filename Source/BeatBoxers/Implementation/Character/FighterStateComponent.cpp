@@ -22,6 +22,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	CurrentWindowStage = EWindowStage::WE_None;
 	bIsHitboxActive = false;
 	TimesHitThisKnockdown = 0;
+	bIsInDDR = false;
 }
 
 
@@ -1063,10 +1064,29 @@ bool UFighterStateComponent::IsInDDR()
 
 void UFighterStateComponent::StartDDR()
 {
-	bIsInDDR = true;
+	if (!bIsInDDR)
+	{
+		bIsInDDR = true;
+		if (DDRToggleEvent.IsBound())
+		{
+			DDRToggleEvent.Broadcast(bIsInDDR);
+		}
+	}
 }
 
 void UFighterStateComponent::EndDDR()
 {
-	bIsInDDR = false;
+	if (bIsInDDR)
+	{
+		bIsInDDR = false;
+		if (DDRToggleEvent.IsBound())
+		{
+			DDRToggleEvent.Broadcast(bIsInDDR);
+		}
+	}
+}
+
+void UFighterStateComponent::RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent)
+{
+	
 }

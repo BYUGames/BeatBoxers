@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FEffects DefaultBlockEffects;
 
+	UPROPERTY(BlueprintAssignable)
+	FDDRToggleEvent DDRToggleEvent;
+
 	FTimerHandle TimerHandle_Window;
 	FTimerHandle TimerHandle_Stun;
 	FTimerHandle TimerHandle_Movement;
@@ -156,10 +159,10 @@ public:
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
 	virtual bool IsInDDR() override;
-	UFUNCTION()
 	virtual void StartDDR() override;
-	UFUNCTION()
 	virtual void EndDDR() override;
+	virtual FDDRToggleEvent& GetOnDDRToggleEvent() override { return DDRToggleEvent; }
+	virtual void RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent) override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

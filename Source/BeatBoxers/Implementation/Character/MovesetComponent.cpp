@@ -248,8 +248,8 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 {
 	if (BGFretboard == nullptr || SoloFretboard == nullptr)
 		return;
-	FFretboardInputResult BGResult = BGFretboard->ReceiveInputToken(Token);
-	FFretboardInputResult SoloResult = SoloFretboard->ReceiveInputToken(Token);
+	FFretboardInputResult BGResult = GetBGFretboard()->ReceiveInputToken(Token);
+	FFretboardInputResult SoloResult = GetSoloFretboard()->ReceiveInputToken(Token);
 	if (BGResult.Accuracy > 0 || SoloResult.Accuracy > 0)
 	{
 		MyFighter->Clash();

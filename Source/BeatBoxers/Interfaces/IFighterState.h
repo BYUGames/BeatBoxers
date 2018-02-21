@@ -6,6 +6,10 @@
 #include "BeatBoxersStructs.h"
 #include "IFighterState.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDDRToggleEvent, bool, IsInDDR);
+
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, meta=(CannotImplementInterfaceInBlueprint))
 class UFighterState : public UInterface
@@ -22,6 +26,7 @@ class BEATBOXERS_API IFighterState
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
 	/** Saves a reference to the FighterWorld so it can push calls to trace etc. */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) = 0;
 
@@ -155,4 +160,8 @@ public:
 
 	/** Inform's the state of fighter leaving DDR state */
 	virtual void EndDDR() = 0;
+
+	virtual FDDRToggleEvent& GetOnDDRToggleEvent() = 0;
+
+	virtual void RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent) = 0;
 };

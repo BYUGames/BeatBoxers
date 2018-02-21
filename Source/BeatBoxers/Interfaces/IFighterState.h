@@ -162,6 +162,4 @@ public:
 	virtual void EndDDR() = 0;
 
 	virtual FDDRToggleEvent& GetOnDDRToggleEvent() = 0;
-
-	virtual void RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent) = 0;
 };

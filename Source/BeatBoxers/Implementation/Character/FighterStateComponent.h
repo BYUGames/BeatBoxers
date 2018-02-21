@@ -162,7 +162,6 @@ public:
 	virtual void StartDDR() override;
 	virtual void EndDDR() override;
 	virtual FDDRToggleEvent& GetOnDDRToggleEvent() override { return DDRToggleEvent; }
-	virtual void RegisterDDREvent(FDDRToggleEvent BPAccessibleEvent) override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

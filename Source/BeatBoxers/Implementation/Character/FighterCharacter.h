@@ -149,7 +149,6 @@ public:
 	virtual bool IsDead() const override;
 	virtual void Knockdown() override;
 	virtual FMusicBalanceParams GetMusicBalance() const override { return FighterData.MusicBalance; }
-	virtual void SetFighterCollisions(bool DoesCollide) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual float GetFighterCurrentWindowAccuracy() const override;
 	virtual FMoveHitbox GetFighterHitbox() const override;
@@ -168,6 +167,10 @@ public:
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Dead"))
 	bool K2_IsDead();
+
+	/** Disables Collisions*/
+	UFUNCTION(BlueprintCallable)
+	virtual void SetFighterCollisions(bool DoesCollide) override;
 
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))

@@ -484,9 +484,6 @@ bool bake(FbxScene* scene, string outTexturefile)
 		}
 	}
 
-	int largeframe = -1;
-	double largest = 0;
-
 	int frame = 0;
 	for (mCurrentTime = mStart; mCurrentTime < mStop; mCurrentTime += mFrameTime)
 	{
@@ -494,14 +491,6 @@ bool bake(FbxScene* scene, string outTexturefile)
 		for (int i = 0; i < numControlPoints; i++)
 		{
 			diff[frame * numControlPoints + i] = deformPoints[i] - controlPoints[i];
-			for (int j = 0; j < 3; j++)
-			{
-				if (FbxAbs(diff[frame * numControlPoints + i].mData[j]) > largest)
-				{
-					largest = FbxAbs(diff[frame * numControlPoints + i].mData[j]);
-					largeframe = frame;
-				}
-			}
 		}
 		/*
 		{
@@ -532,9 +521,9 @@ bool bake(FbxScene* scene, string outTexturefile)
 	int iHeight = 1;
 
 	for (; iWidth < numControlPoints; iWidth *= 2);
-	for (; iHeight < numFrames; iHeight *= 2);
+	for (; iHeight < numFrames + 1; iHeight *= 2);
 
-	printf("Image dimensions: %ix%i, scale by %f\n", iWidth, iHeight, largest);
+	printf("Image dimensions: %ix%i\n", iWidth, iHeight);
 
 	if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
 		iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION)
@@ -553,21 +542,32 @@ bool bake(FbxScene* scene, string outTexturefile)
 	ImageName = ilGenImage();
 	ilBindImage(ImageName);
 
-	float *data = new float[iWidth * iHeight * 3];
+	float *data = new float[iWidth * iHeight * 4];
 
 	for (int vert = 0; vert < iWidth; vert++)
 	{
 		for (int frame = 0; frame < iHeight; frame++)
 		{
-			int index = (vert + iWidth * (iHeight - frame - 1)) * 3;
-			if (vert < numControlPoints && frame < numFrames)
+			int index = (vert + iWidth * (iHeight - frame - 1)) * 4;
+			if (vert < numControlPoints && frame <= numFrames)
 			{
 				FbxVector4 delta;
-				delta = diff[frame * numControlPoints + vert];
+				delta = diff[
+					(frame == numFrames) ? vert : frame * numControlPoints + vert
+				];
+				float largest = 0.f;
 				for (int i = 0; i < 3; i++)
 				{
-					data[index + i] = FbxClamp<FbxFloat>((float)(delta.mData[i] / largest / 2. + 0.5), 0.f, 1.f);
+					if (FbxAbs(delta.mData[i]) > largest)
+					{
+						largest = (float)FbxAbs(delta.mData[i]);
+					}
 				}
+				for (int i = 0; i < 3; i++)
+				{
+					data[index + i] = FbxClamp<FbxFloat>((float)(delta.mData[i]/ largest / 2. + 0.5), 0.f, 1.f);
+				}
+				data[index + 3] = largest;
 			}
 			else
 			{
@@ -575,11 +575,24 @@ bool bake(FbxScene* scene, string outTexturefile)
 				{
 					data[index + i] = 0.5f;
 				}
+				data[index + 3] = 0.f;
 			}
 		}
 	}
 
-	if (!ilTexImage(iWidth, iHeight, 0, 3, IL_RGB, IL_FLOAT, data))
+	for (int x = 0; x < iWidth; x++)
+	{
+		for (int y = 0; y < iHeight; y++)
+		{
+			//Swap channels as needed
+			int index = (x + iWidth * (iHeight - y - 1)) * 4;
+			float r = data[index], g = data[index + 1], b = data[index + 2], a = data[index + 3];
+			data[index + 1] = b;
+			data[index + 2] = g;
+		}
+	}
+
+	if (!ilTexImage(iWidth, iHeight, 0, 4, IL_RGBA, IL_FLOAT, data))
 	{
 		printf("ERROR: DevIL unable to set image data: %s.\n", (const char *)iluErrorString(ilGetError()));
 		delete[] data;

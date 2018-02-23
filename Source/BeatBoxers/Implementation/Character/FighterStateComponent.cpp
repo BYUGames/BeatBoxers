@@ -453,14 +453,14 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	{
 		if (MyFighter->GetAnimTable() == nullptr)
 		{
-			UE_LOG(LogBBAnimation, Error, "%s does not have a valid animation table set.", *GetOwner()->GetName());
+			UE_LOG(LogBBAnimation, Error, TEXT("%s does not have a valid animation table set."), *GetOwner()->GetName());
 		}
 		else
 		{
 			FMoveAnimation *MoveAnimation = MyFighter->GetAnimTable()->FindRow<FMoveAnimation>(CurrentWindow.AnimName, cs, true);
 			if (MoveAnimation == nullptr)
 			{
-				UE_LOG(LogBBAnimation, Error, "%s move tried to use animation %s, but it was not found in the animation table.", *GetOwner()->GetName(), *CurrentWindow.AnimName.ToString())
+				UE_LOG(LogBBAnimation, Error, TEXT("%s move tried to use animation %s, but it was not found in the animation table."), *GetOwner()->GetName(), *CurrentWindow.AnimName.ToString())
 			}
 			else
 			{

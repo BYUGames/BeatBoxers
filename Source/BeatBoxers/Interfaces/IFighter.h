@@ -77,6 +77,8 @@ public:
 
 	virtual FDataTableRowHandle GetDefaultMoveState() const = 0;
 
+	virtual UDataTable *GetAnimTable() const = 0;
+
 	/** Called when an on-beat attack hits the opponent. */
 	virtual void HitOnBeatLogic() = 0;
 

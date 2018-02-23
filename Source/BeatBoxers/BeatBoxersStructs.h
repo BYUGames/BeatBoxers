@@ -383,9 +383,9 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 LandingInterrupts : 1;
 
-	/** The animation montage to play in conjuction with this window, starts when entering windup. */
+	/** The name of the row in the fighter's move animation table to find the animation montage to play in conjuction with this window, starts when entering windup. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UAnimMontage *AnimMontage;
+	FName AnimName;
 
 	/** If true, the player will ignore collisions during the window. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -399,6 +399,15 @@ struct FMoveWindow
 	{
 		Interruptible = true;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FMoveAnimation : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage *AnimMontage;
 };
 
 USTRUCT(BlueprintType)

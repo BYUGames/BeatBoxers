@@ -22,6 +22,9 @@ class BEATBOXERS_API UFighterStateComponent : public UActorComponent, public IFi
 {
 	GENERATED_UCLASS_BODY()
 
+private:
+	FString cs; //Context String
+
 protected:
 	IFighterWorld *MyFighterWorld;
 	IFighter *MyFighter;
@@ -44,6 +47,7 @@ protected:
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
+	UAnimMontage *CurrentMontage;
 	TArray<TWeakObjectPtr<AActor>> ActorsToIgnore;
 	float MoveDirection;
 	float VerticalDirection;

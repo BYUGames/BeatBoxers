@@ -117,6 +117,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FDataTableRowHandle DefaultMoveState;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UDataTable* AnimTable;
+
 	UPROPERTY(BlueprintAssignable)
 	FDDRToggleEvent DDRToggleEvent;
 
@@ -142,6 +145,7 @@ public:
 	virtual FClashEvent& GetOnClashEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() const override { return DefaultMoveState; }
+	virtual UDataTable *GetAnimTable() const override { return AnimTable; }
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;

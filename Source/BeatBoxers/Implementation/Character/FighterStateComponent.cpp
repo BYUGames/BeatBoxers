@@ -30,6 +30,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 void UFighterStateComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	cs = GetNameSafe(this);
 
 	SetComponentTickEnabled(false);
 	
@@ -287,7 +288,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
 	bIsCurrentStunBlock = WasBlocked;
-	if (IsMidMove() && CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
 	{
 		ACharacter *Character = Cast<ACharacter>(MyFighter);
 		if (Character != nullptr)
@@ -448,24 +449,43 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
 		}
 	}
-	if (CurrentWindow.AnimMontage != nullptr && MyFighter != nullptr)
+	if (MyFighter != nullptr && !CurrentWindow.AnimName.IsNone())
 	{
-		ACharacter *Character = Cast<ACharacter>(MyFighter);
-		if (Character != nullptr)
+		if (MyFighter->GetAnimTable() == nullptr)
 		{
-			float Duration = Character->PlayAnimMontage(CurrentWindow.AnimMontage);
-			if (Duration == 0.f)
-			{
-				UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(CurrentWindow.AnimMontage));
-			}
-			else
-			{
-				UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(CurrentWindow.AnimMontage), Duration);
-			}
+			UE_LOG(LogBBAnimation, Error, "%s does not have a valid animation table set.", *GetOwner()->GetName());
 		}
 		else
 		{
-			UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup unable to cast fighter to character."), *GetNameSafe(this));
+			FMoveAnimation *MoveAnimation = MyFighter->GetAnimTable()->FindRow<FMoveAnimation>(CurrentWindow.AnimName, cs, true);
+			if (MoveAnimation == nullptr)
+			{
+				UE_LOG(LogBBAnimation, Error, "%s move tried to use animation %s, but it was not found in the animation table.", *GetOwner()->GetName(), *CurrentWindow.AnimName.ToString())
+			}
+			else
+			{
+				CurrentMontage = MoveAnimation->AnimMontage;
+				if (CurrentMontage != nullptr)
+				{
+					ACharacter *Character = Cast<ACharacter>(MyFighter);
+					if (Character != nullptr)
+					{
+						float Duration = Character->PlayAnimMontage(CurrentMontage);
+						if (Duration == 0.f)
+						{
+							UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(CurrentMontage));
+						}
+						else
+						{
+							UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(CurrentMontage), Duration);
+						}
+					}
+					else
+					{
+						UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup unable to cast fighter to character."), *GetNameSafe(this));
+					}
+				}
+			}
 		}
 	}
 	if (CurrentWindow.IgnoreCollisions)

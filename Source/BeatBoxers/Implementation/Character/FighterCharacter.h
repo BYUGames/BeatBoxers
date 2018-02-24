@@ -12,6 +12,7 @@
 #include "Interfaces/IMoveset.h"
 #include "Interfaces/IInputParser.h"
 #include "Interfaces/ISoloTracker.h"
+#include "Implementation/BasicFretboard.h"
 #include "FighterStateComponent.h"
 #include "MovesetComponent.h"
 #include "InputParserComponent.h"
@@ -217,6 +218,9 @@ public:
 	/** If the character is stunned*/
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get is Stunned"))
 		virtual bool K2_IsStunned() const;
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get Fret Board"))
+		virtual UBasicFretboard* K2_GetFretBoard() const { return FighterState->GetFretboard(); }
 
 	UFUNCTION(BlueprintPure)
 	virtual float GetHorizontalMovement() const;

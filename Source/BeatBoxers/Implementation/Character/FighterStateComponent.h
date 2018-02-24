@@ -14,6 +14,7 @@
 #include "Interfaces/IInputParser.h"
 #include "Interfaces/IFighterPlayerState.h"
 #include "BBFunctionLibrary.h"
+#include "MovesetComponent.h"
 #include "FighterStateComponent.generated.h"
 
 
@@ -165,6 +166,8 @@ public:
 	virtual bool IsInDDR() override;
 	virtual void StartDDR() override;
 	virtual void EndDDR() override;
+	UFUNCTION(BlueprintCallable)
+	virtual UBasicFretboard* GetFretboard() override { return Cast<UMovesetComponent>(MyMoveset)->GetBGFretboard(); }
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

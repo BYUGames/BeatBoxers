@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "BeatBoxersStructs.h"
+#include "IFretboard.h"
+#include "Implementation/BasicFretboard.h"
 #include "IFighterState.generated.h"
 
 
@@ -160,4 +162,6 @@ public:
 
 	/** Inform's the state of fighter leaving DDR state */
 	virtual void EndDDR() = 0;
+
+	virtual UBasicFretboard* GetFretboard() = 0;
 };

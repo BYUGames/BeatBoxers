@@ -1087,10 +1087,7 @@ void UFighterStateComponent::StartDDR()
 	if (!bIsInDDR)
 	{
 		bIsInDDR = true;
-		if (DDRToggleEvent.IsBound())
-		{
-			DDRToggleEvent.Broadcast(bIsInDDR);
-		}
+		Cast<AFighterCharacter>(MyFighter)->K2_OnToggleDDR(bIsInDDR);
 	}
 }
 
@@ -1099,9 +1096,6 @@ void UFighterStateComponent::EndDDR()
 	if (bIsInDDR)
 	{
 		bIsInDDR = false;
-		if (DDRToggleEvent.IsBound())
-		{
-			DDRToggleEvent.Broadcast(bIsInDDR);
-		}
+		Cast<AFighterCharacter>(MyFighter)->K2_OnToggleDDR(bIsInDDR);
 	}
 }

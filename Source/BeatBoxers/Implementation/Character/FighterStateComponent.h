@@ -165,7 +165,6 @@ public:
 	virtual bool IsInDDR() override;
 	virtual void StartDDR() override;
 	virtual void EndDDR() override;
-	virtual FDDRToggleEvent& GetOnDDRToggleEvent() override { return DDRToggleEvent; }
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

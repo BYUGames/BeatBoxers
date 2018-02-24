@@ -160,6 +160,4 @@ public:
 
 	/** Inform's the state of fighter leaving DDR state */
 	virtual void EndDDR() = 0;
-
-	virtual FDDRToggleEvent& GetOnDDRToggleEvent() = 0;
 };

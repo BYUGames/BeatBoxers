@@ -160,7 +160,6 @@ public:
 	virtual void Clash() override;
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
-	virtual FDDRToggleEvent& GetOnDDRToggleEvent() override { return DDRToggleEvent; }
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))
@@ -187,6 +186,9 @@ public:
 	/** TODO: add desciption for this event */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))
 	void K2_OnInputReceived();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On DDR Notification"))
+	void K2_OnToggleDDR(bool start);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

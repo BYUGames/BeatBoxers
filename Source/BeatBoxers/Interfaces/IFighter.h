@@ -123,6 +123,4 @@ public:
 
 	/** Inform that it has been hit. */
 	virtual void AddHit() = 0;
-
-	virtual FDDRToggleEvent& GetOnDDRToggleEvent() = 0;
 };

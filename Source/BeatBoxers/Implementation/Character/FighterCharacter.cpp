@@ -293,21 +293,10 @@ void AFighterCharacter::RegisterFighterState(TWeakObjectPtr<UObject> NewFighterS
 		{
 			UE_LOG(LogBeatBoxers, Error, TEXT("FighterCharacter %s given %s to register as FighterState, but it doesn't implement IFighter."), *GetNameSafe(this), *GetNameSafe(NewFighterState.Get()));
 		}
-		else
-		{
 
-			/*
-			auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
-			if (GameMode != nullptr)
-			{
-				auto BBGameMode = Cast<ABBGameMode>(GameMode);
-				BBGameMode->GetOnRoundEndEvent().AddDynamic(this, &UFighterStateComponent::GetOnDDRToggleEvent);
-			}
-			*/
-			//GetOnDDRToggleEvent().AddDynamic(MyFighterState, &UFighterStateComponent::GetOnDDRToggleEvent);
-		}
 	}
 }
+
 
 void AFighterCharacter::RegisterOpponent(TWeakObjectPtr<AActor> Opponent)
 {

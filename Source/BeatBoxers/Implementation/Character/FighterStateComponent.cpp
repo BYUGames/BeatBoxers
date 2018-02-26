@@ -288,6 +288,7 @@ void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
 	bIsCurrentStunBlock = WasBlocked;
+	StartDDR();
 	if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
 	{
 		ACharacter *Character = Cast<ACharacter>(MyFighter);
@@ -808,6 +809,7 @@ void UFighterStateComponent::PerformHitboxScan()
 
 void UFighterStateComponent::OnStunFinished()
 {
+	EndDDR();
 	if (!bIsKnockedDown)
 	{
 		if (MyInputParser != nullptr)
@@ -1084,7 +1086,7 @@ bool UFighterStateComponent::IsInDDR()
 
 void UFighterStateComponent::StartDDR()
 {
-	if (!bIsInDDR)
+	if (!bIsInDDR && IsStunned() || IsKnockedDown())
 	{
 		bIsInDDR = true;
 		Cast<AFighterCharacter>(MyFighter)->K2_OnToggleDDR(bIsInDDR);
@@ -1093,7 +1095,7 @@ void UFighterStateComponent::StartDDR()
 
 void UFighterStateComponent::EndDDR()
 {
-	if (bIsInDDR)
+	if (bIsInDDR && !IsStunned() && !IsKnockedDown())
 	{
 		bIsInDDR = false;
 		Cast<AFighterCharacter>(MyFighter)->K2_OnToggleDDR(bIsInDDR);

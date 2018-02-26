@@ -157,10 +157,10 @@ public:
 	/** Checks to see if player is in DDR state */
 	virtual bool IsInDDR() = 0;
 
-	/** Inform's the state of fighter being in DDR state */
+	/** Inform's the state of fighter being in DDR state, Will not trigger unless in stun OR Knockdown */
 	virtual void StartDDR() = 0;
 
-	/** Inform's the state of fighter leaving DDR state */
+	/** Inform's the state of fighter leaving DDR state, Will not stop switch unless out of stun AND knockdown */
 	virtual void EndDDR() = 0;
 
 	virtual UBasicFretboard* GetFretboard() = 0;

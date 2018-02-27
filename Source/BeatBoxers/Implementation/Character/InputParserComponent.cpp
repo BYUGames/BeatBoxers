@@ -94,10 +94,8 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	{
 		if (MyFighterState->IsInputBlocked())
 		{
-			UE_LOG(LogBBAnimation, Warning, TEXT("%f=accuracy"), bToken.accuracy);
 			if (MyFighter->HasAttackedThisBeat()) {
 				bToken.accuracy = 0.5f;
-				UE_LOG(LogBBAnimation, Warning, TEXT("%f=newaccuracy"), bToken.accuracy);
 			}
 			SetInputBuffer(bToken);
 		}

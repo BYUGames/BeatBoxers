@@ -707,6 +707,12 @@ void AFighterCharacter::MissBeat()
 	}
 }
 
+void AFighterCharacter::SetHasHitOffBeat(bool setValue)
+{
+	UE_LOG(LogBeatBoxers, Warning, TEXT("hitoffbeat"));
+	HasHitOffBeat = true;
+}
+
 bool AFighterCharacter::IsJumping()
 {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
@@ -831,4 +837,9 @@ void AFighterCharacter::AddHit()
 	{
 		MyFighterState->AddHit();
 	}
+}
+
+bool AFighterCharacter::HasPlayerHitOffBeat()
+{
+	return HasHitOffBeat;
 }

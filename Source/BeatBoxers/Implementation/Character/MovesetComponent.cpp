@@ -295,6 +295,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 						else
 						{
 							MyFighter->MissBeat();
+							MyFighter->InputOffBeatLogic();
 						}
 						GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
 						return;

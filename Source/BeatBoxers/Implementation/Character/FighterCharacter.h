@@ -152,6 +152,7 @@ public:
 	virtual UDataTable *GetAnimTable() const override { return AnimTable; }
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
+	virtual void InputOffBeatLogic() override { K2_InputOffBeatLogic(); }
 	virtual void MissBeat() override;
 	virtual void SetAttackedThisBeat(bool setValue) override;
 	virtual bool IsJumping() override;
@@ -188,6 +189,10 @@ public:
 	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();
+
+	/** InputOffBeatLogic will fire when the input is outside the accuracy window*/
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input Off Beat Logic"))
+	void K2_InputOffBeatLogic();
 
 	/** TODO: add desciption for this event */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Input Received"))

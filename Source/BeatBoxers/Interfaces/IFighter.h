@@ -85,6 +85,9 @@ public:
 	/** Called when an attack input is on the beat. */
 	virtual void InputOnBeatLogic() = 0;
 
+	/** Called when an attack input is off the beat. */
+	virtual void InputOffBeatLogic() = 0;
+
 	/** Called when an attack is off beat or misses the opponent. */
 	virtual void MissBeat() = 0;
 

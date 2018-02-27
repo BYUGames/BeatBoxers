@@ -709,7 +709,6 @@ void AFighterCharacter::MissBeat()
 
 void AFighterCharacter::SetHasHitOffBeat(bool setValue)
 {
-	UE_LOG(LogBeatBoxers, Warning, TEXT("hitoffbeat"));
 	HasHitOffBeat = true;
 }
 

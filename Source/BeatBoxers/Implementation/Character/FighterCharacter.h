@@ -125,7 +125,7 @@ public:
 	FDDRToggleEvent DDRToggleEvent;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool HasHitOffBeat;
+	bool AttackedThisBeat;
 
 	//UFUNCTION(BlueprintCallable)
 	//FDDRToggleEvent& GetDDRToggleEvent() {return DDRToggleEvent;}
@@ -153,7 +153,7 @@ public:
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void MissBeat() override;
-	virtual void SetHasHitOffBeat(bool setValue) override;
+	virtual void SetAttackedThisBeat(bool setValue) override;
 	virtual bool IsJumping() override;
 	virtual bool IsDead() const override;
 	virtual void Knockdown() override;
@@ -165,7 +165,7 @@ public:
 	virtual void Clash() override;
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
-	virtual bool HasPlayerHitOffBeat() override;
+	virtual bool HasAttackedThisBeat() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

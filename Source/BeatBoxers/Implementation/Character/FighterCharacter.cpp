@@ -707,9 +707,9 @@ void AFighterCharacter::MissBeat()
 	}
 }
 
-void AFighterCharacter::SetHasHitOffBeat(bool setValue)
+void AFighterCharacter::SetAttackedThisBeat(bool setValue)
 {
-	HasHitOffBeat = true;
+	AttackedThisBeat = true;
 }
 
 bool AFighterCharacter::IsJumping()
@@ -838,7 +838,7 @@ void AFighterCharacter::AddHit()
 	}
 }
 
-bool AFighterCharacter::HasPlayerHitOffBeat()
+bool AFighterCharacter::HasAttackedThisBeat()
 {
-	return HasHitOffBeat;
+	return AttackedThisBeat;
 }

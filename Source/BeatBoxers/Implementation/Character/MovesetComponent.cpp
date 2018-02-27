@@ -276,7 +276,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 		{
 			if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 			{
-				if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && (MyFighterWorld->IsOnBeat(Accuracy) && !MyFighter->HasPlayerHitOffBeat()))
+				if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(Accuracy))
 				{
 					if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
 					{
@@ -287,13 +287,13 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 							*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 						);
-						if (MyFighterWorld->IsOnBeat(Accuracy) && !MyFighter->HasPlayerHitOffBeat())
+						MyFighter->SetAttackedThisBeat(true);
+						if (MyFighterWorld->IsOnBeat(Accuracy) )
 						{
 							MyFighter->InputOnBeatLogic();
 						}
 						else
 						{
-							MyFighter->SetHasHitOffBeat(true);
 							MyFighter->MissBeat();
 						}
 						GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);

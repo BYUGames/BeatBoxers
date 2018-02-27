@@ -89,7 +89,7 @@ public:
 	virtual void MissBeat() = 0;
 
 	/** Called when an attack is off beat */
-	virtual void SetHasHitOffBeat(bool setValue) = 0;
+	virtual void SetAttackedThisBeat(bool setValue) = 0;
 
 	/** Returns true if IFighter is in jumping process */
 	virtual bool IsJumping() = 0;
@@ -128,5 +128,5 @@ public:
 	virtual void AddHit() = 0;
 
 	/** lets you know if the player has recentused used a move off-beat - used primarily to prevent the player from spamming attacks */
-	virtual bool HasPlayerHitOffBeat() = 0;
+	virtual bool HasAttackedThisBeat() = 0;
 };

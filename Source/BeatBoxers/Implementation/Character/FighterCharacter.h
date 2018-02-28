@@ -167,6 +167,7 @@ public:
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
 	virtual bool HasAttackedThisBeat() override;
+	virtual void UpdateFacing() override;
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))

@@ -132,4 +132,7 @@ public:
 
 	/** lets you know if the player has recentused used a move off-beat - used primarily to prevent the player from spamming attacks */
 	virtual bool HasAttackedThisBeat() = 0;
+
+	/** Push to tell the fighter to update their facing. */
+	virtual void UpdateFacing() = 0;
 };

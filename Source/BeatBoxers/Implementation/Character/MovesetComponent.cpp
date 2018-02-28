@@ -111,6 +111,13 @@ void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 		// Inform the input parser that this move has finished and we are ready for more input.
 		if (MyInputParser != nullptr)
 		{
+			if (MyFighter != nullptr)
+			{
+				if (MyFighter->GetStance() != EStance::SE_Jumping)
+				{
+					MyFighter->UpdateFacing();
+				}
+			}
 			return MyInputParser->OnControlReturned();
 		}
 		else

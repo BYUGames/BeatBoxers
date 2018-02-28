@@ -98,15 +98,20 @@ void AFighterCharacter::Tick(float DeltaTime)
 	if (!(GetMovementComponent() != nullptr && GetMovementComponent()->IsFalling()
 		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned())))
 	{
-		if (MyOpponent != nullptr)
+		UpdateFacing();
+	}
+}
+
+void AFighterCharacter::UpdateFacing()
+{
+	if (MyOpponent != nullptr)
+	{
+		float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);
+		if (NewFacing != 0 && NewFacing != Facing)
 		{
-			float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);
-			if (NewFacing != 0 && NewFacing != Facing)
-			{
-				Facing = NewFacing;
-				SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
-				SetActorRelativeScale3D(FVector(1, (Facing > 0) ? 1 : -1,1));
-			}
+			Facing = NewFacing;
+			SetActorRotation(FRotator(0, (Facing > 0) ? 0 : 180.f, 0));
+			SetActorRelativeScale3D(FVector(1, (Facing > 0) ? 1 : -1,1));
 		}
 	}
 }

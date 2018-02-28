@@ -540,6 +540,13 @@ struct FNewGameData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> Player1Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector4 Player0Tint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector4 Player1Tint;
+
 };
 
 USTRUCT(BlueprintType)

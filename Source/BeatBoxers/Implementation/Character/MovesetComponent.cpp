@@ -340,6 +340,7 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 		break;
 	case EWindowEnd::WE_Stunned:
 	case EWindowEnd::WE_LandInt:
+		MyInputParser->OnControlReturned();
 		GotoDefaultState();
 		break;
 	default:

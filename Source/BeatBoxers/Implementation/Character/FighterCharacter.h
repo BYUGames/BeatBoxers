@@ -231,7 +231,7 @@ public:
 		virtual bool K2_IsStunned() const;
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get Fret Board"))
-		virtual UBasicFretboard* K2_GetFretBoard() const { return FighterState->GetFretboard(); }
+		virtual UBasicFretboard* K2_GetFretBoard() const;
 
 	UFUNCTION(BlueprintPure)
 	virtual float GetHorizontalMovement() const;

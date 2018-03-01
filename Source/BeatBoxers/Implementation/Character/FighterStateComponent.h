@@ -167,7 +167,7 @@ public:
 	virtual void StartDDR() override;
 	virtual void EndDDR() override;
 	UFUNCTION(BlueprintCallable)
-	virtual UBasicFretboard* GetFretboard() override { return Cast<UMovesetComponent>(MyMoveset)->GetBGFretboard(); }
+	virtual UBasicFretboard* GetFretboard() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

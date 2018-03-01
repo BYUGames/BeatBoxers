@@ -847,3 +847,10 @@ bool AFighterCharacter::HasAttackedThisBeat()
 {
 	return AttackedThisBeat;
 }
+
+UBasicFretboard* AFighterCharacter::K2_GetFretBoard() const
+{
+	if (FighterState != nullptr)
+		return FighterState->GetFretboard();
+	return nullptr;
+}

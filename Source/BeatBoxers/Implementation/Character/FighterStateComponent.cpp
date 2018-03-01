@@ -1101,3 +1101,10 @@ void UFighterStateComponent::EndDDR()
 		Cast<AFighterCharacter>(MyFighter)->K2_OnToggleDDR(bIsInDDR);
 	}
 }
+
+UBasicFretboard* UFighterStateComponent::GetFretboard()
+{
+	if (MyMoveset != nullptr)
+		return Cast<UMovesetComponent>(MyMoveset)->GetBGFretboard();
+	return nullptr;
+}

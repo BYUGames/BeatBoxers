@@ -49,6 +49,7 @@ protected:
 	UBasicFretboard *SoloFretboard;
 
 	FDataTableRowHandle CurrentState;
+	FDataTableRowHandle PreviousState;
 	FTimerHandle TimerHandle_PostWait;
 
 	// Called when the game starts

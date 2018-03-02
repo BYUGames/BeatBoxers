@@ -49,6 +49,7 @@ void UMovesetComponent::SetState(FDataTableRowHandle State)
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait);
 	}
+	PreviousState = CurrentState;
 	CurrentState = State;
 	CurrentWindowInState = 0;
 }
@@ -274,7 +275,15 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 
 	for (int i = 0; i < CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
 	{
+
 		FDataTableRowHandle PossibleMove = CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+
+		//if in current state and PostWait timer still going on, check PreviousState transistions first
+		if ((CurrentState == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+		{
+			PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+		}
+
 		if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
 		{
 			UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *CurrentState.RowName.ToString());
@@ -304,7 +313,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 							MyFighter->MissBeat();
 							MyFighter->InputOffBeatLogic();
 						}
-						GotoState(CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i]);
+						GotoState(PossibleMove);
 						return;
 					}
 				}

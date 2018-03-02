@@ -193,6 +193,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 
+	FMusicBalanceParams GetMusicBalance();
+
 	
 
 protected:

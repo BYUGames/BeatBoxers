@@ -560,8 +560,16 @@ void ABBGameMode::AdjustLocation(AActor *ActorToAdjust)
 
 void ABBGameMode::OnMusicEnd()
 {
-	UE_LOG(LogABBGameMode, Log, TEXT("Music ended, ending game."));
-	EndMatch();
+	UE_LOG(LogABBGameMode, Verbose, TEXT("Music ended, restarting music."));
+	IMusicBox *WorldMusicBox = GetGameState<ABBGameState>()->GetIMusicBox();
+	if (WorldMusicBox != nullptr)
+	{
+		UBBGameInstance *GameInstance = GetWorld()->GetGameInstance<UBBGameInstance>();
+		if (GameInstance != nullptr)
+		{
+			WorldMusicBox->StartMusic(GameInstance->NewGameData.SongName, GetMusicBalance());
+		}
+	}
 }
 
 void ABBGameMode::HandleMatchIsWaitingToStart()
@@ -1159,12 +1167,13 @@ void ABBGameMode::HandleMatchHasEnded()
 	}
 }
 
-void ABBGameMode::PushMusicBalance()
+FMusicBalanceParams ABBGameMode::GetMusicBalance()
 {
-	if (GameState == nullptr || GetMusicBox() == nullptr || GetGameInstance() == nullptr) return;
+	FMusicBalanceParams FinalParams;
+	if (GameState == nullptr || GetMusicBox() == nullptr || GetGameInstance() == nullptr) return FinalParams;
 	IMusicBox *MusicBox = Cast<IMusicBox>(GetMusicBox());
 	UBBGameInstance *GameInstance = Cast<UBBGameInstance>(GetGameInstance());
-	if (GameState->PlayerArray.Num() < 2 || MusicBox == nullptr || GameInstance == nullptr) return;
+	if (GameState->PlayerArray.Num() < 2 || MusicBox == nullptr || GameInstance == nullptr) return FinalParams;
 	ABBPlayerState *PlayerStates[2];
 	AFighterCharacter *DefaultFighter[2];
 	FMusicBalanceParams MusicParams[2];
@@ -1173,7 +1182,7 @@ void ABBGameMode::PushMusicBalance()
 	for (int i = 0; i < 2; i++)
 	{
 		PlayerStates[i] = Cast<ABBPlayerState>(GameState->PlayerArray[i]);
-		if (PlayerStates[i] == nullptr) return;
+		if (PlayerStates[i] == nullptr) return FinalParams;
 		if (DefaultFighter[i] != nullptr)
 		{
 			MusicParams[i] = DefaultFighter[i]->GetMusicBalance();
@@ -1181,7 +1190,6 @@ void ABBGameMode::PushMusicBalance()
 	}
 	int r0 = PlayerStates[0]->RoundsWon;
 	int r1 = PlayerStates[1]->RoundsWon;
-	FMusicBalanceParams FinalParams;
 	if (r0 == r1)
 	{
 		FinalParams = MusicParams[0] + MusicParams[1];
@@ -1194,7 +1202,14 @@ void ABBGameMode::PushMusicBalance()
 	{
 		FinalParams = MusicParams[1];
 	}
-	MusicBox->ChangeBalance(FinalParams);
+	return FinalParams;
+}
+
+void ABBGameMode::PushMusicBalance()
+{
+	if (GetMusicBox() == nullptr) return;
+	IMusicBox *MusicBox = Cast<IMusicBox>(GetMusicBox());
+	MusicBox->ChangeBalance(GetMusicBalance());
 }
 
 bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActor> ActorB)

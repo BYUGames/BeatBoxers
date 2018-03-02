@@ -47,3 +47,15 @@ ENoteType UBBFunctionLibrary::GetNoteFromInput(EInputToken InputToken)
 		return ENoteType::NE_None;
 	}
 }
+
+UBBGameUserSettings* UBBFunctionLibrary::GetBBGameUserSettings()
+{
+	if (GEngine != nullptr)
+	{
+		if (GEngine->GetGameUserSettings() != nullptr)
+		{
+			return Cast<UBBGameUserSettings>(GEngine->GetGameUserSettings());
+		}
+	}
+	return nullptr;
+}

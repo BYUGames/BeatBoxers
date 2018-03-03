@@ -44,6 +44,7 @@ void UMovesetComponent::GotoDefaultState()
 
 void UMovesetComponent::SetState(FDataTableRowHandle State)
 {
+	Cast<AFighterCharacter>(MyFighter)->K2_BPEventsOnStateBegin(State);
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent changing state to %s"), *GetNameSafe(GetOwner()), *State.RowName.ToString());
 	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait))
 	{
@@ -52,6 +53,7 @@ void UMovesetComponent::SetState(FDataTableRowHandle State)
 	PreviousState = CurrentState;
 	CurrentState = State;
 	CurrentWindowInState = 0;
+
 }
 
 void UMovesetComponent::GotoState(FDataTableRowHandle NewState)

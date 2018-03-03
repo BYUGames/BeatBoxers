@@ -202,6 +202,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On DDR Notification"))
 	void K2_OnToggleDDR(bool start);
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Blueprint Event Called Whenever State Starts- to add unique effects"))
+	void K2_BPEventsOnStateBegin(FDataTableRowHandle state);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

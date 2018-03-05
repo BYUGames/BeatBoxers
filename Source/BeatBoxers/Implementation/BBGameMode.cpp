@@ -188,7 +188,10 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		if (Source.IsValid() && SourceController.IsValid()
 			&& Source.Get() == SourceController.Get()->GetPawn())
 		{
-			ApplyMovementToActor(Source, Source, SourceController, -ImpactData->ImpartedMovement);
+			FMovement MovementToAttacker = ImpactData->ImpartedMovement;
+			MovementToAttacker.Delta.X *=-1;
+			MovementToAttacker.Delta.Y = 0;
+			ApplyMovementToActor(Source, Source, SourceController, MovementToAttacker);
 		}
 	}
 

@@ -386,6 +386,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		if (Fighter != nullptr)
 		{
 			NonrelativeMovement.Delta.X *= Fighter->GetFacing();
+			NonrelativeMovement.InAirLaunchDelta.X *= Fighter->GetFacing();
 			NonrelativeMovement.IsRelativeToAttackerFacing = false;
 		}
 	}
@@ -406,18 +407,26 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		Character->LaunchCharacter(FVector(0.f,0.f,1.f), true, true);
 		TargetFighter->ApplyMovement(FMovement{});
 	}
-	if (!Movement.UsePhysicsLaunch)
+	if (!Movement.UsePhysicsLaunch && !TargetFighter->IsJumping())
 	{
 		if (TargetFighter != nullptr)
 		{
 			TargetFighter->ApplyMovement(NonrelativeMovement);
 		}
 	}
+	else if (!Movement.UsePhysicsLaunch) //launches character using InKnockdownLaunchDelta if they're in the air and physics launch isnt set to true
+	{
+		if (Character != nullptr)
+		{
+			FVector Launch{NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y};
+			Character->LaunchCharacter(Launch, true, true);
+		}
+	}
 	else
 	{
 		if (Character != nullptr)
 		{
-			FVector Launch{NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y};
+			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
 			Character->LaunchCharacter(Launch, true, true);
 			if (Character->GetCapsuleComponent() != nullptr)
 			{

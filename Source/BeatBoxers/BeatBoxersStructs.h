@@ -209,6 +209,10 @@ struct FMovement
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 UsePhysicsLaunch : 1;
 
+	/** Vector used to launch opponent using this move if they're in knockdown */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector2D InAirLaunchDelta;
+
 	bool IsValid() const;
 
 	operator bool() const{ return IsValid(); }
@@ -323,7 +327,7 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Interruptible : 1;
 
-	/** Whether this window's startlag can be canceled at the end of the beat window. */
+	/** Whether this window reduces the hitbox of the attacker. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 CrouchAttack : 1;
 

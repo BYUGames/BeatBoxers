@@ -43,7 +43,7 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 
 	InputBufferLength = 0.5f;
 	ComplexInputWindow = 0.25f;
-	RecoveryDuration = 0.6f;
+	RecoveryDuration = 0.3f;
 	bIsDead = false;
 }
 

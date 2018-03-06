@@ -1326,7 +1326,6 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
 {
-	UE_LOG(LogKnockdown, Error, TEXT("wut"));
 	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
 
 	IFighter* Fighter = Cast<IFighter>(Actor.Get());
@@ -1341,9 +1340,10 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			IFighter* Fighter = Cast<IFighter>(Actor.Get());
 			if (Fighter != nullptr)
 			{
-				UE_LOG(LogKnockdown, Error, TEXT("Knocking down fighter %s"), *Actor->GetName());
 				Fighter->Knockdown();
 			}
+		}
+		else {
 		}
 	}
 	

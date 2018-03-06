@@ -365,7 +365,7 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) co
 
 int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
 {
-	if (!Movement.IsValid())
+	if (!Movement.IsValid() && !Cast<IFighter>(Target.Get())->IsJumping())
 	{
 		//Invalid or no movement.
 		return -1;
@@ -376,7 +376,6 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
 		return -1;
 	}
-
 	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s) to actor %s."), *Movement.ToString(), *GetNameSafe(Target.Get()));
 
 	FMovement NonrelativeMovement = Movement;
@@ -419,7 +418,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		if (Character != nullptr)
 		{
 			FVector Launch{NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y};
-			Character->LaunchCharacter(Launch, true, true);
+			Cast<AFighterCharacter>(TargetFighter)->K2_BPLaunchCharacter(Launch);
 		}
 	}
 	else
@@ -427,7 +426,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		if (Character != nullptr)
 		{
 			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
-			Character->LaunchCharacter(Launch, true, true);
+			Cast<AFighterCharacter>(TargetFighter)->K2_BPLaunchCharacter(Launch);
 			if (Character->GetCapsuleComponent() != nullptr)
 			{
 				Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);

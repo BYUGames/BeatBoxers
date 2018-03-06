@@ -414,7 +414,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 			TargetFighter->ApplyMovement(NonrelativeMovement);
 		}
 	}
-	else if (!Movement.UsePhysicsLaunch) //launches character using InKnockdownLaunchDelta if they're in the air and physics launch isnt set to true
+	else if (!Movement.UsePhysicsLaunch) //launches character using InAirLaunchDelta if they're in the air and physics launch isnt set to true
 	{
 		if (Character != nullptr)
 		{
@@ -1336,7 +1336,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 		{
 			Fighter->StartStun(GetScaledTime(ImpactData.StunLength), WasBlocked);
 		}
-		if (ImpactData.bKnocksDown && !WasBlocked)
+		if ((ImpactData.bKnocksDown && !WasBlocked) || Fighter->IsJumping())
 		{
 			IFighter* Fighter = Cast<IFighter>(Actor.Get());
 			if (Fighter != nullptr)

@@ -417,8 +417,8 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	{
 		if (Character != nullptr)
 		{
-			FVector Launch{NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y};
-			Cast<AFighterCharacter>(TargetFighter)->K2_BPLaunchCharacter(Launch);
+			FVector Launch{ NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y };
+			Character->LaunchCharacter(Launch, true, true);
 		}
 	}
 	else
@@ -426,7 +426,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		if (Character != nullptr)
 		{
 			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
-			Cast<AFighterCharacter>(TargetFighter)->K2_BPLaunchCharacter(Launch);
+			Character->LaunchCharacter(Launch, true, true);
 			if (Character->GetCapsuleComponent() != nullptr)
 			{
 				Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
@@ -1326,6 +1326,7 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
 {
+	UE_LOG(LogKnockdown, Error, TEXT("wut"));
 	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
 
 	IFighter* Fighter = Cast<IFighter>(Actor.Get());
@@ -1340,7 +1341,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			IFighter* Fighter = Cast<IFighter>(Actor.Get());
 			if (Fighter != nullptr)
 			{
-				UE_LOG(LogKnockdown, Verbose, TEXT("Knocking down fighter %s"), *Actor->GetName());
+				UE_LOG(LogKnockdown, Error, TEXT("Knocking down fighter %s"), *Actor->GetName());
 				Fighter->Knockdown();
 			}
 		}

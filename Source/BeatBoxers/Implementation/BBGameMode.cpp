@@ -191,6 +191,8 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			FMovement MovementToAttacker = ImpactData->ImpartedMovement;
 			MovementToAttacker.Delta.X *=-1;
 			MovementToAttacker.Delta.Y = 0;
+			MovementToAttacker.InAirLaunchDelta.X =-100;
+			MovementToAttacker.InAirLaunchDelta.Y = 0;
 			ApplyMovementToActor(Source, Source, SourceController, MovementToAttacker);
 		}
 	}

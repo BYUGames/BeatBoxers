@@ -429,10 +429,7 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		{
 			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
 			Character->LaunchCharacter(Launch, true, true);
-			if (Character->GetCapsuleComponent() != nullptr)
-			{
-				Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-			}
+			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
 		}
 	}
 

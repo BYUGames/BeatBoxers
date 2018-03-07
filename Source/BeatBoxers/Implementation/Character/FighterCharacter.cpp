@@ -583,8 +583,15 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	if (GetCapsuleComponent() != nullptr)
 	{
 		if (FighterState != nullptr)
-		{
-			SetFighterCollisions(true);
+		{	//set collision logic sans the "IsFalling" check due to the fact that this when called still think you've fallen... movement component is a bit slow on the draw to update isfalling and moving on ground
+			if (!FighterState->IsIgnoringCollision()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()
+				)
+			{
+				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+				Cast<AFighterCharacter>(MyOpponent.Get())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			}
 		}
 		TSet<AActor*> Overlaps;
 		GetCapsuleComponent()->GetOverlappingActors(Overlaps, ACharacter::GetClass());
@@ -749,7 +756,7 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 	{
 		if (DoesCollide)
 		{
-			if (GetMovementComponent()->IsFalling()
+			if (!GetMovementComponent()->IsFalling()
 				&& !FighterState->IsIgnoringCollision()
 				&& !Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()
 				&& !Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()
@@ -757,13 +764,6 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 			{
 				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 				Cast<AFighterCharacter>(MyOpponent.Get())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-			}
-			else
-			{
-				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -falling?"), GetMovementComponent()->IsFalling()? TEXT("true") : TEXT("false"));
-				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -ignore collisions?"), FighterState->IsIgnoringCollision()? TEXT("true") : TEXT("false"));
-				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -opponent ignore collisions?"), Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()? TEXT("true") : TEXT("false"));
-				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -opponent falling?"), Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()? TEXT("true") : TEXT("false"));
 			}
 		}
 		else

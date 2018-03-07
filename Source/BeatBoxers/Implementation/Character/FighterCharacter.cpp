@@ -582,7 +582,7 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 	//enable collision with other pawns.
 	if (GetCapsuleComponent() != nullptr)
 	{
-		if (FighterState != nullptr && !FighterState->IsIgnoringCollision())
+		if (FighterState != nullptr)
 		{
 			SetFighterCollisions(true);
 		}
@@ -749,11 +749,27 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 	{
 		if (DoesCollide)
 		{
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			if (GetMovementComponent()->IsFalling()
+				&& !FighterState->IsIgnoringCollision()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()
+				)
+			{
+				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+				Cast<AFighterCharacter>(MyOpponent.Get())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			}
+			else
+			{
+				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -falling?"), GetMovementComponent()->IsFalling()? TEXT("true") : TEXT("false"));
+				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -ignore collisions?"), FighterState->IsIgnoringCollision()? TEXT("true") : TEXT("false"));
+				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -opponent ignore collisions?"), Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()? TEXT("true") : TEXT("false"));
+				UE_LOG(LogAFighterCharacter, Error, TEXT("%s -opponent falling?"), Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()? TEXT("true") : TEXT("false"));
+			}
 		}
 		else
 		{
 			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+			Cast<AFighterCharacter>(MyOpponent.Get())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		}
 	}	
 }

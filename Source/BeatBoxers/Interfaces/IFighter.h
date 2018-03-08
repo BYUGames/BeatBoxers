@@ -101,6 +101,7 @@ public:
 	virtual bool IsDead() const = 0;
 
 	/** Knocksdown the fighter. */
+	UFUNCTION(BlueprintCallable)
 	virtual void Knockdown() = 0;
 
 	/** Returns the music balance for this fighter. */

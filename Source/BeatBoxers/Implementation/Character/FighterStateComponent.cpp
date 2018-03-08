@@ -381,6 +381,7 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 	}
 	else
 	{
+		Cast<AFighterCharacter>(MyFighter)->AirMovementDirection = 0;
 		SetComponentTickEnabled(true);
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Movement,

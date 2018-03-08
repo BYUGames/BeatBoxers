@@ -34,6 +34,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FFighterData FighterData;
 
+	float AirMovementDirection;
+
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;

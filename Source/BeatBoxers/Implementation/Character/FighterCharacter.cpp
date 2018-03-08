@@ -100,6 +100,21 @@ void AFighterCharacter::Tick(float DeltaTime)
 	{
 		UpdateFacing();
 	}
+
+	if (GetMovementComponent()->IsFalling() && !FighterState->IsStunned() && !FighterState->IsMidMove())
+	{
+		if (AirMovementDirection > .1) 
+		{
+			LaunchCharacter({500,0,0}, true, false);
+		}
+		else if (AirMovementDirection < -.1)
+		{
+			LaunchCharacter({-500,0,0}, true, false);
+		}
+		else {
+			LaunchCharacter({0,0,0}, true, false);
+		}
+	}
 }
 
 void AFighterCharacter::UpdateFacing()
@@ -442,6 +457,7 @@ void AFighterCharacter::OnJumpTimer()
 		);
 	}
 	SetFighterCollisions(false);
+	AirMovementDirection = MyFighterState->GetCurrentHorizontalDirection();
 	ACharacter::Jump();
 }
 

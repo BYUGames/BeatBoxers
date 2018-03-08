@@ -58,6 +58,7 @@ void UMovesetComponent::SetState(FDataTableRowHandle State)
 
 void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 {
+	Cast<AFighterCharacter>(MyFighter)->UpdateFacing();
 	if (NewState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent passed invalid class reference as new state."), *GetNameSafe(GetOwner()));

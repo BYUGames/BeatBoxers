@@ -35,6 +35,7 @@ public:
 	FFighterData FighterData;
 
 	float AirMovementDirection;
+	bool HasUsedMoveAndHasYetToLand;
 
 protected:
 	IFighterState *MyFighterState;

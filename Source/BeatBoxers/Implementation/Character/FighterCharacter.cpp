@@ -101,7 +101,7 @@ void AFighterCharacter::Tick(float DeltaTime)
 		UpdateFacing();
 	}
 
-	if (GetMovementComponent()->IsFalling() && !FighterState->IsStunned() && !FighterState->IsMidMove())
+	if (GetMovementComponent()->IsFalling() && !FighterState->IsStunned() && !FighterState->IsMidMove() && !HasUsedMoveAndHasYetToLand)
 	{
 		if (AirMovementDirection > .1) 
 		{
@@ -592,6 +592,7 @@ void AFighterCharacter::InputActionSpecial3()
 
 void AFighterCharacter::Landed(const FHitResult& Result)
 {
+	HasUsedMoveAndHasYetToLand = false;
 	ACharacter::Landed(Result);
 	UE_LOG(LogKnockdown, Verbose, TEXT("Fighter %s landed"), *GetName());
 

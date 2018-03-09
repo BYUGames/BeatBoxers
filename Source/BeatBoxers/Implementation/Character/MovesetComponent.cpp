@@ -1,6 +1,7 @@
 // copyright 2017 BYU Animation
 
 #include "MovesetComponent.h"
+#include "../BBGameMode.h"
 #include "GameFramework/Actor.h"
 #include "FighterCharacter.h"
 #include "../BBGameState.h"
@@ -255,8 +256,20 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 	BufferToken = Token.token;
 	BufferAccuracy = Token.accuracy;
 	MoveAccuracy = BufferAccuracy;
-	ProcessInputToken(Token.token, Token.accuracy);
-	ProcessDDRInputToken(Token.token);
+	ABBGameMode* mGame = (ABBGameMode*)GetWorld()->GetAuthGameMode();
+	if (mGame != nullptr)
+	{
+		if (mGame->IsInRound())
+		{
+			ProcessInputToken(Token.token, Token.accuracy);
+		}
+		else
+		{
+			ProcessDDRInputToken(Token.token);
+		}
+	}
+		
+
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent received input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UMovesetComponent recieved input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token.token), BufferAccuracy);
 	if (MyFighter != nullptr && diff)
@@ -267,11 +280,11 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 
 void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 {
-	if (BGFretboard == nullptr || SoloFretboard == nullptr)
+	if (BGFretboard == nullptr)
 		return;
 	FFretboardInputResult BGResult = GetBGFretboard()->ReceiveInputToken(Token);
-	FFretboardInputResult SoloResult = GetSoloFretboard()->ReceiveInputToken(Token);
-	if (BGResult.Accuracy > 0 || SoloResult.Accuracy > 0)
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("World delta for current frame equals %f"), BGResult.Accuracy));
+	if (BGResult.Accuracy > 0)
 	{
 		MyFighter->Clash();
 	}

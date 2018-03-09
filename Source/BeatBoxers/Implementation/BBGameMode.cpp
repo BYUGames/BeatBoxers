@@ -230,7 +230,7 @@ void ABBGameMode::EndRound()
 		GetWorldTimerManager().ClearTimer(TimerHandle_RoundEnd);
 	}
 
-	SetPlayerInput(false);
+	// TODO: put winner of round in DDR state
 
 	int Winner = GetWinnerIndex();
 

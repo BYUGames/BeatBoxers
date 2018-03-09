@@ -13,6 +13,7 @@
 #include "Interfaces/ISoloTracker.h"
 #include "Interfaces/IMusicBox.h"
 #include "../BasicFretboard.h"
+
 #include "MovesetComponent.generated.h"
 
 

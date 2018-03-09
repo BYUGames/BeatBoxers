@@ -8,6 +8,7 @@
 #include "Interfaces/IFighterWorld.h"
 #include "BBGameMode.generated.h"
 
+
 class AFighterCharacter;
 class ABBPlayerController;
 class ABBGameState;
@@ -195,6 +196,7 @@ public:
 
 	FMusicBalanceParams GetMusicBalance();
 
+
 	
 
 protected:
@@ -230,4 +232,5 @@ protected:
 
 	/** Returns -1 on error, 1 if theactor in question was backed against a wall, 0 otherwise. */
 	virtual int ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source);
+
 };

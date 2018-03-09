@@ -283,10 +283,12 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 	if (BGFretboard == nullptr)
 		return;
 	FFretboardInputResult BGResult = GetBGFretboard()->ReceiveInputToken(Token);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("World delta for current frame equals %f"), BGResult.Accuracy));
-	if (BGResult.Accuracy > 0)
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Hit on the beat of %f"), BGResult.Accuracy));
+	if (BGResult.Accuracy > 0.85)
 	{
-		MyFighter->Clash();
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("HIT!!"));
+		//UGameplayStatics::SpawnEmitterAtLocation(MyFighter, EmitterTemplate, Cast<ACharacter>(MyFighter)->GetActorLocation(), Cast<ACharacter>(MyFighter)->GetActorRotation());
+		MyFighter->InputOnBeatLogic();
 	}
 }
 

@@ -16,6 +16,7 @@ FFretboardInputResult UBasicFretboard::ReceiveInputToken(EInputToken InputToken)
 	FFretboardInputResult Result;
 	Result.Accuracy = -1.f;
 	TArray<int> NotesHitIndexes;
+	int HitNote = -1;
 	for (TPair<int, FNoteData> NotePair : Notes)
 	{
 		if (NotePair.Value.NoteType == HitType)
@@ -23,17 +24,22 @@ FFretboardInputResult UBasicFretboard::ReceiveInputToken(EInputToken InputToken)
 			float Accuracy = GetNoteTimingAccuracy(NotePair.Value);
 			if (Accuracy >= 0.f)
 			{
-				NotesHitIndexes.Add(NotePair.Key);
+				//NotesHitIndexes.Add(NotePair.Key);
 				if (Result.Accuracy < 0 || Accuracy > Result.Accuracy)
 				{
+					HitNote = NotePair.Key;
 					Result.Accuracy = Accuracy;
 				}
 			}
 		}
 	}
-	for (int Index : NotesHitIndexes)
+	//for (int Index : NotesHitIndexes)
+	//{
+	//	EndNote(Index);
+	//}
+	if (HitNote != -1)
 	{
-		EndNote(Index);
+		EndNote(HitNote);
 	}
 	return Result;
 }

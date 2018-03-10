@@ -565,6 +565,9 @@ struct FFighterData
 	UTexture *Portrait;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture *StylizedName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FMusicBalanceParams MusicBalance;
 };
 

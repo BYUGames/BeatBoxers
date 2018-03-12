@@ -30,8 +30,11 @@ public:
 	virtual void InputActionDown(UInputParserComponent *Parser);
 	virtual void InputActionUp(UInputParserComponent *Parser);
 	virtual void InputActionLight(UInputParserComponent *Parser);
+	virtual void InputActionLightCrouch(UInputParserComponent *Parser);
 	virtual void InputActionMedium(UInputParserComponent *Parser);
+	virtual void InputActionMediumCrouch(UInputParserComponent *Parser);
 	virtual void InputActionHeavy(UInputParserComponent *Parser);
+	virtual void InputActionHeavyCrouch(UInputParserComponent *Parser);
 	virtual void InputActionSpecial1(UInputParserComponent *Parser);
 	virtual void InputActionSpecial2(UInputParserComponent *Parser);
 	virtual void InputActionSpecial3(UInputParserComponent *Parser);
@@ -49,8 +52,11 @@ public:
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavyCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
@@ -68,8 +74,11 @@ public:
 	virtual bool IsComplex() override;
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavyCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
@@ -84,8 +93,11 @@ public:
 	virtual bool IsComplex() override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
+	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionHeavy(UInputParserComponent *Parser) override;
+	virtual void InputActionHeavyCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;

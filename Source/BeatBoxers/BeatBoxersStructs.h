@@ -94,7 +94,10 @@ enum class EInputToken : uint8
 {
 	IE_None			UMETA(DisplayName = "None"),
 	IE_Light		UMETA(DisplayName = "Light"),
+	IE_LightCrouch	UMETA(DisplayName = "LightCrouch"),
 	IE_Medium		UMETA(DisplayName = "Medium"),
+	IE_MediumCrouch	UMETA(DisplayName = "MediumCrouch"),
+	IE_HeavyCrouch	UMETA(DisplayName = "HeavyCrouch"),
 	IE_Heavy		UMETA(DisplayName = "Heavy"),
 	IE_Special1     UMETA(DisplayName = "Special1"),
 	IE_Special2     UMETA(DisplayName = "Special2"),
@@ -113,14 +116,17 @@ enum class EInputToken : uint8
 UENUM(BlueprintType)
 enum class ENoteType : uint8
 {
-	NE_None		UMETA(DisplayName = "None"),
-	NE_Light	UMETA(DisplayName = "Light"),
-	NE_Medium	UMETA(DisplayName = "Medium"),
-	NE_Heavy	UMETA(DisplayName = "Heavy"),
-	NE_Up		UMETA(DisplayName = "Up"),
-	NE_Down		UMETA(DisplayName = "Down"),
-	NE_Left		UMETA(DisplayName = "Left"),
-	NE_Right	UMETA(DisplayName = "Right")
+	NE_None			UMETA(DisplayName = "None"),
+	NE_Light		UMETA(DisplayName = "Light"),
+	NE_LightCrouch	UMETA(DisplayName = "LightCrouch"),
+	NE_Medium		UMETA(DisplayName = "Medium"),
+	NE_MediumCrouch	UMETA(DisplayName = "MediumCrouch"),
+	NE_Heavy		UMETA(DisplayName = "Heavy"),
+	NE_HeavyCrouch	UMETA(DisplayName = "HeavyCrouch"),
+	NE_Up			UMETA(DisplayName = "Up"),
+	NE_Down			UMETA(DisplayName = "Down"),
+	NE_Left			UMETA(DisplayName = "Left"),
+	NE_Right		UMETA(DisplayName = "Right")
 };
 
 USTRUCT(BlueprintType)
@@ -136,10 +142,19 @@ struct FInputTokenBools
 	bool Light;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool LightCrouch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Medium;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool MediumCrouch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Heavy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool HeavyCrouch;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Special1;

@@ -70,11 +70,20 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_Light:
 		if (Light) return true;
 		break;
+	case EInputToken::IE_LightCrouch:
+		if (LightCrouch) return true;
+		break;
 	case EInputToken::IE_Medium:
 		if (Medium) return true;
 		break;
+	case EInputToken::IE_MediumCrouch:
+		if (MediumCrouch) return true;
+		break;
 	case EInputToken::IE_Heavy:
 		if (Heavy) return true;
+		break;
+	case EInputToken::IE_HeavyCrouch:
+		if (HeavyCrouch) return true;
 		break;
 	case EInputToken::IE_Special1:
 		if (Special1) return true;

@@ -116,10 +116,11 @@ int UFretboardWidget::BindToFretboard(UObject* Fretboard)
 void UFretboardWidget::UnbindFromFretboard()
 {
 	OnNotesCleared();
-	if (MyFretboard != nullptr && MyFretboard->GetOnNewNoteEvent().IsBound())
+	if (MyFretboard != nullptr)
 	{
 		MyFretboard->GetOnNewNoteEvent().RemoveDynamic(this, &UFretboardWidget::OnNewNote);
 		MyFretboard->GetOnNoteEndEvent().RemoveDynamic(this, &UFretboardWidget::OnNoteEnd);
 		MyFretboard->GetOnNotesClearedEvent().RemoveDynamic(this, &UFretboardWidget::OnNotesCleared);
+		MyFretboard = nullptr;
 	}
 }

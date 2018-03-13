@@ -18,6 +18,7 @@ class BEATBOXERS_API ABBPlayerState : public APlayerState, public IFighterPlayer
 protected:
 	float Special;
 	float Health;
+	float PreviousHealth;
 	int BeatCombo;
 
 public:
@@ -49,6 +50,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual float GetHealth() override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetPreviousHealth();
+
+	UFUNCTION(BlueprintCallable)
+	void SetPreviousHealth(float NewValue);
 
 	virtual void ResetPlayerState() override;
 	// End IFighterPlayerState

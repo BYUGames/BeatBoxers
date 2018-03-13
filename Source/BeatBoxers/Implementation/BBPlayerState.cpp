@@ -8,6 +8,7 @@ ABBPlayerState::ABBPlayerState(const class FObjectInitializer& ObjectInitializer
 	MaxSpecial = 100.f;
 	RoundsWon = 0;
 	Health = 100.f;
+	PreviousHealth = 100.0f;
 }
 
 float ABBPlayerState::GetSpecial() const
@@ -57,6 +58,17 @@ float ABBPlayerState::GetHealth()
 {
 	return Health;
 }
+
+float ABBPlayerState::GetPreviousHealth()
+{
+	return PreviousHealth;
+}
+
+void ABBPlayerState::SetPreviousHealth(float NewValue)
+{
+	PreviousHealth = NewValue;
+}
+
 
 void ABBPlayerState::ResetPlayerState()
 {

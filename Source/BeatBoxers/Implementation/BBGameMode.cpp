@@ -926,8 +926,8 @@ void ABBGameMode::AdjustCamera()
 		{
 			ACameraActor *Cam = GetGameState<ABBGameState>()->MainCamera;
 			if (Cam != nullptr)
-			{
-				Cam->SetActorLocation(CamPos);
+			{				
+				Cam->SetActorLocation(FMath::Lerp(Cam->GetActorLocation(), CamPos, .06));
 			}
 		}
 	}

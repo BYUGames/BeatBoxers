@@ -45,6 +45,7 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	ComplexInputWindow = 0.25f;
 	RecoveryDuration = 0.3f;
 	bIsDead = false;
+	PlayerIndex = 0;
 }
 
 // Called when the game starts or when spawned
@@ -657,7 +658,6 @@ bool AFighterCharacter::K2_IsStunned() const
 	return FighterState->IsStunned();
 }
 
-
 FStartJumpEvent& AFighterCharacter::GetOnStartJumpEvent()
 {
 	return StartJumpEvent;
@@ -886,4 +886,9 @@ UBasicFretboard* AFighterCharacter::K2_GetFretBoard() const
 	if (FighterState != nullptr)
 		return FighterState->GetFretboard();
 	return nullptr;
+}
+
+int AFighterCharacter::GetIndex() 
+{
+	return PlayerIndex;
 }

@@ -37,6 +37,8 @@ public:
 	float AirMovementDirection;
 	bool HasUsedMoveAndHasYetToLand;
 
+	int PlayerIndex;
+
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;
@@ -246,4 +248,7 @@ public:
 
 	UFUNCTION()
 	void OnRoundEnd(int Winner);
+
+	UFUNCTION(BlueprintCallable)
+	virtual int GetIndex() override;
 };

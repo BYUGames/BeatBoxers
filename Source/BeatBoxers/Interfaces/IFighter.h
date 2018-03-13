@@ -136,4 +136,8 @@ public:
 
 	/** Push to tell the fighter to update their facing. */
 	virtual void UpdateFacing() = 0;
+
+	//** returns index of player */
+	UFUNCTION(BlueprintCallable)
+	virtual int GetIndex() = 0;
 };

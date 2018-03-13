@@ -907,7 +907,7 @@ void ABBGameMode::AdjustCamera()
 
 		FVector CamPos;
 		CamPos.X = FMath::Clamp(Target.X, Settings->CameraBounds.Min.X, Settings->CameraBounds.Max.X);
-		CamPos.Z = FMath::Clamp(Target.Z, Settings->CameraBounds.Min.Z, Settings->CameraBounds.Max.Z);
+		CamPos.Z = FMath::Clamp(Target.Z - 100.0f, Settings->CameraBounds.Min.Z, Settings->CameraBounds.Max.Z);
 
 		float FOV = GetDefault<APlayerCameraManager>()->DefaultFOV;
 		APlayerController *Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);

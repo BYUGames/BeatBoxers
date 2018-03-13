@@ -23,6 +23,16 @@ class BEATBOXERS_API ABBGameMode : public AGameMode, public IFighterWorld
 {
 	GENERATED_UCLASS_BODY()
 public:
+	TWeakObjectPtr<AController> AfterHitstopSourceController;
+	TWeakObjectPtr<AActor> AfterHitstopActor;
+	TWeakObjectPtr<AActor> AfterHitstopSource;
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hitstop Events"))
+	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Hitstop"))
+	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy);
+
 	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HitscanDistanceConstant;
@@ -124,6 +134,7 @@ public:
 	FTimerHandle TimerHandle_BeatWindowClose;
 	FTimerHandle TimerHandle_StartCombat;
 	FTimerHandle TimerHandle_FightStarted;
+	FTimerHandle TimerHandle_Hitstop;
 
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;

@@ -129,6 +129,7 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 	return Result;
 }
 
+
 EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
 {
 	if (!Actor.IsValid())
@@ -157,10 +158,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		return EHitResponse::HE_Missed;
 	}
 	
-	if (Hit.HitstopAmount > 0) {
-		//shake camera as part of hitstop
-		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
-	}
+
 
 	if (CheckClash(Actor, Source))
 	{
@@ -169,36 +167,56 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		return EHitResponse::HE_Clashed;
 	}
 
+	AfterHitstopSourceController = SourceController;
+	AfterHitstopActor = Actor;
+	AfterHitstopSource = Source;
+
+	if (Hit.HitstopAmount > 0) {
+		//shake camera as part of hitstop
+		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
+	}
+	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount);
+
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
+	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
+}
+
+
+void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy)
+{
+	
+	IFighter *Fighter = Cast<IFighter>(AfterHitstopActor.Get());
+	bool WasBlocked = DoesBlock(Fighter, DamageType);
+
 
 	if (Fighter != nullptr)
 	{
 		Fighter->AddHit();
 	}
 
-	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
-	FImpactData ScaledImpact = GetScaledImpactData(Actor.Get(), *ImpactData, Accuracy);
 
-	if (ApplyImpact(Actor, ScaledImpact, WasBlocked, SourceController, Source) == 1
+	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
+	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
+
+	if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
 		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
 		//The target is already pushed up against a wall, push back the source instead.
 		//Don't do this for projectiles.
-		if (Source.IsValid() && SourceController.IsValid()
-			&& Source.Get() == SourceController.Get()->GetPawn())
+		if (AfterHitstopSource.IsValid() && AfterHitstopSourceController.IsValid()
+			&& AfterHitstopSource.Get() == AfterHitstopSourceController.Get()->GetPawn())
 		{
 			FMovement MovementToAttacker = ImpactData->ImpartedMovement;
-			MovementToAttacker.Delta.X *=-1;
+			MovementToAttacker.Delta.X *= -1;
 			MovementToAttacker.Delta.Y = 0;
-			MovementToAttacker.InAirLaunchDelta.X =-100;
+			MovementToAttacker.InAirLaunchDelta.X = -100;
 			MovementToAttacker.InAirLaunchDelta.Y = 0;
-			ApplyMovementToActor(Source, Source, SourceController, MovementToAttacker);
+			ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker);
 		}
 	}
-
-	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
+
 
 int ABBGameMode::GetWinnerIndex()
 {

@@ -251,4 +251,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual int GetIndex() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetIndex(int NewIndex) override;
 };

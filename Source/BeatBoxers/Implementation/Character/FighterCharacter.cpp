@@ -892,3 +892,8 @@ int AFighterCharacter::GetIndex()
 {
 	return PlayerIndex;
 }
+
+void AFighterCharacter::SetIndex(int NewIndex)
+{
+	PlayerIndex = NewIndex;
+}

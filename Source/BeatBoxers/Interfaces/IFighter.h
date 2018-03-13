@@ -140,4 +140,8 @@ public:
 	//** returns index of player */
 	UFUNCTION(BlueprintCallable)
 	virtual int GetIndex() = 0;
+
+	//** sets index of player */
+	UFUNCTION(BlueprintCallable)
+	virtual void SetIndex(int NewIndex) = 0;
 };

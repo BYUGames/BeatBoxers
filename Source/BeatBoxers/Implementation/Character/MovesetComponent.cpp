@@ -301,20 +301,27 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 		return ProcessInputToken(Token, Accuracy);
 	}
 
-	for (int i = 0; i < CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
+	FDataTableRowHandle StateToLookAt = CurrentState;
+
+	if ((CurrentState == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+	{
+		StateToLookAt = PreviousState;
+	}
+
+	for (int i = 0; i < StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
 	{
 
-		FDataTableRowHandle PossibleMove = CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+		FDataTableRowHandle PossibleMove = StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i];
 
 		//if in current state and PostWait timer still going on, check PreviousState transistions first
-		if ((CurrentState == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+		if ((StateToLookAt == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
 		{
 			PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
 		}
 
 		if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
 		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *CurrentState.RowName.ToString());
+			UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *StateToLookAt.RowName.ToString());
 		}
 		else if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
 		{
@@ -327,8 +334,8 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 						// Found a state that we can enter.
 						UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
 							*GetNameSafe(GetOwner()),
-							*CurrentState.RowName.ToString(),
-							*CurrentState.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
+							*StateToLookAt.RowName.ToString(),
+							*StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 						);
 						MyFighter->SetAttackedThisBeat(true);
@@ -350,10 +357,16 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 	}
 	// We weren't able to use any of the possible transitions or there were none to begin with.
 
-	if (CurrentState != DefaultState)
+	if (StateToLookAt != DefaultState)
 	{
 		// Reached the end of this combo, return to default and try this input again.
 		GotoDefaultState();
+		return ProcessInputToken(Token, Accuracy);
+	}
+	else if ((GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+	{
+		//try again but with postwait ended
+		(GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait));
 		return ProcessInputToken(Token, Accuracy);
 	}
 	else

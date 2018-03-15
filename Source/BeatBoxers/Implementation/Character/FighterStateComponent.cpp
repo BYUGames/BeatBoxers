@@ -733,7 +733,7 @@ void UFighterStateComponent::PerformHitboxScan()
 						(Pawn == nullptr) ? nullptr : Pawn->GetController()
 					);
 
-					FTransform ImpactTransform = FTransform(HitResult.ImpactNormal.Rotation(), HitResult.ImpactPoint, FVector::OneVector);
+					FTransform ImpactTransform = FTransform({ 0 ,HitResult.ImpactNormal.Rotation().Yaw ,HitResult.ImpactNormal.Rotation().Roll }, HitResult.ImpactPoint, FVector::OneVector);
 					FTransform RelativeTransform;
 					switch (Response)
 					{

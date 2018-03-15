@@ -418,13 +418,13 @@ void UFighterStateComponent::OnLand()
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandInt;
-			OnCurrentWindowDurationFinished();
+			OnCurrentWindowWinddownFinished();
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
-			OnCurrentWindowDurationFinished();
+			OnCurrentWindowWinddownFinished();
 		}
 		else
 		{

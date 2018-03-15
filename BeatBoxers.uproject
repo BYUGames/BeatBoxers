@@ -22,7 +22,7 @@
 		},
 		{
 			"Name": "HoudiniEngine",
-			"Enabled": False
+			"Enabled": false
 		}
 	]
 }

@@ -142,6 +142,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	}
 
 	IFighter *Fighter = Cast<IFighter>(Actor.Get());
+	IFighter *OpponentFighter = Cast<IFighter>(Actor.Get());
 	if (Fighter == nullptr)
 	{
 		//Behavior not defined for non-fighters.
@@ -175,7 +176,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		//shake camera as part of hitstop
 		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
 	}
-	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount);
+	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, OpponentFighter->GetIndex());
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType);
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;

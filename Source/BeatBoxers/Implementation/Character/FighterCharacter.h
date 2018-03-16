@@ -39,6 +39,9 @@ public:
 
 	int PlayerIndex;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool InAir;
+
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;

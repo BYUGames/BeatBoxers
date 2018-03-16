@@ -63,7 +63,7 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 
 	
 
-	if (!(Cast<AFighterCharacter>(MyFighter)->GetMovementComponent()->IsFalling()
+	if (!(Cast<AFighterCharacter>(MyFighter)->InAir
 		|| Cast<AFighterCharacter>(MyFighter)->FighterState != nullptr && (Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove() || Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned())))
 	{
 		Cast<AFighterCharacter>(MyFighter)->UpdateFacing();

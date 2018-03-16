@@ -46,6 +46,8 @@ AFighterCharacter::AFighterCharacter(const FObjectInitializer& ObjectInitializer
 	RecoveryDuration = 0.3f;
 	bIsDead = false;
 	PlayerIndex = 0;
+
+	InAir = false;
 }
 
 // Called when the game starts or when spawned
@@ -96,13 +98,13 @@ void AFighterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!(GetMovementComponent() != nullptr && GetMovementComponent()->IsFalling()
+	if (!(GetMovementComponent() != nullptr && InAir
 		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned())))
 	{
 		UpdateFacing();
 	}
 
-	if (GetMovementComponent()->IsFalling() && !FighterState->IsStunned() && !FighterState->IsMidMove() && !HasUsedMoveAndHasYetToLand)
+	if (InAir && !FighterState->IsStunned() && !FighterState->IsMidMove() && !HasUsedMoveAndHasYetToLand)
 	{
 		if (AirMovementDirection > .1) 
 		{
@@ -364,7 +366,7 @@ bool AFighterCharacter::IsInvulnerable() const
 
 EStance AFighterCharacter::GetStance() const
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
+	if (!InAir)
 	{
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump))
 		{
@@ -439,6 +441,7 @@ void AFighterCharacter::Jump()
 
 void AFighterCharacter::OnJumpTimer()
 {
+	InAir = true;
 	FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();
 	if (JumpEffects.ParticleSystem != nullptr)
 	{
@@ -593,6 +596,7 @@ void AFighterCharacter::InputActionSpecial3()
 
 void AFighterCharacter::Landed(const FHitResult& Result)
 {
+	InAir = false;
 	HasUsedMoveAndHasYetToLand = false;
 	ACharacter::Landed(Result);
 	UE_LOG(LogKnockdown, Verbose, TEXT("Fighter %s landed"), *GetName());
@@ -604,7 +608,7 @@ void AFighterCharacter::Landed(const FHitResult& Result)
 		{	//set collision logic sans the "IsFalling" check due to the fact that this when called still think you've fallen... movement component is a bit slow on the draw to update isfalling and moving on ground
 			if (!FighterState->IsIgnoringCollision()
 				&& !Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()
-				&& !Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->InAir
 				)
 			{
 				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
@@ -744,7 +748,7 @@ void AFighterCharacter::SetAttackedThisBeat(bool setValue)
 bool AFighterCharacter::IsJumping()
 {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
-		|| !GetCharacterMovement()->IsMovingOnGround()
+		|| InAir
 		|| IsJumpProvidingForce())
 		return true;
 	return false;
@@ -773,10 +777,10 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 	{
 		if (DoesCollide)
 		{
-			if (!GetMovementComponent()->IsFalling()
+			if (!InAir
 				&& !FighterState->IsIgnoringCollision()
 				&& !Cast<AFighterCharacter>(MyOpponent.Get())->FighterState->IsIgnoringCollision()
-				&& !Cast<AFighterCharacter>(MyOpponent.Get())->GetMovementComponent()->IsFalling()
+				&& !Cast<AFighterCharacter>(MyOpponent.Get())->InAir
 				)
 			{
 				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);

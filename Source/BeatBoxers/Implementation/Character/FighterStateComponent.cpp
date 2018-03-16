@@ -466,7 +466,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			}
 			else
 			{
-				CurrentMontage = MoveAnimation->AnimMontage;
+				CurrentMontage = MoveAnimation->AntisipationAnimMontage;
 				if (CurrentMontage != nullptr)
 				{
 					ACharacter *Character = Cast<ACharacter>(MyFighter);
@@ -561,6 +561,47 @@ void UFighterStateComponent::SkipWindup()
 
 void UFighterStateComponent::StartCurrentWindowDuration()
 {
+
+	if (MyFighter != nullptr && !CurrentWindow.AnimName.IsNone())
+	{
+		if (MyFighter->GetAnimTable() == nullptr)
+		{
+			UE_LOG(LogBBAnimation, Error, TEXT("%s does not have a valid animation table set."), *GetOwner()->GetName());
+		}
+		else
+		{
+			FMoveAnimation *MoveAnimation = MyFighter->GetAnimTable()->FindRow<FMoveAnimation>(CurrentWindow.AnimName, cs, true);
+			if (MoveAnimation == nullptr)
+			{
+				UE_LOG(LogBBAnimation, Error, TEXT("%s move tried to use animation %s, but it was not found in the animation table."), *GetOwner()->GetName(), *CurrentWindow.AnimName.ToString())
+			}
+			else
+			{
+				CurrentMontage = MoveAnimation->ExecutionAnimMontage;
+				if (CurrentMontage != nullptr)
+				{
+					ACharacter *Character = Cast<ACharacter>(MyFighter);
+					if (Character != nullptr)
+					{
+						float Duration = Character->PlayAnimMontage(CurrentMontage);
+						if (Duration == 0.f)
+						{
+							UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) returned 0 as duration."), *GetNameSafe(this), *GetNameSafe(CurrentMontage));
+						}
+						else
+						{
+							UE_LOG(LogBBAnimation, Verbose, TEXT("%s::StartCurrentWindowWindup PlayAnimMontage(%s) duration %f."), *GetNameSafe(this), *GetNameSafe(CurrentMontage), Duration);
+						}
+					}
+					else
+					{
+						UE_LOG(LogBBAnimation, Warning, TEXT("%s::StartCurrentWindowWindup unable to cast fighter to character."), *GetNameSafe(this));
+					}
+				}
+			}
+		}
+	}
+
 	CurrentWindowStage = EWindowStage::WE_Duration;
 	PlayerAttackerEffects(CurrentWindow.SFX);
 	if (CurrentWindow.Duration <= 0)

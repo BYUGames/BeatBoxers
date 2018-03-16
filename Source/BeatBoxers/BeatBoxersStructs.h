@@ -426,7 +426,10 @@ struct FMoveAnimation : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage *AnimMontage;
+	UAnimMontage *AntisipationAnimMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage *ExecutionAnimMontage;
 };
 
 USTRUCT(BlueprintType)

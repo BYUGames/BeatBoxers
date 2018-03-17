@@ -382,6 +382,9 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 	switch (WindowEnd)
 	{
 	case EWindowEnd::WE_LandSkip:
+		GotoDefaultState();
+		MyInputParser->OnControlReturned();
+		break;
 	case EWindowEnd::WE_Missed:
 		StartNextWindow(false);
 		break;
@@ -390,8 +393,8 @@ void UMovesetComponent::OnWindowFinished(EWindowEnd WindowEnd)
 		break;
 	case EWindowEnd::WE_Stunned:
 	case EWindowEnd::WE_LandInt:
-		//MyInputParser->OnControlReturned();
 		GotoDefaultState();
+		MyInputParser->OnControlReturned();
 		break;
 	default:
 		break;

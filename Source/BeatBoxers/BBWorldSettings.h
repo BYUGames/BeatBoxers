@@ -19,13 +19,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FBox CameraBounds;
 
-	/** Padding to frame the subjects. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
-	FVector2D CameraPadding;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FVector InitialCameraLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=World)
 	FVector InitialCameraLookAtLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = World)
+	FVector2D CameraFocus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = World)
+	FVector2D PlayerCameraPadding;
 };

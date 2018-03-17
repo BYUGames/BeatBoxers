@@ -866,69 +866,90 @@ void ABBGameMode::AdjustCamera()
 	ABBWorldSettings *Settings = Cast<ABBWorldSettings>(GetWorldSettings());
 	if (Settings != nullptr)
 	{
-		FVector Target;
-		FVector2D DesiredExtents;
-		if (GameState->PlayerArray.Num() > 1)
+		FVector CamPos;
+		if (GetGameState<ABBGameState>() != nullptr)
+		{
+			ACameraActor *Cam = GetGameState<ABBGameState>()->MainCamera;
+			if (Cam != nullptr)
+			{
+				CamPos = Cam->GetActorLocation();
+			}
+		}
+		FVector Target = CamPos;
+		FVector p1Loc = Settings->InitialCameraLookAtLocation
+			, p2Loc = Settings->InitialCameraLookAtLocation;
+		if (GameState->PlayerArray.Num() > 0)
 		{
 			ABBPlayerState *BBPlayerState;
 			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
-			FVector p1loc, p2loc;
 			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
 			{
-				p1loc = BBPlayerState->MyPawn->GetActorLocation();
+				p1Loc = BBPlayerState->MyPawn->GetActorLocation();
 			}
-			else
-			{
-				p1loc = Settings->InitialCameraLookAtLocation;
-			}
+		}
+		if (GameState->PlayerArray.Num() > 1)
+		{
+			ABBPlayerState *BBPlayerState;
 			BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
 			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
 			{
-				p2loc = BBPlayerState->MyPawn->GetActorLocation();
+				p2Loc = BBPlayerState->MyPawn->GetActorLocation();
+			}
+		}
+
+		float xDelta = FMath::Abs(p1Loc.X - p2Loc.X) + 2 * Settings->PlayerCameraPadding.X;
+		if (xDelta > Settings->CameraFocus.X)
+		{
+			Target.X = (p1Loc.X + p2Loc.X) / 2.f;
+		}
+		else
+		{
+			float tPos;
+			if (FMath::Abs(p1Loc.X - CamPos.X) >= FMath::Abs(p2Loc.X - CamPos.X))
+			{
+				tPos = p1Loc.X;
 			}
 			else
 			{
-				p2loc = Settings->InitialCameraLookAtLocation;
+				tPos = p2Loc.X;
 			}
-			FVector Diff = p1loc - p2loc;
-			Target = p2loc + (Diff / 2.f);
-			DesiredExtents = FVector2D{ FMath::Abs(Diff.X), FMath::Abs(Diff.Z) };
-		}
-		else if (GameState->PlayerArray.Num() == 1)
-		{
-			ABBPlayerState *BBPlayerState = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
-			if (BBPlayerState != nullptr && BBPlayerState->MyPawn != nullptr)
+			if (FMath::Abs(CamPos.X - tPos) + Settings->PlayerCameraPadding.X > Settings->CameraFocus.X / 2.f)
 			{
-				Target = BBPlayerState->MyPawn->GetActorLocation();
-				DesiredExtents = FVector2D{ 0.f, 0.f };
+				Target.X = CamPos.X + FMath::Sign(tPos - CamPos.X) * (FMath::Abs(tPos - CamPos.X) + Settings->PlayerCameraPadding.X - (Settings->CameraFocus.X / 2.f));
 			}
 		}
 
-		DesiredExtents += Settings->CameraPadding;
-
-		FVector CamPos;
-		CamPos.X = FMath::Clamp(Target.X, Settings->CameraBounds.Min.X, Settings->CameraBounds.Max.X);
-		CamPos.Z = FMath::Clamp(Target.Z - 100.0f, Settings->CameraBounds.Min.Z, Settings->CameraBounds.Max.Z);
-
-		float FOV = GetDefault<APlayerCameraManager>()->DefaultFOV;
-		APlayerController *Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-		if (Controller != nullptr && Controller->PlayerCameraManager != nullptr)
+		float zDelta = FMath::Abs(p1Loc.Z - p2Loc.Z) + 2 * Settings->PlayerCameraPadding.Y;
+		if (zDelta > Settings->CameraFocus.Y)
 		{
-			FOV = Controller->PlayerCameraManager->GetFOVAngle();
+			Target.Z = (p1Loc.Z + p2Loc.Z) / 2.f;
+		}
+		else
+		{
+			float tPos;
+			if (FMath::Abs(p1Loc.Z - CamPos.Z) >= FMath::Abs(p2Loc.Z - CamPos.Z))
+			{
+				tPos = p1Loc.Z;
+			}
+			else
+			{
+				tPos = p2Loc.Z;
+			}
+			if (FMath::Abs(tPos - CamPos.Z) + Settings->PlayerCameraPadding.Y > Settings->CameraFocus.Y / 2.f)
+			{
+				Target.Z += FMath::Sign(tPos - CamPos.Z) * (FMath::Abs(tPos - CamPos.Z) + Settings->PlayerCameraPadding.Y - (Settings->CameraFocus.Y / 2.f));
+			}
 		}
 
-		CamPos.Y = FMath::Clamp(
-			FMath::Max(DesiredExtents.X, DesiredExtents.Y) / 2.f / FMath::Tan(FMath::DegreesToRadians(FOV / 2.f))
-			, Settings->CameraBounds.Min.Y
-			, Settings->CameraBounds.Max.Y
-			);
+		Target.X = FMath::Clamp(Target.X, Settings->CameraBounds.Min.X, Settings->CameraBounds.Max.X);
+		Target.Z = FMath::Clamp(Target.Z, Settings->CameraBounds.Min.Y, Settings->CameraBounds.Max.Y);
 
 		if (GetGameState<ABBGameState>() != nullptr)
 		{
 			ACameraActor *Cam = GetGameState<ABBGameState>()->MainCamera;
 			if (Cam != nullptr)
 			{				
-				Cam->SetActorLocation(FMath::Lerp(Cam->GetActorLocation(), CamPos, .06));
+				Cam->SetActorLocation(Target);
 			}
 		}
 	}

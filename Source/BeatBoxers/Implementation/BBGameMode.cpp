@@ -200,7 +200,7 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
 
 	if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
-		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
+		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
 	{
 		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
 		//The target is already pushed up against a wall, push back the source instead.
@@ -942,7 +942,7 @@ void ABBGameMode::AdjustCamera()
 		}
 
 		Target.X = FMath::Clamp(Target.X, Settings->CameraBounds.Min.X, Settings->CameraBounds.Max.X);
-		Target.Z = FMath::Clamp(Target.Z, Settings->CameraBounds.Min.Y, Settings->CameraBounds.Max.Y);
+		Target.Z = FMath::Clamp(Target.Z-100, Settings->CameraBounds.Min.Y, Settings->CameraBounds.Max.Y);
 
 		if (GetGameState<ABBGameState>() != nullptr)
 		{

@@ -108,11 +108,11 @@ void AFighterCharacter::Tick(float DeltaTime)
 	{
 		if (AirMovementDirection > .1) 
 		{
-			LaunchCharacter({300,0,0}, true, false);
+			LaunchCharacter({400,0,0}, true, false);
 		}
 		else if (AirMovementDirection < -.1)
 		{
-			LaunchCharacter({-300,0,0}, true, false);
+			LaunchCharacter({-400,0,0}, true, false);
 		}
 		else {
 			LaunchCharacter({0,0,0}, true, false);

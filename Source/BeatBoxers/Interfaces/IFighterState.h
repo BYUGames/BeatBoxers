@@ -164,4 +164,7 @@ public:
 	virtual void EndDDR() = 0;
 
 	virtual UBasicFretboard* GetFretboard() = 0;
+
+	/** Returns true if teh move that the player is currently in is ment to be crouching. */
+	virtual bool IsInCrouchMove() = 0;
 };

@@ -168,6 +168,7 @@ public:
 	virtual void EndDDR() override;
 	UFUNCTION(BlueprintCallable)
 	virtual UBasicFretboard* GetFretboard() override;
+	virtual bool IsInCrouchMove() override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

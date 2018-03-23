@@ -235,7 +235,7 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 
 void UInputParserComponent::InputAxisVertical(float Amount)
 {
-	if (MyFighterState != nullptr)
+	if (MyFighterState != nullptr && !MyFighterState->IsInCrouchMove())
 	{
 		MyFighterState->SetVerticalDirection(Amount);
 		if (Amount < -.25f)
@@ -251,6 +251,10 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 				MyFighterState->Jump();
 			}
 		}
+	}
+	else if(MyFighter != nullptr)
+	{
+		MyFighter->SetWantsToCrouch(true);
 	}
 }
 

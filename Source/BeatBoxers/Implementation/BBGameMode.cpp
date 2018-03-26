@@ -172,13 +172,19 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	AfterHitstopActor = Actor;
 	AfterHitstopSource = Source;
 
+	bool WasBlocked = DoesBlock(Fighter, DamageType);
+
+	if (Hit.StunLength > 0)
+	{
+		Fighter->StartStun(GetScaledTime(Hit.StunLength), WasBlocked);
+	}
+
 	if (Hit.HitstopAmount > 0) {
 		//shake camera as part of hitstop
 		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
 	}
 	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, OpponentFighter->GetIndex());
 
-	bool WasBlocked = DoesBlock(Fighter, DamageType);
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
 
@@ -1370,10 +1376,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 	IFighter* Fighter = Cast<IFighter>(Actor.Get());
 	if (Fighter != nullptr)
 	{
-		if (ImpactData.StunLength > 0)
-		{
-			Fighter->StartStun(GetScaledTime(ImpactData.StunLength), WasBlocked);
-		}
+
 		if ((ImpactData.bKnocksDown && !WasBlocked) || Fighter->IsJumping())
 		{
 			IFighter* Fighter = Cast<IFighter>(Actor.Get());

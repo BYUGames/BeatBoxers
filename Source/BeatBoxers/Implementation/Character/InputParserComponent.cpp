@@ -92,7 +92,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{
-		if (MyFighterState->IsInputBlocked())
+		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())
 		{
 			if (MyFighter->HasAttackedThisBeat()) {
 				bToken.accuracy = 0.5f;
@@ -216,7 +216,9 @@ void UInputParserComponent::OnControlReturned()
 			// Preventing infinite loops.
 			FBufferInputToken BufferToken = InputBuffer;
 			InputBuffer.token = EInputToken::IE_None;
-			MyMoveset->ReceiveInputToken(BufferToken);
+			if(!MyFighterState->IsStunned()){
+				MyMoveset->ReceiveInputToken(BufferToken);
+			}
 		}
 	}
 }

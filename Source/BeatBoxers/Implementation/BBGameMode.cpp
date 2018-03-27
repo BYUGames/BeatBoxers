@@ -1377,13 +1377,9 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 	int FighterB_RPSCategory = FighterB->GetFighterHitbox().RPSCategory;
 
 	if (((FighterA_RPSCategory > FighterB_RPSCategory) && FighterB_RPSCategory > 1) || ((FighterA_RPSCategory == 1) && (FighterB_RPSCategory > 1)) ) {
-		UE_LOG(LogClashing, Warning, TEXT("Afighter A: %d"), FighterA_RPSCategory);
-		UE_LOG(LogClashing, Warning, TEXT("Afighter B: %d"), FighterB_RPSCategory);
 		return FighterA;
 	}
 	else if (((FighterB_RPSCategory > FighterA_RPSCategory) && FighterA_RPSCategory > 1) || ((FighterB_RPSCategory == 1) && (FighterA_RPSCategory > 1)) ) {
-		UE_LOG(LogClashing, Warning, TEXT("Bfighter A: %d"), FighterA_RPSCategory);
-		UE_LOG(LogClashing, Warning, TEXT("Bfighter B: %d"), FighterB_RPSCategory);
 		return FighterB;
 	}
 	return nullptr;

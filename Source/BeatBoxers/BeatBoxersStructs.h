@@ -278,8 +278,13 @@ struct FMoveHitbox
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Radius;
 
+	/** Value Representing Rock Paper or Scissors, to determine which beats the other */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int RPSCategory;
+
 	FMoveHitbox()
 	{
+		RPSCategory = 0;
 		Radius = 20.f;
 		End.X = 75.f;
 	}

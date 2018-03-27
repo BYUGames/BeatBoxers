@@ -160,7 +160,7 @@ public:
 	virtual float TimeToNextRound() override;
 	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
-	virtual void OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
+	virtual bool OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	virtual float GetScaledTime(float time)  override;
 	/** End IFighterWorld implementation */

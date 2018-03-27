@@ -89,7 +89,7 @@ public:
 	virtual void PlayerMissBeat(APlayerController* Player) = 0;
 	
 	/** Called for Clash between fighters */
-	virtual void OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
+	virtual bool OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
 
 	/** Determines if there was a clash between two the Fighters, returns false if either of the Fighter's are NULL. */
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;

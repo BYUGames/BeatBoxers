@@ -217,8 +217,8 @@ bool UFighterStateComponent::IsBlocking() const
 
 	if (ToOpponent == 0) return false;
 
-	if (ToOpponent > 0 && MoveDirection < 0) return true;
-	if (ToOpponent < 0 && MoveDirection > 0) return true;
+	//if (ToOpponent > 0 && MoveDirection < 0) return true;
+	//if (ToOpponent < 0 && MoveDirection > 0) return true;
 
 	return false;
 }

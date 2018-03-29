@@ -93,6 +93,8 @@ protected:
 	void InputActionDodge();
 	void InputActionDashLeftButton();
 	void InputActionDashRightButton();
+	void InputActionBlock();
+	void InputActionStopBlock();
 	void SetGravityScale(float scale);
 
 public:	

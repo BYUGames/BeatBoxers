@@ -162,6 +162,8 @@ public:
 	virtual void InputActionDashLeft(bool IsUp) override;
 	virtual void InputActionDashRight(bool IsUp) override;
 	virtual void InputActionSuper(bool IsUp) override;
+	virtual void InputActionBlock(bool IsUp) override;
+	virtual void InputActionStopBlock(bool IsUp) override;
 
 	/** End IInputParser implementation */
 

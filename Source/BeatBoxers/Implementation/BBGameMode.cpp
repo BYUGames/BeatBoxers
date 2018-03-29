@@ -350,6 +350,9 @@ void ABBGameMode::AddSpecial(APlayerState *PlayerState, float Amount)
 bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const
 {
 	if (Fighter == nullptr || !Fighter->IsBlocking()) return false;
+
+	return true;
+	/*
 	switch (Fighter->GetStance())
 	{
 	case EStance::SE_NA:
@@ -388,6 +391,7 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) co
 
 	if (DamageType == EFighterDamageType::DE_None) return true;
 	return false;
+	*/
 }
 
 int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)

@@ -230,7 +230,12 @@ bool UFighterStateComponent::IsCharging() const
 
 bool UFighterStateComponent::IsStunned() const
 {
-	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun) || IsKnockedDown();
+	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Stun) || IsKnockedDown() || IsGrabbed();
+}
+
+bool UFighterStateComponent::IsGrabbed() const
+{
+	return bGrabbed;
 }
 
 bool UFighterStateComponent::IsBlockStunned() const
@@ -1151,4 +1156,28 @@ UBasicFretboard* UFighterStateComponent::GetFretboard()
 	if (MyMoveset != nullptr)
 		return Cast<UMovesetComponent>(MyMoveset)->GetBGFretboard();
 	return nullptr;
+}
+
+bool UFighterStateComponent::Grabbed(const FVector OpponentLocation)
+{
+	if (bGrabbed)
+		return false;
+	if (MyFighter && MyFighter->GetOpponentDirection() > 0)
+	{
+		Cast<AActor>(MyFighter)->SetActorLocation(FVector(OpponentLocation.X + 50, OpponentLocation.Y, OpponentLocation.Z));
+	}
+	else
+	{
+		Cast<AActor>(MyFighter)->SetActorLocation(FVector(OpponentLocation.X - 50, OpponentLocation.Y, OpponentLocation.Z));
+	}
+	bGrabbed = true;
+	return true;
+}
+
+bool UFighterStateComponent::Released()
+{
+	if (!bGrabbed)
+		return false;
+	bGrabbed = false;
+	return true;
 }

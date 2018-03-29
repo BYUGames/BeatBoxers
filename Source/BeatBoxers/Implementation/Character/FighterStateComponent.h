@@ -43,6 +43,7 @@ protected:
 	uint32 bIsKnockedDown : 1;
 	uint32 bSkipWindupOnBeat : 1;
 	uint32 bIsInDDR : 1;
+	uint32 bGrabbed : 1;
 
 	EWindowStage CurrentWindowStage;
 	EWindowEnd CurrentWindowEnd;
@@ -169,6 +170,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UBasicFretboard* GetFretboard() override;
 	virtual bool IsInCrouchMove() override;
+	virtual bool Grabbed(const FVector OpponentLocation) override;
+	virtual bool Released() override;
+	virtual bool IsGrabbed() const override;
 	/** End IFighterState implmementation */
 
 	AController* GetOwnerController() const;

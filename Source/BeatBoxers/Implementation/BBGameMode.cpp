@@ -1376,16 +1376,21 @@ bool ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor
 
 IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* FighterB)
 {
-	int FighterA_RPSCategory = FighterA->GetFighterHitbox().RPSCategory;
-	int FighterB_RPSCategory = FighterB->GetFighterHitbox().RPSCategory;
+	ERPSType FighterA_RPSCategory = FighterA->GetFighterHitbox().RPSCategory;
+	ERPSType FighterB_RPSCategory = FighterB->GetFighterHitbox().RPSCategory;
 
-	if (((FighterA_RPSCategory > FighterB_RPSCategory) && FighterB_RPSCategory > 1) || ((FighterA_RPSCategory == 1) && (FighterB_RPSCategory > 1)) ) {
+	if (FighterA_RPSCategory == ERPSType::ERPS_None || FighterB_RPSCategory == ERPSType::ERPS_None)
+		UE_LOG(LogClashing, Warning, TEXT("ABBGameMode::DetermineClashWinner given a None for a RPSCategory for one or more fighters."));
+	if (FighterA_RPSCategory == FighterB_RPSCategory) // tie
+		return nullptr; 
+	if (FighterA_RPSCategory == ERPSType::ERPS_Attack && FighterB_RPSCategory == ERPSType::ERPS_Grab
+		|| FighterA_RPSCategory == ERPSType::ERPS_Grab && FighterB_RPSCategory == ERPSType::ERPS_Block
+		|| FighterA_RPSCategory == ERPSType::ERPS_Block && FighterB_RPSCategory == ERPSType::ERPS_Attack) {
 		return FighterA;
 	}
-	else if (((FighterB_RPSCategory > FighterA_RPSCategory) && FighterA_RPSCategory > 1) || ((FighterB_RPSCategory == 1) && (FighterA_RPSCategory > 1)) ) {
+	else {
 		return FighterB;
 	}
-	return nullptr;
 }
 
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)

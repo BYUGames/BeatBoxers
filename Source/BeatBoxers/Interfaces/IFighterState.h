@@ -167,4 +167,13 @@ public:
 
 	/** Returns true if teh move that the player is currently in is ment to be crouching. */
 	virtual bool IsInCrouchMove() = 0;
+
+	/** puts the player in a grabbed state */
+	virtual bool Grabbed(const FVector OpponentLocation) = 0;
+
+	/** Releases the player from a grab */
+	virtual bool Released() = 0;
+
+	/** Returns true if the player is currently grabbed */
+	virtual bool IsGrabbed() const = 0;
 };

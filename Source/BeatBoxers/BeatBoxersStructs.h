@@ -19,6 +19,15 @@ static FORCEINLINE FString GetEnumValueToString(const FString& Name, TEnum Value
 }
 
 UENUM(BlueprintType)
+enum class ERPSType : uint8
+{
+	ERPS_None		UMETA(DisplayName = "None")
+	, ERPS_Attack	UMETA(DisplayName = "Attack")
+	, ERPS_Grab		UMETA(DisplayName = "Grab")
+	, ERPS_Block	UMETA(DisplayName = "Block")
+};
+
+UENUM(BlueprintType)
 enum class EWindowStage : uint8
 {
 	WE_Windup			UMETA(DisplayName = "Wind up")
@@ -280,11 +289,11 @@ struct FMoveHitbox
 
 	/** Value Representing Rock Paper or Scissors, to determine which beats the other */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int RPSCategory;
+	ERPSType RPSCategory;
 
 	FMoveHitbox()
 	{
-		RPSCategory = 0;
+		RPSCategory = ERPSType::ERPS_None;
 		Radius = 20.f;
 		End.X = 75.f;
 	}
@@ -418,6 +427,9 @@ struct FMoveWindow
 	/** If true, the player will be invincible during the window. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Invincibility : 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 Grab : 1;
 
 	FMoveWindow()
 	{

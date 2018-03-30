@@ -24,7 +24,6 @@ enum class ERPSType : uint8
 	ERPS_None		UMETA(DisplayName = "None")
 	, ERPS_Attack	UMETA(DisplayName = "Attack")
 	, ERPS_Grab		UMETA(DisplayName = "Grab")
-	, ERPS_Block	UMETA(DisplayName = "Block")
 };
 
 UENUM(BlueprintType)

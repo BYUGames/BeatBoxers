@@ -1383,9 +1383,7 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 		UE_LOG(LogClashing, Warning, TEXT("ABBGameMode::DetermineClashWinner given a None for a RPSCategory for one or more fighters."));
 	if (FighterA_RPSCategory == FighterB_RPSCategory) // tie
 		return nullptr; 
-	if (FighterA_RPSCategory == ERPSType::ERPS_Attack && FighterB_RPSCategory == ERPSType::ERPS_Grab
-		|| FighterA_RPSCategory == ERPSType::ERPS_Grab && FighterB_RPSCategory == ERPSType::ERPS_Block
-		|| FighterA_RPSCategory == ERPSType::ERPS_Block && FighterB_RPSCategory == ERPSType::ERPS_Attack) {
+	if (FighterA_RPSCategory == ERPSType::ERPS_Attack && FighterB_RPSCategory == ERPSType::ERPS_Grab) {
 		return FighterA;
 	}
 	else {

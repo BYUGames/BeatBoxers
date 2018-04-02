@@ -130,7 +130,7 @@ struct FHitResult ABBGameMode::TraceHitbox(FVector Source, FMoveHitbox Hitbox, T
 }
 
 
-EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController)
+EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, bool grab)
 {
 	if (!Actor.IsValid())
 	{
@@ -142,7 +142,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	}
 
 	IFighter *Fighter = Cast<IFighter>(Actor.Get());
-	IFighter *OpponentFighter = Cast<IFighter>(Actor.Get());
+	IFighter *OpponentFighter = Cast<IFighter>(Source.Get());
 	if (Fighter == nullptr)
 	{
 		//Behavior not defined for non-fighters.
@@ -161,10 +161,14 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	
 
 
-	if (CheckClash(Actor, Source))
+	if (CheckClash(Source, Actor))
 	{
 		UE_LOG(LogClashing, Log, TEXT("Clash detected between %s and %s."), *Actor.Get()->GetName(), *Source.Get()->GetName());
-		if (OnClash(Actor, Source)) {
+		if (OnClash(Source, Actor)) {
+			if (grab)
+			{
+				Fighter->Grabbed(Hit.StunLength);
+			}
 			return EHitResponse::HE_Clashed;
 		}
 	}
@@ -184,7 +188,11 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		//shake camera as part of hitstop
 		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
 	}
-	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, OpponentFighter->GetIndex());
+	if (grab)
+	{
+		Fighter->Grabbed(Hit.StunLength);
+	}
+	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, Fighter->GetIndex());
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
@@ -206,6 +214,7 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
 
+	
 	if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
 		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
 	{
@@ -970,7 +979,10 @@ void ABBGameMode::Tick(float DeltaSeconds)
 	AGameMode::Tick(DeltaSeconds);
 
 	AdjustCamera();
+
 }
+
+
 
 void ABBGameMode::StartRoundWithDelay()
 {
@@ -1394,6 +1406,7 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
 {
 	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
+
 
 	IFighter* Fighter = Cast<IFighter>(Actor.Get());
 	if (Fighter != nullptr)

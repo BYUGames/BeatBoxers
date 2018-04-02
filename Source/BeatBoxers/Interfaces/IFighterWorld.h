@@ -39,7 +39,7 @@ public:
 	virtual struct FHitResult TraceHitbox(FVector Source, FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) = 0;
 
 	/** Request made to apply damage to an actor. */
-	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController) = 0;
+	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, bool grab) = 0;
 
 	/** Attempts to move the actor. Returns -1 on error, 1 if actor was pressed against a wall, 0 otherwise. */
 	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement) = 0;
@@ -96,7 +96,5 @@ public:
 
 	/** Gives the game mode a scaled time based on the beat */
 	virtual float GetScaledTime(float time)  = 0;
-
-	/**  */
 
 };

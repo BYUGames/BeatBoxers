@@ -144,4 +144,10 @@ public:
 	//** sets index of player */
 	UFUNCTION(BlueprintCallable)
 	virtual void SetIndex(int NewIndex) = 0;
+
+	/** Put Fighter in brabbed state */
+	virtual bool Grabbed(float Duration) = 0;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsGrabbed() = 0;
 };

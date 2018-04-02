@@ -766,10 +766,10 @@ void UFighterStateComponent::PerformHitboxScan()
 				ActorsToIgnore.Add(HitResult.Actor);
 				if (MyFighter != nullptr)
 				{
-				//	if (GEngine)
-				//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("HIT YOU WITH!!!! %f"), CurrentWindowAccuracy));
-					EHitResponse Response = MyFighterWorld->HitActor(
-						HitResult.Actor,
+				
+					EHitResponse Response;
+					
+					Response = MyFighterWorld->HitActor(HitResult.Actor,
 						MyFighterWorld->GetDamageType(
 							MyFighter->GetStance(),
 							CurrentWindow.DamageTypeOverride
@@ -778,9 +778,10 @@ void UFighterStateComponent::PerformHitboxScan()
 						CurrentWindow.DefenderBlock,
 						CurrentWindowAccuracy,
 						GetOwner(),
-						(Pawn == nullptr) ? nullptr : Pawn->GetController()
+						(Pawn == nullptr) ? nullptr : Pawn->GetController(),
+						CurrentWindow.Grab
 					);
-
+									
 					FTransform ImpactTransform = FTransform({ 0 ,HitResult.ImpactNormal.Rotation().Yaw ,HitResult.ImpactNormal.Rotation().Roll }, HitResult.ImpactPoint, FVector::OneVector);
 					FTransform RelativeTransform;
 					switch (Response)
@@ -821,6 +822,7 @@ void UFighterStateComponent::PerformHitboxScan()
 						{
 							MyFighterWorld->StartSolo(TWeakObjectPtr<AActor>(GetOwner()));
 						}
+						
 						break;
 					case EHitResponse::HE_Blocked:
 						bHasMoveWindowHit = true;
@@ -847,6 +849,7 @@ void UFighterStateComponent::PerformHitboxScan()
 							EndWindow(EWindowEnd::WE_Missed);
 						}
 						break;
+
 					default:
 						break;
 					}
@@ -1158,26 +1161,31 @@ UBasicFretboard* UFighterStateComponent::GetFretboard()
 	return nullptr;
 }
 
-bool UFighterStateComponent::Grabbed(const FVector OpponentLocation)
+bool UFighterStateComponent::Grabbed(float Duration)
 {
 	if (bGrabbed)
 		return false;
-	if (MyFighter && MyFighter->GetOpponentDirection() > 0)
+	if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
 	{
-		Cast<AActor>(MyFighter)->SetActorLocation(FVector(OpponentLocation.X + 50, OpponentLocation.Y, OpponentLocation.Z));
+		ACharacter *Character = Cast<ACharacter>(MyFighter);
+		if (Character != nullptr)
+		{
+			Character->StopAnimMontage();
+		}
 	}
-	else
-	{
-		Cast<AActor>(MyFighter)->SetActorLocation(FVector(OpponentLocation.X - 50, OpponentLocation.Y, OpponentLocation.Z));
-	}
+	EndWindow(EWindowEnd::WE_Stunned);
 	bGrabbed = true;
+	GetOwner()->GetWorldTimerManager().SetTimer(
+		TimerHandle_Grab,
+		this,
+		&UFighterStateComponent::Released,
+		Duration,
+		false
+	);
 	return true;
 }
 
-bool UFighterStateComponent::Released()
+void UFighterStateComponent::Released()
 {
-	if (!bGrabbed)
-		return false;
 	bGrabbed = false;
-	return true;
 }

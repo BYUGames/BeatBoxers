@@ -178,6 +178,13 @@ public:
 	virtual void AddHit() override;
 	virtual bool HasAttackedThisBeat() override;
 	virtual void UpdateFacing() override;
+	virtual bool Grabbed(float Duration) override;
+	UFUNCTION(BlueprintCallable)
+		virtual int GetIndex() override;
+	UFUNCTION(BlueprintCallable)
+		virtual void SetIndex(int NewIndex) override;
+	UFUNCTION(BlueprintCallable)
+		virtual bool IsGrabbed() override { if (MyFighterState) return MyFighterState->IsGrabbed(); else return false; }
 	/** End IFighter implementation */
 
 	UFUNCTION(BlueprintPure, meta=(DisplayName="Is Jumping"))
@@ -254,9 +261,5 @@ public:
 	UFUNCTION()
 	void OnRoundEnd(int Winner);
 
-	UFUNCTION(BlueprintCallable)
-	virtual int GetIndex() override;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void SetIndex(int NewIndex) override;
 };

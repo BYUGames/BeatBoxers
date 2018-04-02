@@ -818,6 +818,11 @@ void AFighterCharacter::StartStun(float Duration, bool WasBlocked)
 	FighterState->StartStun(Duration, WasBlocked);
 }
 
+bool AFighterCharacter::Grabbed(float Duration)
+{ 
+	return MyFighterState->Grabbed(Duration); 
+};
+
 bool AFighterCharacter::IsDead() const
 {
 	return bIsDead;

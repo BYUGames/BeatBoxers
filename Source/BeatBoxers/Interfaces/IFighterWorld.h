@@ -88,8 +88,8 @@ public:
 	/** Should be called when the given player hits off beat or misses the opponent. */
 	virtual void PlayerMissBeat(APlayerController* Player) = 0;
 	
-	/** Called for Clash between fighters */
-	virtual bool OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
+	/** Called for Clash between fighters, if A won ret 1, if B ret -1, if tie ret 0. */
+	virtual int OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;
 
 	/** Determines if there was a clash between two the Fighters, returns false if either of the Fighter's are NULL. */
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) = 0;

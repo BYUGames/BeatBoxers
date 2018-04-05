@@ -110,6 +110,7 @@ class BEATBOXERS_API UInputParserComponent : public UActorComponent, public IInp
 private:
 	// Stores the horizontal movement of the player
 	float HorizontalMovement;
+	bool HoldingBlock;
 protected:
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

@@ -227,12 +227,15 @@ void UInputParserComponent::OnControlReturned()
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {
+
+
 	HorizontalMovement = Amount;
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(Amount);
 		MyFighterState->SetHorizontalDirection(Amount);
 	}
+
 }
 
 void UInputParserComponent::InputAxisVertical(float Amount)
@@ -281,6 +284,7 @@ void UInputParserComponent::InputActionBlock(bool IsUp)
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->Block();
+		HoldingBlock = true;
 	}
 }
 
@@ -289,6 +293,7 @@ void UInputParserComponent::InputActionStopBlock(bool IsUp)
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->StopBlock();
+		HoldingBlock = false;
 	}
 }
 
@@ -298,7 +303,20 @@ void UInputParserComponent::InputActionLeft(bool IsUp)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionLeft(this);
 	}
+
+	if (HoldingBlock) {
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+	}
 }
+
+
 
 void UInputParserComponent::InputActionRight(bool IsUp)
 {
@@ -306,7 +324,19 @@ void UInputParserComponent::InputActionRight(bool IsUp)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionRight(this);
 	}
+
+	if (HoldingBlock) {
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+	}
 }
+
 
 void UInputParserComponent::InputActionDown(bool IsUp)
 {
@@ -509,6 +539,7 @@ void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 	}
 }
 
+
 void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 {
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
@@ -517,6 +548,7 @@ void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 		ChangeState(Parser, UPreRightDashState::StaticClass());
 	}
 }
+
 
 void UInputParserDefaultState::InputActionLight(UInputParserComponent *Parser)
 {
@@ -625,7 +657,9 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 		}
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
+
 }
+
 
 void UPreLeftDashState::InputActionLight(UInputParserComponent *Parser)
 {

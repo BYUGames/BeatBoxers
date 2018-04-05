@@ -407,7 +407,9 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (MyFighterState->GetCurrentVerticalDirection() >= 0)
+		if(HoldingBlock)
+			CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+		else if (MyFighterState->GetCurrentVerticalDirection() >= 0)
 			CurrentStateClass.GetDefaultObject()->InputActionLight(this);
 		else
 			CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);

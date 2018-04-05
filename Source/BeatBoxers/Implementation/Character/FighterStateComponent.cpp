@@ -316,7 +316,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 
 void UFighterStateComponent::SetMoveDirection(float Direction)
 {
-	if (!IsInputBlocked() && MyFighter != nullptr)
+	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!MyFighter->IsBlocking()))
 	{
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);

@@ -535,7 +535,7 @@ void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
-		ChangeState(Parser, UPreLeftDashState::StaticClass());
+		//ChangeState(Parser, UPreLeftDashState::StaticClass());
 	}
 }
 
@@ -545,7 +545,7 @@ void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
-		ChangeState(Parser, UPreRightDashState::StaticClass());
+		//ChangeState(Parser, UPreRightDashState::StaticClass());
 	}
 }
 

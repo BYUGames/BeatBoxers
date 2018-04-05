@@ -154,3 +154,31 @@ FMusicBalanceParams& FMusicBalanceParams::operator+=(const FMusicBalanceParams& 
 	bIsRiffOn |= rhs.bIsRiffOn;
 	return *this;
 }
+
+
+int GetRPSWinner(ERPSType a, ERPSType b)
+{
+	if (a == b) return 0;
+	if (a == ERPSType::RPS_None) return 2;
+	if (b == ERPSType::RPS_None) return 1;
+	switch (a)
+	{
+	case ERPSType::RPS_Attack:
+		switch (b)
+		{
+		case ERPSType::RPS_Block:
+			return 2;
+		case ERPSType::RPS_Grab:
+			return 1;
+		}
+	case ERPSType::RPS_Grab:
+		switch (b)
+		{
+		case ERPSType::RPS_Attack:
+			return 2;
+		case ERPSType::RPS_Block:
+			return 1;
+		}
+	}
+	return 0;
+}

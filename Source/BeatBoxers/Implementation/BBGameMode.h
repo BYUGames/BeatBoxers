@@ -27,11 +27,11 @@ public:
 	TWeakObjectPtr<AActor> AfterHitstopActor;
 	TWeakObjectPtr<AActor> AfterHitstopSource;
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hitstop Events"))
-	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex);
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Hitstop Events"))
+	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Hitstop"))
-	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy);
+	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType);
 
 	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -139,7 +139,7 @@ public:
 	/** IFighterWorld implementation */
 	virtual EFighterDamageType GetDamageType(EStance Stance, EFighterDamageType DesiredOverride) const override;
 	virtual struct FHitResult TraceHitbox(FVector Source, FMoveHitbox Hitbox, TArray< TWeakObjectPtr<AActor> >& IgnoreActors) override;
-	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, bool grab) override;
+	virtual EHitResponse HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageType DamageType, FImpactData& Hit, FImpactData& Block, float Accuracy, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, bool grab, ERPSType RPSType) override;
 	virtual int ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement);
 	virtual void StartSolo(TWeakObjectPtr<AActor> OneSoloing) override;
 	virtual void EndSolo() override;
@@ -171,7 +171,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Is In Round"))
 	virtual float K2_IsInRound() { return IsInRound(); }
 
-	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType) const;
+	virtual bool DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ERPSType RPS) const;
 
 	virtual void AddSpecial(APlayerState *PlayerState, float Amount);
 	virtual void HandleMatchIsWaitingToStart() override;

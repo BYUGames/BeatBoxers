@@ -21,10 +21,14 @@ static FORCEINLINE FString GetEnumValueToString(const FString& Name, TEnum Value
 UENUM(BlueprintType)
 enum class ERPSType : uint8
 {
-	ERPS_None		UMETA(DisplayName = "None")
-	, ERPS_Attack	UMETA(DisplayName = "Attack")
-	, ERPS_Grab		UMETA(DisplayName = "Grab")
+	RPS_None		UMETA(DisplayName = "None")
+	, RPS_Attack	UMETA(DisplayName = "Attack")
+	, RPS_Grab		UMETA(DisplayName = "Grab")
+	, RPS_Block		UMETA(DisplayName = "Block")
 };
+
+// Returns winner: 0 for tie, 1 for a, 2 for b
+int GetRPSWinner(ERPSType a, ERPSType b);
 
 UENUM(BlueprintType)
 enum class EWindowStage : uint8
@@ -209,6 +213,13 @@ struct FEffects
 	FTransform RelativeTransform;
 
 	bool IsValid() const;
+
+	FEffects() :
+		ParticleSystem(nullptr)
+		, SoundCue(nullptr)
+		, AttachToActor(false)
+		, RelativeTransform(FTransform::Identity)
+	{}
 };
 
 USTRUCT(BlueprintType)
@@ -246,10 +257,14 @@ struct FMovement
 
 	FString ToString() const;
 
-	FMovement()
-	{
-		IsRelativeToAttackerFacing = true;
-	}
+	FMovement() :
+		Delta(FVector2D(0.f, 0.f))
+		, Duration(0.f)
+		, IsRelativeToAttackerFacing(true)
+		, UseDeltaAsSpeed(false)
+		, UsePhysicsLaunch(false)
+		, InAirLaunchDelta(FVector2D(0.f, 0.f))
+	{}
 };
 
 USTRUCT(BlueprintType)
@@ -292,7 +307,7 @@ struct FMoveHitbox
 
 	FMoveHitbox()
 	{
-		RPSCategory = ERPSType::ERPS_None;
+		RPSCategory = ERPSType::RPS_None;
 		Radius = 20.f;
 		End.X = 75.f;
 	}
@@ -328,6 +343,17 @@ struct FImpactData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HitstopAmount;
+
+	FImpactData() :
+		EndsCurrentWindow(false)
+		, bKnocksDown(false)
+		, ImpartedMovement(FMovement())
+		, Damage(0.f)
+		, SpecialGenerated(0.f)
+		, StunLength(0.f)
+		, SFX(FEffects())
+		, HitstopAmount(0.f)
+	{}
 };
 
 USTRUCT(BlueprintType)

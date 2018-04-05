@@ -768,20 +768,34 @@ void UFighterStateComponent::PerformHitboxScan()
 				{
 				
 					EHitResponse Response;
+
+					FImpactData DefenderHit = FImpactData();
+					FImpactData DefenderBlock = FImpactData(); 
+
+					if (CurrentWindow.Hitbox.RPSCategory != ERPSType::RPS_Block)
+					{
+						// If we're a block attack we might want to store data here, but we only want to use that data now if we aren't.
+						DefenderHit = CurrentWindow.DefenderHit;
+						DefenderBlock = CurrentWindow.DefenderBlock;
+					}
 					
 					Response = MyFighterWorld->HitActor(HitResult.Actor,
 						MyFighterWorld->GetDamageType(
 							MyFighter->GetStance(),
 							CurrentWindow.DamageTypeOverride
 						),
-						CurrentWindow.DefenderHit,
-						CurrentWindow.DefenderBlock,
+						DefenderHit,
+						DefenderBlock,
 						CurrentWindowAccuracy,
 						GetOwner(),
 						(Pawn == nullptr) ? nullptr : Pawn->GetController(),
-						CurrentWindow.Grab
+						CurrentWindow.Grab,
+						CurrentWindow.Hitbox.RPSCategory
 					);
-									
+					
+					// Don't proceed if we're a block attack meant only to cause clashes.
+					if (CurrentWindow.Hitbox.RPSCategory == ERPSType::RPS_Block) return;
+
 					FTransform ImpactTransform = FTransform({ 0 ,HitResult.ImpactNormal.Rotation().Yaw ,HitResult.ImpactNormal.Rotation().Roll }, HitResult.ImpactPoint, FVector::OneVector);
 					FTransform RelativeTransform;
 					switch (Response)
@@ -796,25 +810,25 @@ void UFighterStateComponent::PerformHitboxScan()
 							}
 						}
 						bHasMoveWindowHit = true;
-						RelativeTransform = CurrentWindow.DefenderHit.SFX.RelativeTransform * ImpactTransform;
-						if (CurrentWindow.DefenderHit.SFX.ParticleSystem != nullptr)
+						RelativeTransform = DefenderHit.SFX.RelativeTransform * ImpactTransform;
+						if (DefenderHit.SFX.ParticleSystem != nullptr)
 						{
 							UGameplayStatics::SpawnEmitterAtLocation(
 								GetOwner()->GetWorld(),
-								CurrentWindow.DefenderHit.SFX.ParticleSystem,
+								DefenderHit.SFX.ParticleSystem,
 								RelativeTransform
 							);
 						}
-						if (CurrentWindow.DefenderHit.SFX.SoundCue != nullptr)
+						if (DefenderHit.SFX.SoundCue != nullptr)
 						{
 							UGameplayStatics::SpawnSoundAtLocation(
 								GetOwner(),
-								CurrentWindow.DefenderHit.SFX.SoundCue,
+								DefenderHit.SFX.SoundCue,
 								RelativeTransform.GetLocation(),
 								RelativeTransform.GetRotation().Rotator()
 							);
 						}
-						if (CurrentWindow.DefenderHit.EndsCurrentWindow)
+						if (DefenderHit.EndsCurrentWindow)
 						{
 							EndWindow(EWindowEnd::WE_Hit);
 						}
@@ -826,12 +840,12 @@ void UFighterStateComponent::PerformHitboxScan()
 						break;
 					case EHitResponse::HE_Blocked:
 						bHasMoveWindowHit = true;
-						RelativeTransform = CurrentWindow.DefenderBlock.SFX.RelativeTransform * ImpactTransform;
-						if (CurrentWindow.DefenderBlock.SFX.ParticleSystem != nullptr)
+						RelativeTransform = DefenderBlock.SFX.RelativeTransform * ImpactTransform;
+						if (DefenderBlock.SFX.ParticleSystem != nullptr)
 						{
 							UGameplayStatics::SpawnEmitterAtLocation(
 								GetOwner()->GetWorld(),
-								CurrentWindow.DefenderBlock.SFX.ParticleSystem,
+								DefenderBlock.SFX.ParticleSystem,
 								RelativeTransform
 							);
 						}
@@ -839,12 +853,12 @@ void UFighterStateComponent::PerformHitboxScan()
 						{
 							UGameplayStatics::SpawnSoundAtLocation(
 								GetOwner(),
-								CurrentWindow.DefenderBlock.SFX.SoundCue,
+								DefenderBlock.SFX.SoundCue,
 								RelativeTransform.GetLocation(),
 								RelativeTransform.GetRotation().Rotator()
 							);
 						}
-						if (CurrentWindow.DefenderBlock.EndsCurrentWindow)
+						if (DefenderBlock.EndsCurrentWindow)
 						{
 							EndWindow(EWindowEnd::WE_Missed);
 						}

@@ -780,13 +780,17 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(AActor *Target, cons
 	{
 		int TimesHit = Fighter->GetTimesHitThisKnockdown();
 		Scale = FGenericPlatformMath::Pow(ComboImpactScaling, TimesHit);
-
+		float absolute = Accuracy - 0.5f;
+		if (absolute < 0) {
+			absolute *= -1;
+		}
+		float scalar = 0.75 + (2 * absolute * absolute);
 		FImpactData ScaledImpact = ImpactData;
 		ScaledImpact.Damage *= Scale;
 		ScaledImpact.ImpartedMovement.Delta *= GlobalImpactScaling;
 		if (ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 		{
-			ScaledImpact.ImpartedMovement.Delta *= Scale;
+			ScaledImpact.ImpartedMovement.Delta *= Scale * scalar;
 		}
 		return ScaledImpact;
 	}

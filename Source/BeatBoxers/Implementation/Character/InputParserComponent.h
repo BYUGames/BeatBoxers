@@ -39,6 +39,7 @@ public:
 	virtual void InputActionSpecial2(UInputParserComponent *Parser);
 	virtual void InputActionSpecial3(UInputParserComponent *Parser);
 	virtual void InputActionSuper(UInputParserComponent *Parser);
+	virtual void InputActionBlock(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
 	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
 };
@@ -61,6 +62,7 @@ public:
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
 	virtual void InputActionSuper(UInputParserComponent *Parser) override;
+	virtual void InputActionBlock(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
 	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
 };

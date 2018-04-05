@@ -283,6 +283,7 @@ void UInputParserComponent::InputActionBlock(bool IsUp)
 {
 	if (MyFighterState != nullptr)
 	{
+		CurrentStateClass.GetDefaultObject()->InputActionBlock(this);
 		MyFighterState->Block();
 		HoldingBlock = true;
 	}
@@ -508,6 +509,7 @@ void UInputParserState::InputActionSpecial1(UInputParserComponent *Parser) { UE_
 void UInputParserState::InputActionSpecial2(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial2()")); }
 void UInputParserState::InputActionSpecial3(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSpecial3()")); }
 void UInputParserState::InputActionSuper(UInputParserComponent *Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionSuper()")); }
+void UInputParserState::InputActionBlock(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionBlock()")); }
 void UInputParserState::InputActionDashForward(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashForward()")); }
 void UInputParserState::InputActionDashBackwards(UInputParserComponent * Parser) { UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserState::InputActionDashBackwards()")); }
 
@@ -639,6 +641,17 @@ void UInputParserDefaultState::InputActionSuper(UInputParserComponent *Parser)
 		Parser->PushInputToken(EInputToken::IE_Super);
 	}
 }
+
+void UInputParserDefaultState::InputActionBlock(UInputParserComponent * Parser)
+{
+	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionBlock()"));
+	if (Parser != nullptr)
+	{
+		Parser->PushInputToken(EInputToken::IE_Block);
+	}
+}
+
+
 
 bool UPreLeftDashState::IsComplex() { return true; }
 

@@ -25,6 +25,7 @@ class BEATBOXERS_API UMovesetComponent : public UActorComponent, public IMoveset
 private:
 	FString cs; //Context String
 	FDataTableRowHandle DefaultState;
+	FDataTableRowHandle ParryState;
 	int CurrentWindowInState;
 
 	// Don't call this. It does no checking.
@@ -98,4 +99,5 @@ public:
 	virtual int GetCurrentWindowInMove() const override;
 	virtual int GetWindowsInCurrentMove() const override;
 	/** End IMovesetImplementation */
+	virtual void Parry();
 };

@@ -1352,8 +1352,8 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 
 int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB)
 {
-	IFighter* mFighterA = Cast<IFighter>(FighterA.Get());
-	IFighter* mFighterB = Cast<IFighter>(FighterB.Get());
+	AFighterCharacter* mFighterA = Cast<AFighterCharacter>(FighterA.Get());
+	AFighterCharacter* mFighterB = Cast<AFighterCharacter>(FighterB.Get());
 
 	if (mFighterA != nullptr && mFighterB != nullptr)
 	{
@@ -1372,10 +1372,12 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 			if (winner == mFighterA)
 			{
 				mFighterB->Knockdown();
+				mFighterA->Moveset->Parry();
 			}
 			else if (winner == mFighterB)
 			{
 				mFighterA->Knockdown();
+				mFighterB->Moveset->Parry();
 			}
 		}
 

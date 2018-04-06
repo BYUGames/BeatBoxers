@@ -24,6 +24,7 @@ void UMovesetComponent::BeginPlay()
 	if (MyFighter != nullptr)
 	{
 		DefaultState = MyFighter->GetDefaultMoveState();
+		ParryState = MyFighter->GetParryMoveState();
 	}
 	GotoDefaultState();
 }
@@ -465,4 +466,14 @@ int UMovesetComponent::GetCurrentWindowInMove() const
 int UMovesetComponent::GetWindowsInCurrentMove() const
 {
 	return CurrentState.GetRow<FMoveData>(cs)->MoveWindows.Num();
+}
+
+void UMovesetComponent::Parry()
+{
+	if (ParryState.GetRow<FMoveData>(cs) == nullptr)
+	{
+		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid parry move state!"), *GetNameSafe(GetOwner()));
+		return;
+	}
+	SetState(ParryState);
 }

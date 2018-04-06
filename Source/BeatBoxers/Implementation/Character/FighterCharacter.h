@@ -129,6 +129,9 @@ public:
 	FDataTableRowHandle DefaultMoveState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle ParryMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UDataTable* AnimTable;
 
 	UPROPERTY(BlueprintAssignable)
@@ -159,6 +162,7 @@ public:
 	virtual FClashEvent& GetOnClashEvent() override;
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() const override { return DefaultMoveState; }
+	virtual FDataTableRowHandle GetParryMoveState() const override { return ParryMoveState; }
 	virtual UDataTable *GetAnimTable() const override { return AnimTable; }
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }

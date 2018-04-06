@@ -141,8 +141,8 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		return EHitResponse::HE_Missed;
 	}
 
-	IFighter *Fighter = Cast<IFighter>(Actor.Get());
-	IFighter *OpponentFighter = Cast<IFighter>(Source.Get());
+	AFighterCharacter *Fighter = Cast<AFighterCharacter>(Actor.Get());
+	AFighterCharacter *OpponentFighter = Cast<AFighterCharacter>(Source.Get());
 	if (Fighter == nullptr)
 	{
 		//Behavior not defined for non-fighters.
@@ -167,16 +167,21 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		int res = OnClash(Source, Actor);
 		switch (res) {
 		case 1:
+			Fighter->StartStun(GetScaledTime(10), false);
+			OpponentFighter->Moveset->Parry();
 			break; // The Source won the clash, continue on.
 		case 0:
+			Fighter->StartStun(GetScaledTime(10), false);
+			OpponentFighter->Moveset->Parry();
 			return EHitResponse::HE_Clashed;
 			break;
 		case -1:
+			OpponentFighter->StartStun(GetScaledTime(10), false);
+			Fighter->Moveset->Parry();
 			return EHitResponse::HE_Missed;
 			break;
 		}
 	}
-
 	AfterHitstopSourceController = SourceController;
 	AfterHitstopActor = Actor;
 	AfterHitstopSource = Source;
@@ -1366,19 +1371,6 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 			ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
 			mFighterA->Clash();
 			mFighterB->Clash();
-		}
-		else
-		{
-			if (winner == mFighterA)
-			{
-				mFighterB->Knockdown();
-				mFighterA->Moveset->Parry();
-			}
-			else if (winner == mFighterB)
-			{
-				mFighterA->Knockdown();
-				mFighterB->Moveset->Parry();
-			}
 		}
 
 		FTransform ImpactTransform = FTransform::Identity;

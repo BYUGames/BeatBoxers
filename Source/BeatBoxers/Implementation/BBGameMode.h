@@ -28,7 +28,7 @@ public:
 	TWeakObjectPtr<AActor> AfterHitstopSource;
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Hitstop Events"))
-	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType);
+	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType, bool WasBlocked);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Hitstop"))
 	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType);

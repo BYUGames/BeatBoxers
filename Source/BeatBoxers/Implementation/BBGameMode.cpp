@@ -171,9 +171,14 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			OpponentFighter->Moveset->Parry();
 			break; // The Source won the clash, continue on.
 		case 0:
-			Fighter->StartStun(GetScaledTime(10), false);
-			OpponentFighter->Moveset->Parry();
-			return EHitResponse::HE_Clashed;
+			if (Fighter->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack)
+			{
+				return EHitResponse::HE_Clashed;
+			}
+			else
+			{
+				return EHitResponse::HE_Missed;
+			}
 			break;
 		case -1:
 			OpponentFighter->StartStun(GetScaledTime(10), false);
@@ -182,6 +187,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			break;
 		}
 	}
+
 	AfterHitstopSourceController = SourceController;
 	AfterHitstopActor = Actor;
 	AfterHitstopSource = Source;
@@ -1305,6 +1311,7 @@ void ABBGameMode::PushMusicBalance()
 
 bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActor> ActorB)
 {
+
 	if (ActorA.IsValid() && ActorB.IsValid())
 	{
 		IFighter* mFighterA = Cast<IFighter>(ActorA.Get());
@@ -1328,6 +1335,7 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 				Hitbox,
 				ActorsToIgnore
 			);
+			
 			if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
 			{
 				ActorsToIgnore.Empty();
@@ -1350,6 +1358,8 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 					return true;
 				}
 			}
+			
+
 		}
 	}
 	return false;
@@ -1367,36 +1377,43 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 
 		if (winner == nullptr)
 		{
-			ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
-			ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
-			mFighterA->Clash();
-			mFighterB->Clash();
+			if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack)
+			{
+				ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
+				ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
+				mFighterA->Clash();
+				mFighterB->Clash();
+
+				FTransform ImpactTransform = FTransform::Identity;
+				ImpactTransform.SetTranslation((FighterA.Get()->GetActorLocation() + FighterB.Get()->GetActorLocation()) / 2.f);
+				FTransform RelativeTransform = DefaultClashImpact.SFX.RelativeTransform * ImpactTransform;
+
+				if (DefaultClashImpact.SFX.ParticleSystem != nullptr)
+				{
+					UGameplayStatics::SpawnEmitterAtLocation(
+						GetWorld(),
+						DefaultClashImpact.SFX.ParticleSystem,
+						RelativeTransform
+					);
+				}
+				if (DefaultClashImpact.SFX.SoundCue != nullptr)
+				{
+					UGameplayStatics::SpawnSoundAtLocation(
+						GetWorld(),
+						DefaultClashImpact.SFX.SoundCue,
+						RelativeTransform.GetLocation(),
+						RelativeTransform.GetRotation().Rotator()
+					);
+				}
+			}
 		}
 
-		FTransform ImpactTransform = FTransform::Identity;
-		ImpactTransform.SetTranslation((FighterA.Get()->GetActorLocation() + FighterB.Get()->GetActorLocation()) / 2.f);
-		FTransform RelativeTransform = DefaultClashImpact.SFX.RelativeTransform * ImpactTransform;
-			
-		if (DefaultClashImpact.SFX.ParticleSystem != nullptr)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(),
-				DefaultClashImpact.SFX.ParticleSystem,
-				RelativeTransform
-			);
-		}
-		if (DefaultClashImpact.SFX.SoundCue != nullptr)
-		{
-			UGameplayStatics::SpawnSoundAtLocation(
-				GetWorld(),
-				DefaultClashImpact.SFX.SoundCue,
-				RelativeTransform.GetLocation(),
-				RelativeTransform.GetRotation().Rotator()
-			);
-		}
 
-		if (winner == mFighterA) return 1;
-		if (winner == mFighterB) return -1;
+
+		if (winner == mFighterA) 
+			return 1; 
+		if (winner == mFighterB) 
+			return -1;
 		return 0;
 	}
 	else
@@ -1415,6 +1432,9 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 	{
 		UE_LOG(LogClashing, Warning, TEXT("ABBGameMode::DetermineClashWinner given a None for a RPSCategory for one or more fighters."));
 	}
+	//if (FighterA_RPSCategory == ){
+	//	UE_LOG(LogClashing, Warning, TEXT("player 1 %s"));
+	//}
 
 	int winner = GetRPSWinner(FighterA_RPSCategory, FighterB_RPSCategory);
 	switch (winner)

@@ -179,6 +179,14 @@ int GetRPSWinner(ERPSType a, ERPSType b)
 		case ERPSType::RPS_Block:
 			return 1;
 		}
+	case ERPSType::RPS_Block:
+		switch (b)
+		{
+		case ERPSType::RPS_Grab:
+			return 2;
+		case ERPSType::RPS_Attack:
+			return 1;
+		}
 	}
 	return 0;
 }

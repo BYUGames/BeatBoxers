@@ -127,6 +127,7 @@ protected:
 	IFighterState *MyFighterState;
 	IMoveset *MyMoveset;
 	FTimerHandle TimerHandle_InputBuffer;
+	FTimerHandle TimerHandle_ParryWait;
 	FBufferInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
 	IMusicBox *MyMusicBox;
@@ -139,6 +140,8 @@ protected:
 
 	void OnComboTimer();
 	float calcAccuracy();
+
+
 public:	
 	TSubclassOf<UInputParserState> CurrentStateClass;
 
@@ -181,5 +184,7 @@ public:
 
 	/** Gets the dircetion the Fighter is facing, return's 0 if MyFighter == nullptr */
 	float GetFighterFacing();
+
+	void ParryTimerEnd();
 };
 

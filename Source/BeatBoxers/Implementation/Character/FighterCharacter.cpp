@@ -760,7 +760,7 @@ void AFighterCharacter::MissBeat()
 
 void AFighterCharacter::SetAttackedThisBeat(bool setValue)
 {
-	AttackedThisBeat = true;
+	AttackedThisBeat = false;
 }
 
 bool AFighterCharacter::IsJumping()

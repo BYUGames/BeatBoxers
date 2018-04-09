@@ -92,20 +92,49 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{
-		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())
+		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || NewToken == EInputToken::IE_Block || MyFighter->HasAttackedThisBeat())
 		{
 			if (MyFighter->HasAttackedThisBeat()) {
 				bToken.accuracy = 0.5f;
 			}
 			SetInputBuffer(bToken);
+
+			if (NewToken == EInputToken::IE_Block) {
+				GetOwner()->GetWorldTimerManager().SetTimer(
+					TimerHandle_ParryWait,
+					this,
+					&UInputParserComponent::ParryTimerEnd,
+					.05,
+					false
+				);
+				return;
+			}
 		}
 		else if (MyMoveset != nullptr)
 		{
+			if (InputBuffer.token == EInputToken::IE_Block) {
+				FBufferInputToken bToken;
+				bToken.token = EInputToken::IE_None;
+				bToken.accuracy = 0;
+
+				SetInputBuffer(bToken);
+			}
 			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
 }
 
+
+void UInputParserComponent::ParryTimerEnd() {
+	if (InputBuffer.token == EInputToken::IE_Block && !MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && !MyFighter->HasAttackedThisBeat())
+	{
+		FBufferInputToken BufferToken = InputBuffer;
+		InputBuffer.token = EInputToken::IE_None;
+		if (!MyFighterState->IsStunned()) {
+			MyMoveset->ReceiveInputToken(BufferToken);
+		}
+	}
+}
 
 float UInputParserComponent::calcAccuracy()
 {
@@ -132,6 +161,7 @@ void UInputParserComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighter
 	}
 	else
 	{
+		
 		MyFighterWorld = Cast<IFighterWorld>(FighterWorld.Get());
 		if (MyFighterWorld == nullptr)
 		{
@@ -208,19 +238,7 @@ void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 void UInputParserComponent::OnControlReturned()
 {
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned, input buffer = %s."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), InputBuffer.token));
-	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_InputBuffer))
-	{
-		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_InputBuffer);
-		if (MyMoveset != nullptr && InputBuffer.token != EInputToken::IE_None)
-		{
-			// Preventing infinite loops.
-			FBufferInputToken BufferToken = InputBuffer;
-			InputBuffer.token = EInputToken::IE_None;
-			if(!MyFighterState->IsStunned()){
-				MyMoveset->ReceiveInputToken(BufferToken);
-			}
-		}
-	}
+	PushInputToken(InputBuffer.token);
 }
 
 

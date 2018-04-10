@@ -97,8 +97,9 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			if (MyFighter->HasAttackedThisBeat()) {
 				bToken.accuracy = 0.5f;
 			}
-			SetInputBuffer(bToken);
-
+			if (NewToken != EInputToken::IE_Medium) {
+				SetInputBuffer(bToken);
+			}
 			if (NewToken == EInputToken::IE_Block) {
 				GetOwner()->GetWorldTimerManager().SetTimer(
 					TimerHandle_ParryWait,

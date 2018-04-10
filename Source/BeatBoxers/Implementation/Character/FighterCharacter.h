@@ -42,6 +42,19 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool InAir;
 
+	IFighter* GetSelfAsFighter();
+	const IFighter* GetSelfAsFighter() const;
+	IFighterState* GetFighterState();
+	const IFighterState* GetFighterState() const;
+	IMoveset* GetMoveset();
+	const IMoveset* GetMoveset() const;
+	IInputParser* GetInputParser();
+	const IInputParser* GetInputParser() const;
+	ISoloTracker* GetSoloTracker();
+	const ISoloTracker* GetSoloTracker() const;
+	IFighterWorld* GetFighterWorld();
+	const IFighterWorld* GetFighterWorld() const;
+
 protected:
 	IFighterState *MyFighterState;
 	TWeakObjectPtr<AActor> MyOpponent;
@@ -63,19 +76,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	IFighter* GetSelfAsFighter();
-	const IFighter* GetSelfAsFighter() const;
-	IFighterState* GetFighterState();
-	const IFighterState* GetFighterState() const;
-	IMoveset* GetMoveset();
-	const IMoveset* GetMoveset() const;
-	IInputParser* GetInputParser();
-	const IInputParser* GetInputParser() const;
-	ISoloTracker* GetSoloTracker();
-	const ISoloTracker* GetSoloTracker() const;
-	IFighterWorld* GetFighterWorld();
-	const IFighterWorld* GetFighterWorld() const;
 
 	void InputAxisHorizontal(float amount);
 	void InputAxisVertical(float amount);

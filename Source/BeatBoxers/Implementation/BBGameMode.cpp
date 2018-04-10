@@ -165,6 +165,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	{
 		UE_LOG(LogClashing, Log, TEXT("Clash detected between %s and %s."), *Actor.Get()->GetName(), *Source.Get()->GetName());
 		int res = OnClash(Source, Actor);
+
 		switch (res) {
 		case 1:
 			Fighter->StartStun(GetScaledTime(10), false);
@@ -196,6 +197,10 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	if (Hit.StunLength > 0)
 	{
+		if (Fighter != nullptr)
+		{
+			Fighter->StopAnimMontage();
+		}
 		Fighter->StartStun(GetScaledTime(Hit.StunLength), WasBlocked);
 	}
 
@@ -215,6 +220,11 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 void ABBGameMode::HitstopEvents_Implementation(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType, bool WasBlocked)
 {
 	EventsAfterHitstop(DamageType, Hit, Block, Accuracy, RPSType);
+}
+
+void ABBGameMode::ParryHitstop_Implementation(int WinnerIndex)
+{
+	//EventsAfterParry();
 }
 
 void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType)
@@ -1311,11 +1321,14 @@ void ABBGameMode::PushMusicBalance()
 
 bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActor> ActorB)
 {
-
 	if (ActorA.IsValid() && ActorB.IsValid())
 	{
-		IFighter* mFighterA = Cast<IFighter>(ActorA.Get());
-		IFighter* mFighterB = Cast<IFighter>(ActorB.Get());
+		AFighterCharacter* mFighterA = Cast<AFighterCharacter>(ActorA.Get());
+		AFighterCharacter* mFighterB = Cast<AFighterCharacter>(ActorB.Get());
+
+		Cast<UFighterStateComponent>(mFighterA->GetFighterState())->PlayExecutionAnimation();
+		Cast<UFighterStateComponent>(mFighterB->GetFighterState())->PlayExecutionAnimation();
+
 		if (mFighterA != nullptr && mFighterB != nullptr
 			&& mFighterA->CanClash() && mFighterB->CanClash())
 		{
@@ -1375,6 +1388,10 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 		IFighter* winner = DetermineClashWinner(mFighterA, mFighterB);
 		// Passes the fighters themselves as the source so the clash impact will be relative to their facing.
 
+		FTransform ImpactTransform = FTransform::Identity;
+		ImpactTransform.SetTranslation((FighterA.Get()->GetActorLocation() + FighterB.Get()->GetActorLocation()) / 2.f);
+		FTransform RelativeTransform = DefaultClashImpact.SFX.RelativeTransform * ImpactTransform;
+
 		if (winner == nullptr)
 		{
 			if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack)
@@ -1384,9 +1401,7 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 				mFighterA->Clash();
 				mFighterB->Clash();
 
-				FTransform ImpactTransform = FTransform::Identity;
-				ImpactTransform.SetTranslation((FighterA.Get()->GetActorLocation() + FighterB.Get()->GetActorLocation()) / 2.f);
-				FTransform RelativeTransform = DefaultClashImpact.SFX.RelativeTransform * ImpactTransform;
+
 
 				if (DefaultClashImpact.SFX.ParticleSystem != nullptr)
 				{
@@ -1407,7 +1422,18 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 				}
 			}
 		}
-
+		else if (winner->GetFighterHitbox().RPSCategory == ERPSType::RPS_Block){
+			ParryHitstop(winner->GetIndex());//EventsAfterparry
+			if (ParryClashImpact.SFX.SoundCue != nullptr)
+			{
+				UGameplayStatics::SpawnSoundAtLocation(
+					GetWorld(),
+					ParryClashImpact.SFX.SoundCue,
+					RelativeTransform.GetLocation(),
+					RelativeTransform.GetRotation().Rotator()
+				);
+			}
+		}
 
 
 		if (winner == mFighterA) 

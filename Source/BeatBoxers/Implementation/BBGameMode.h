@@ -33,6 +33,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Hitstop"))
 	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType);
 
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Parry Hitstop"))
+	void ParryHitstop(int WinnerIndex);
+
+	//UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Parry"))
+	//void EventsAfterParry();
+
 	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HitscanDistanceConstant;
@@ -62,6 +68,10 @@ public:
 	/** Defines the Effects of a Clash. Needs to always be relative. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FImpactData DefaultClashImpact;
+
+	/** Defines the Effects of a parry. Needs to always be relative. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FImpactData ParryClashImpact;
 
 	/** Round time in seconds. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

@@ -55,11 +55,12 @@ void UFretboardWidget::OnNotesCleared()
 
 void UFretboardWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
+	/*
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	if (MyFretboard != nullptr)
 	{
-		const TMap<int, FNoteData>& FretboardNotes = MyFretboard->GetAllNotes();
+		const TMap<int, FNoteData>& FretboardNotes = MyFretboard->GetAllNotes(); // this line fails due to access violation
 		for (TPair<int, FNoteData> NotePair : FretboardNotes)
 		{
 			UFretboardNoteWidget **pNoteWidget = Notes.Find(NotePair.Key);
@@ -78,6 +79,7 @@ void UFretboardWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 			}
 		}
 	}
+	*/
 }
 
 int UFretboardWidget::BindToFretboard(UObject* Fretboard)

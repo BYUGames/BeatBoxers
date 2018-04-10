@@ -295,6 +295,10 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
+	if (Token == EInputToken::IE_None) {
+		return;
+	}
+
 	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{

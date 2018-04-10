@@ -1326,9 +1326,6 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 		AFighterCharacter* mFighterA = Cast<AFighterCharacter>(ActorA.Get());
 		AFighterCharacter* mFighterB = Cast<AFighterCharacter>(ActorB.Get());
 
-		Cast<UFighterStateComponent>(mFighterA->GetFighterState())->PlayExecutionAnimation();
-		Cast<UFighterStateComponent>(mFighterB->GetFighterState())->PlayExecutionAnimation();
-
 		if (mFighterA != nullptr && mFighterB != nullptr
 			&& mFighterA->CanClash() && mFighterB->CanClash())
 		{
@@ -1368,6 +1365,8 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 				);
 				if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
 				{
+					Cast<UFighterStateComponent>(mFighterA->GetFighterState())->PlayExecutionAnimation();
+					Cast<UFighterStateComponent>(mFighterB->GetFighterState())->PlayExecutionAnimation();
 					return true;
 				}
 			}

@@ -92,50 +92,20 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
 	if (MyFighterState != nullptr)
 	{
-		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || NewToken == EInputToken::IE_Block || MyFighter->HasAttackedThisBeat())
+		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || MyFighter->HasAttackedThisBeat())
 		{
 			if (MyFighter->HasAttackedThisBeat()) {
 				bToken.accuracy = 0.5f;
 			}
-			if (NewToken != EInputToken::IE_Medium) {
-				SetInputBuffer(bToken);
-			}
-			if (NewToken == EInputToken::IE_Block) {
-				GetOwner()->GetWorldTimerManager().SetTimer(
-					TimerHandle_ParryWait,
-					this,
-					&UInputParserComponent::ParryTimerEnd,
-					.05,
-					false
-				);
-				return;
-			}
+			SetInputBuffer(bToken);
 		}
 		else if (MyMoveset != nullptr)
 		{
-			if (InputBuffer.token == EInputToken::IE_Block) {
-				FBufferInputToken bToken;
-				bToken.token = EInputToken::IE_None;
-				bToken.accuracy = 0;
-
-				SetInputBuffer(bToken);
-			}
 			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
 }
 
-
-void UInputParserComponent::ParryTimerEnd() {
-	if (InputBuffer.token == EInputToken::IE_Block && !MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && !MyFighter->HasAttackedThisBeat())
-	{
-		FBufferInputToken BufferToken = InputBuffer;
-		InputBuffer.token = EInputToken::IE_None;
-		if (!MyFighterState->IsStunned()) {
-			MyMoveset->ReceiveInputToken(BufferToken);
-		}
-	}
-}
 
 float UInputParserComponent::calcAccuracy()
 {

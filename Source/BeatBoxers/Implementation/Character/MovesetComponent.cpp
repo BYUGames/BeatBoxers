@@ -479,5 +479,5 @@ void UMovesetComponent::Parry()
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid parry move state!"), *GetNameSafe(GetOwner()));
 		return;
 	}
-	SetState(ParryState);
+	GotoState(ParryState);
 }

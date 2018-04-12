@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+#include "PaperFlipbookComponent.h"
 #include "BeatBoxersStructs.generated.h"
 
 template<typename TEnum>
@@ -472,6 +473,26 @@ struct FMoveAnimation : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAnimMontage *ExecutionAnimMontage;
+};
+
+USTRUCT(BlueprintType)
+struct FMoveFlipbookAnimation : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPaperFlipbook *AnimFlipbook;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float FlipbookOffsetHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float FlipbookScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float FlipbookPlayRate;
+
+
 };
 
 USTRUCT(BlueprintType)

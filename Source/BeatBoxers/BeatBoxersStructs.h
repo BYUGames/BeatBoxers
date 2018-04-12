@@ -107,6 +107,8 @@ enum class EInputToken : uint8
 {
 	IE_None			UMETA(DisplayName = "None"),
 	IE_Light		UMETA(DisplayName = "Light"),
+	IE_LightForward	UMETA(DisplayName = "LightForward"),
+	IE_LightBack	UMETA(DisplayName = "LightBack"),
 	IE_LightCrouch	UMETA(DisplayName = "LightCrouch"),
 	IE_Medium		UMETA(DisplayName = "Medium"),
 	IE_MediumCrouch	UMETA(DisplayName = "MediumCrouch"),
@@ -131,6 +133,8 @@ enum class ENoteType : uint8
 {
 	NE_None			UMETA(DisplayName = "None"),
 	NE_Light		UMETA(DisplayName = "Light"),
+	NE_LightForward	UMETA(DisplayName = "LightForward"),
+	NE_LightBack	UMETA(DisplayName = "LightBack"),
 	NE_LightCrouch	UMETA(DisplayName = "LightCrouch"),
 	NE_Medium		UMETA(DisplayName = "Medium"),
 	NE_MediumCrouch	UMETA(DisplayName = "MediumCrouch"),
@@ -141,6 +145,7 @@ enum class ENoteType : uint8
 	NE_Left			UMETA(DisplayName = "Left"),
 	NE_Right		UMETA(DisplayName = "Right")
 };
+
 
 USTRUCT(BlueprintType)
 struct FInputTokenBools
@@ -153,6 +158,12 @@ struct FInputTokenBools
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Light;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool LightForward;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool LightBack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool LightCrouch;

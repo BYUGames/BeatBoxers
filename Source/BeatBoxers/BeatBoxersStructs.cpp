@@ -73,6 +73,12 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_LightCrouch:
 		if (LightCrouch) return true;
 		break;
+	case EInputToken::IE_LightForward:
+		if (LightForward) return true;
+		break;
+	case EInputToken::IE_LightBack:
+		if (LightBack) return true;
+		break;
 	case EInputToken::IE_Medium:
 		if (Medium) return true;
 		break;

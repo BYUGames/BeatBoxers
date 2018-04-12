@@ -30,6 +30,8 @@ public:
 	virtual void InputActionDown(UInputParserComponent *Parser);
 	virtual void InputActionUp(UInputParserComponent *Parser);
 	virtual void InputActionLight(UInputParserComponent *Parser);
+	virtual void InputActionLightForward(UInputParserComponent *Parser);
+	virtual void InputActionLightBack(UInputParserComponent *Parser);
 	virtual void InputActionLightCrouch(UInputParserComponent *Parser);
 	virtual void InputActionMedium(UInputParserComponent *Parser);
 	virtual void InputActionMediumCrouch(UInputParserComponent *Parser);
@@ -53,6 +55,8 @@ public:
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightForward(UInputParserComponent *Parser) override;;
+	virtual void InputActionLightBack(UInputParserComponent *Parser) override;;
 	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;
@@ -76,6 +80,8 @@ public:
 	virtual bool IsComplex() override;
 	virtual void InputActionLeft(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightForward(UInputParserComponent *Parser) override;;
+	virtual void InputActionLightBack(UInputParserComponent *Parser) override;;
 	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;
@@ -95,6 +101,8 @@ public:
 	virtual bool IsComplex() override;
 	virtual void InputActionRight(UInputParserComponent *Parser) override;
 	virtual void InputActionLight(UInputParserComponent *Parser) override;
+	virtual void InputActionLightForward(UInputParserComponent *Parser) override;;
+	virtual void InputActionLightBack(UInputParserComponent *Parser) override;;
 	virtual void InputActionLightCrouch(UInputParserComponent *Parser) override;
 	virtual void InputActionMedium(UInputParserComponent *Parser) override;
 	virtual void InputActionMediumCrouch(UInputParserComponent *Parser) override;

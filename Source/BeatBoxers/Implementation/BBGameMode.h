@@ -34,10 +34,10 @@ public:
 	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType);
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Parry Hitstop"))
-	void ParryHitstop(int WinnerIndex);
+	void ParryHitstop(int WinnerIndex, AFighterCharacter* winner);
 
-	//UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Parry"))
-	//void EventsAfterParry();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Parry"))
+	void EventsAfterParry(AFighterCharacter* ParryGuy);
 
 	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

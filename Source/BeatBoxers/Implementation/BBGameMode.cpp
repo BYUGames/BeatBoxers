@@ -169,7 +169,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		switch (res) {
 		case 1:
 			Fighter->StartStun(GetScaledTime(10), false);
-			OpponentFighter->Moveset->Parry();
+			//OpponentFighter->Moveset->Parry();
 			break; // The Source won the clash, continue on.
 		case 0:
 			if (Fighter->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack)
@@ -183,7 +183,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			break;
 		case -1:
 			OpponentFighter->StartStun(GetScaledTime(10), false);
-			Fighter->Moveset->Parry();
+			//Fighter->Moveset->Parry();
 			return EHitResponse::HE_Missed;
 			break;
 		}
@@ -222,9 +222,14 @@ void ABBGameMode::HitstopEvents_Implementation(EFighterDamageType DamageType, FI
 	EventsAfterHitstop(DamageType, Hit, Block, Accuracy, RPSType);
 }
 
-void ABBGameMode::ParryHitstop_Implementation(int WinnerIndex)
+void ABBGameMode::ParryHitstop_Implementation(int WinnerIndex, AFighterCharacter* winner)
 {
-	//EventsAfterParry();
+	EventsAfterParry(winner);
+}
+
+void ABBGameMode::EventsAfterParry(AFighterCharacter* winner)
+{
+	winner->Moveset->Parry();
 }
 
 void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType)
@@ -1422,7 +1427,7 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 			}
 		}
 		else if (winner->GetFighterHitbox().RPSCategory == ERPSType::RPS_Block){
-			ParryHitstop(winner->GetIndex());//EventsAfterparry
+			ParryHitstop(winner->GetIndex(), Cast<AFighterCharacter>(winner));//EventsAfterparry
 			if (ParryClashImpact.SFX.SoundCue != nullptr)
 			{
 				UGameplayStatics::SpawnSoundAtLocation(

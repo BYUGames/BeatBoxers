@@ -283,11 +283,41 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 			AdjustedAmount = 0;
 	}
 
+	if(AdjustedAmount > -1)
+		HasDashedLeft = false;
+	if (AdjustedAmount < 1)
+		HasDashedRight = false;
+
+
 	HorizontalMovement = AdjustedAmount;
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(AdjustedAmount);
 		MyFighterState->SetHorizontalDirection(AdjustedAmount);
+	}
+
+	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
+		HasDashedLeft = true;
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+	}
+
+	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
+		HasDashedLeft = true;
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
 	}
 
 }
@@ -360,6 +390,12 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 			AdjustedAmount = 0;
 	}
 
+	if (AdjustedAmount > -1)
+		HasDashedLeft = false;
+	if (AdjustedAmount < 1)
+		HasDashedRight = false;
+
+
 	HorizontalMovement = AdjustedAmount;
 	if (MyFighterState != nullptr)
 	{
@@ -367,6 +403,29 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		MyFighterState->SetHorizontalDirection(AdjustedAmount);
 	}
 
+	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
+		HasDashedLeft = true;
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+	}
+
+	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
+		HasDashedLeft = true;
+		if (GetFighterFacing() > 0)
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		}
+		else
+		{
+			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		}
+	}
 }
 
 void UInputParserComponent::InputAxisVertical(float Amount)
@@ -435,17 +494,6 @@ void UInputParserComponent::InputActionLeft(bool IsUp)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionLeft(this);
 	}
-
-	if (HoldingBlock) {
-		if (GetFighterFacing() > 0)
-		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
-		}
-		else
-		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
-		}
-	}
 }
 
 
@@ -455,17 +503,6 @@ void UInputParserComponent::InputActionRight(bool IsUp)
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionRight(this);
-	}
-
-	if (HoldingBlock) {
-		if (GetFighterFacing() > 0)
-		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
-		}
-		else
-		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
-		}
 	}
 }
 

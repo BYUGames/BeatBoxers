@@ -152,7 +152,8 @@ protected:
 
 public:	
 	TSubclassOf<UInputParserState> CurrentStateClass;
-
+	bool HasDashedLeft;
+	bool HasDashedRight;
 	/** IInputParser implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
 	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;

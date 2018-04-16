@@ -42,6 +42,9 @@ public:
 	/** Receives controller input for the horizontal axis. */
 	virtual void InputAxisHorizontal(float Amount) = 0;
 
+	/** Receives controller input for the horizontal axis for player2. */
+	virtual void InputAxisHorizontalP2(float Amount) = 0;
+
 	/** Receives controller input for the vertical axis. */
 	virtual void InputAxisVertical(float Amount) = 0;
 

@@ -217,6 +217,7 @@ void UInputParserComponent::OnControlReturned()
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {
+
 	bool input360axis = false;
 	float defaultHorizontal = 0;
 	float P1360axisUpValue = 0;
@@ -227,6 +228,7 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	float P1360axisBottomLeftValue = 0;
 	float P1360axisLeftValue = 0;
 	float P1360axisTopLeftValue = 0;
+
 	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
 		input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360Axis;
 		defaultHorizontal = GetWorld()->GetGameInstance<UBBGameInstance>()->P1HorizontalDefaultValue;
@@ -278,6 +280,83 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		else if (Amount < (defaultHorizontal - .1)) 
 			AdjustedAmount = -1;
 		else 
+			AdjustedAmount = 0;
+	}
+
+	HorizontalMovement = AdjustedAmount;
+	if (MyFighterState != nullptr)
+	{
+		MyFighterState->SetMoveDirection(AdjustedAmount);
+		MyFighterState->SetHorizontalDirection(AdjustedAmount);
+	}
+
+}
+
+void UInputParserComponent::InputAxisHorizontalP2(float Amount)
+{
+	
+	bool P2input360axis = false;
+	float P2defaultHorizontal = 0;
+	float P2360axisUpValue = 0;
+	float P2360axisUpRightValue = 0;
+	float P2360axisRightValue = 0;
+	float P2360axisBottomRightValue = 0;
+	float P2360axisBottomValue = 0;
+	float P2360axisBottomLeftValue = 0;
+	float P2360axisLeftValue = 0;
+	float P2360axisTopLeftValue = 0;
+
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
+		P2input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P21360Axis;
+		P2defaultHorizontal = GetWorld()->GetGameInstance<UBBGameInstance>()->P2HorizontalDefaultValue;
+		P2360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpValue;
+		P2360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpRightValue;
+		P2360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisRightValue;
+		P2360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomRightValue;
+		P2360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomValue;
+		P2360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomLeftValue;
+		P2360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisLeftValue;
+		P2360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisTopLeftValue;
+	}
+	float AdjustedAmount = P2defaultHorizontal;
+
+
+	if (P2input360axis)
+	{
+		float closeAmount = Amount - P2360axisUpValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - P2360axisUpRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - P2360axisRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - P2360axisBottomRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - P2360axisBottomValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 0;
+		closeAmount = Amount - P2360axisBottomLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - P2360axisLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - P2360axisTopLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - P2defaultHorizontal;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 0;
+	}
+	else {
+		if (Amount > (P2defaultHorizontal + .1))
+			AdjustedAmount = 1;
+		else if (Amount < (P2defaultHorizontal - .1))
+			AdjustedAmount = -1;
+		else
 			AdjustedAmount = 0;
 	}
 

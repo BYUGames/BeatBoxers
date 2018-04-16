@@ -78,6 +78,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void InputAxisHorizontal(float amount);
+	void InputAxisHorizontalP2(float amount);
 	void InputAxisVertical(float amount);
 	void InputActionUp();
 	void InputActionLeft();

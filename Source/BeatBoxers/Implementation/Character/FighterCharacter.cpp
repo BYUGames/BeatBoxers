@@ -162,7 +162,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 	}
 	else{
-		InputComponent->BindAxis("HorizontalP2", this, &AFighterCharacter::InputAxisHorizontal);
+		InputComponent->BindAxis("HorizontalP2", this, &AFighterCharacter::InputAxisHorizontalP2);
 		InputComponent->BindAxis("VerticalP2", this, &AFighterCharacter::InputAxisVertical);
 		InputComponent->BindAction("UpP2", IE_Pressed, this, &AFighterCharacter::InputActionUp);
 		InputComponent->BindAction("LeftP2", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
@@ -512,6 +512,14 @@ void AFighterCharacter::InputAxisHorizontal(float amount)
 	if (GetInputParser() != nullptr)
 	{
 		GetInputParser()->InputAxisHorizontal(amount);
+	}
+}
+
+void AFighterCharacter::InputAxisHorizontalP2(float amount)
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputAxisHorizontalP2(amount);
 	}
 }
 

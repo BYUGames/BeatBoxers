@@ -26,5 +26,36 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FNewGameData NewGameData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1HorizontalDefaultValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P2HorizontalDefaultValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1VerticalDefaultValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P2VerticalDefaultValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisUpValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisUpRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisBottomRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisBottomValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisBottomLeftValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisLeftValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float P1360axisTopLeftValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool P1360Axis;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool P21360Axis;
+
 	virtual void Init() override;
 };

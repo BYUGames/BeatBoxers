@@ -260,6 +260,7 @@ bool UFighterStateComponent::IsMidMove() const
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
 {
+	Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
 	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UFighterStateComponent starting new move window with accuracy %f."), *GetNameSafe(GetOwner()), Accuracy);
 	CurrentWindow = Window;
@@ -406,7 +407,10 @@ void UFighterStateComponent::Jump()
 void UFighterStateComponent::Block()
 {
 	bIsBlockButtonDown = true;
-	Cast<AFighterCharacter>(MyFighter)->BlockEffects();
+	if (!bIsKnockedDown && !IsStunned())
+	{
+		Cast<AFighterCharacter>(MyFighter)->BlockEffects();
+	}
 }
 
 void UFighterStateComponent::StopBlock()
@@ -691,6 +695,12 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 			MyFighter->SetFighterCollisions(true);
 		}
 	}
+	else {
+		if (!bIsKnockedDown && !IsStunned() && bIsBlockButtonDown)
+		{
+			Cast<AFighterCharacter>(MyFighter)->BlockEffects();
+		}
+	}
 }
 
 void UFighterStateComponent::PerformHitboxScan()
@@ -836,6 +846,8 @@ void UFighterStateComponent::OnStunFinished()
 	EndDDR();
 	if (!bIsKnockedDown)
 	{
+		if (bIsBlockButtonDown)
+			Cast<AFighterCharacter>(MyFighter)->BlockEffects();
 		if (MyInputParser != nullptr)
 		{
 			MyInputParser->OnControlReturned();
@@ -1001,6 +1013,7 @@ void UFighterStateComponent::OnSoloEnd()
 
 void UFighterStateComponent::Knockdown()
 {
+	Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 	if (!bIsKnockedDown)
 	{
 		TimesHitThisKnockdown = 0;
@@ -1135,6 +1148,7 @@ UBasicFretboard* UFighterStateComponent::GetFretboard()
 
 bool UFighterStateComponent::Grabbed(float Duration)
 {
+	//Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 	if (bGrabbed)
 		return false;
 	if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)

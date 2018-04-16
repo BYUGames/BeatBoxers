@@ -36,6 +36,11 @@ void UMovesetComponent::OnPostWaitExpired()
 
 void UMovesetComponent::GotoDefaultState()
 {
+	if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsKnockedDown() && !Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned() && Cast<AFighterCharacter>(MyFighter)->FighterState->IsBlocking())
+	{
+		Cast<AFighterCharacter>(MyFighter)->BlockEffects();
+	}
+
 	if (DefaultState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Fatal, TEXT("%s UMovesetComponent has no valid default move state!"), *GetNameSafe(GetOwner()));

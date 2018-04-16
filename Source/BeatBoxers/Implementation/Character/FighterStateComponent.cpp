@@ -406,11 +406,13 @@ void UFighterStateComponent::Jump()
 void UFighterStateComponent::Block()
 {
 	bIsBlockButtonDown = true;
+	Cast<AFighterCharacter>(MyFighter)->BlockEffects();
 }
 
 void UFighterStateComponent::StopBlock()
 {
 	bIsBlockButtonDown = false;
+	Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 }
 
 void UFighterStateComponent::OnLand()

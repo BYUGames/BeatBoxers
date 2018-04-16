@@ -266,5 +266,9 @@ public:
 	UFUNCTION()
 	void OnRoundEnd(int Winner);
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Block Effects"))
+	void BlockEffects();
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Stop Block Effects"))
+	void StopBlockEffects();
 };

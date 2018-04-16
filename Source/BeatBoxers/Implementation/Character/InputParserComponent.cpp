@@ -309,7 +309,7 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	}
 
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
-		HasDashedLeft = true;
+		HasDashedRight = true;
 		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
@@ -416,7 +416,7 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 	}
 
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
-		HasDashedLeft = true;
+		HasDashedRight = true;
 		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);

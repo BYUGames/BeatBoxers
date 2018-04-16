@@ -2,6 +2,7 @@
 
 #include "InputParserComponent.h"
 #include "GameFramework/Actor.h"
+#include "../BBGameInstance.h"
 #include "FighterCharacter.h"
 
 // Sets default values for this component's properties
@@ -216,13 +217,75 @@ void UInputParserComponent::OnControlReturned()
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {
+	bool input360axis = false;
+	float defaultHorizontal = 0;
+	float P1360axisUpValue = 0;
+	float P1360axisUpRightValue = 0;
+	float P1360axisRightValue = 0;
+	float P1360axisBottomRightValue = 0;
+	float P1360axisBottomValue = 0;
+	float P1360axisBottomLeftValue = 0;
+	float P1360axisLeftValue = 0;
+	float P1360axisTopLeftValue = 0;
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
+		input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360Axis;
+		defaultHorizontal = GetWorld()->GetGameInstance<UBBGameInstance>()->P1HorizontalDefaultValue;
+		P1360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisUpValue;
+		P1360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisUpRightValue;
+		P1360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisRightValue;
+		P1360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomRightValue;
+		P1360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomValue;
+		P1360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomLeftValue;
+		P1360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisLeftValue;
+		P1360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisTopLeftValue;
+	}
+	float AdjustedAmount = defaultHorizontal;
 
 
-	HorizontalMovement = Amount;
+	if (input360axis)
+	{
+		float closeAmount = Amount - P1360axisUpValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 1;
+		closeAmount = Amount - P1360axisUpRightValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 1;
+		closeAmount = Amount - P1360axisRightValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 1;
+		closeAmount = Amount - P1360axisBottomRightValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 1;
+		closeAmount = Amount - P1360axisBottomValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 0;
+		closeAmount = Amount - P1360axisBottomLeftValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = -1;
+		closeAmount = Amount - P1360axisLeftValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = -1;
+		closeAmount = Amount - P1360axisTopLeftValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = -1;
+		closeAmount = Amount - defaultHorizontal;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 0;
+	}
+	else {
+		if (Amount > (defaultHorizontal + .1)) 
+			AdjustedAmount = 1;
+		else if (Amount < (defaultHorizontal - .1)) 
+			AdjustedAmount = -1;
+		else 
+			AdjustedAmount = 0;
+	}
+
+	HorizontalMovement = AdjustedAmount;
 	if (MyFighterState != nullptr)
 	{
-		MyFighterState->SetMoveDirection(Amount);
-		MyFighterState->SetHorizontalDirection(Amount);
+		MyFighterState->SetMoveDirection(AdjustedAmount);
+		MyFighterState->SetHorizontalDirection(AdjustedAmount);
 	}
 
 }
@@ -394,6 +457,7 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 
 void UInputParserComponent::InputActionLight(bool IsUp)
 {
+	UE_LOG(LogUInputParser, Error, TEXT("light"));
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {

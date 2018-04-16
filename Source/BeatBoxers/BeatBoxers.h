@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Engine.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogBeatBoxers, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogBeatBoxersCriticalErrors, Log, All);

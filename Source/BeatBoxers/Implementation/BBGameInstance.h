@@ -53,6 +53,23 @@ public:
 	float P1360axisTopLeftValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisUpValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisUpRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisBottomRightValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisBottomValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisBottomLeftValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisLeftValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float P2360axisTopLeftValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool P1360Axis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool P21360Axis;

@@ -138,25 +138,49 @@ void AFighterCharacter::UpdateFacing()
 void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	InputComponent->BindAxis("Horizontal", this, &AFighterCharacter::InputAxisHorizontal);
-	InputComponent->BindAxis("Vertical", this, &AFighterCharacter::InputAxisVertical);
-	InputComponent->BindAction("Up", IE_Pressed, this, &AFighterCharacter::InputActionUp);
-	InputComponent->BindAction("Left", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
-	InputComponent->BindAction("Down", IE_Pressed, this, &AFighterCharacter::InputActionDown);
-	InputComponent->BindAction("Right", IE_Pressed, this, &AFighterCharacter::InputActionRight);
-	InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
-	InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
-	InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
-	InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
-	InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
-	InputComponent->BindAction("Special1", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
-	InputComponent->BindAction("Special2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
-	InputComponent->BindAction("Special3", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
-	InputComponent->BindAction("Dodge", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
-	InputComponent->BindAction("Super", IE_Pressed, this, &AFighterCharacter::InputActionSuper);
-	InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
-	InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
+	//if ( getstate== 0)
+	//GetFighterState()->
+	if (GetWorld()->GetFirstPlayerController() == Controller)
+	{
+		InputComponent->BindAxis("Horizontal", this, &AFighterCharacter::InputAxisHorizontal);
+		InputComponent->BindAxis("Vertical", this, &AFighterCharacter::InputAxisVertical);
+		InputComponent->BindAction("Up", IE_Pressed, this, &AFighterCharacter::InputActionUp);
+		InputComponent->BindAction("Left", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
+		InputComponent->BindAction("Down", IE_Pressed, this, &AFighterCharacter::InputActionDown);
+		InputComponent->BindAction("Right", IE_Pressed, this, &AFighterCharacter::InputActionRight);
+		InputComponent->BindAction("Light", IE_Pressed, this, &AFighterCharacter::InputActionLight);
+		InputComponent->BindAction("Medium", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
+		InputComponent->BindAction("Heavy", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
+		InputComponent->BindAction("Block", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
+		InputComponent->BindAction("Block", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
+		InputComponent->BindAction("Special1", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
+		InputComponent->BindAction("Special2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
+		InputComponent->BindAction("Special3", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
+		InputComponent->BindAction("Dodge", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
+		InputComponent->BindAction("Super", IE_Pressed, this, &AFighterCharacter::InputActionSuper);
+		InputComponent->BindAction("DashLeftButton", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
+		InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
+	}
+	else{
+		InputComponent->BindAxis("HorizontalP2", this, &AFighterCharacter::InputAxisHorizontal);
+		InputComponent->BindAxis("VerticalP2", this, &AFighterCharacter::InputAxisVertical);
+		InputComponent->BindAction("UpP2", IE_Pressed, this, &AFighterCharacter::InputActionUp);
+		InputComponent->BindAction("LeftP2", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
+		InputComponent->BindAction("DownP2", IE_Pressed, this, &AFighterCharacter::InputActionDown);
+		InputComponent->BindAction("RightP2", IE_Pressed, this, &AFighterCharacter::InputActionRight);
+		InputComponent->BindAction("LightP2", IE_Pressed, this, &AFighterCharacter::InputActionLight);
+		InputComponent->BindAction("MediumP2", IE_Pressed, this, &AFighterCharacter::InputActionMedium);
+		InputComponent->BindAction("HeavyP2", IE_Pressed, this, &AFighterCharacter::InputActionHeavy);
+		InputComponent->BindAction("BlockP2", IE_Pressed, this, &AFighterCharacter::InputActionBlock);
+		InputComponent->BindAction("BlockP2", IE_Released, this, &AFighterCharacter::InputActionStopBlock);
+		InputComponent->BindAction("Special1P2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial1);
+		InputComponent->BindAction("Special2P2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial2);
+		InputComponent->BindAction("Special3P2", IE_Pressed, this, &AFighterCharacter::InputActionSpecial3);
+		InputComponent->BindAction("DodgeP2", IE_Pressed, this, &AFighterCharacter::InputActionDodge);
+		InputComponent->BindAction("SuperP2", IE_Pressed, this, &AFighterCharacter::InputActionSuper);
+		InputComponent->BindAction("DashLeftButtonP2", IE_Pressed, this, &AFighterCharacter::InputActionDashLeftButton);
+		InputComponent->BindAction("DashRightButtonP2", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
+	}
 }
 
 

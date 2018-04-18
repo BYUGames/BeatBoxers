@@ -209,6 +209,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "WasHitBPEvents"))
+	void WasHitBPEvents();
+
 	/** InputOnBeatLogic will fire when the input is within the accuracy window*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Input On Beat Logic"))
 	void K2_InputOnBeatLogic();

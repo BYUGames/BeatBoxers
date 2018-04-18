@@ -212,6 +212,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	{
 		Fighter->Grabbed(Hit.StunLength);
 	}
+	Fighter->WasHitBPEvents();
 	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, Fighter->GetIndex(), RPSType, WasBlocked);
 
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;

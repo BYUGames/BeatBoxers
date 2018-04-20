@@ -217,7 +217,6 @@ void UInputParserComponent::OnControlReturned()
 
 void UInputParserComponent::InputAxisHorizontal(float Amount)
 {
-
 	bool input360axis = false;
 	float defaultHorizontal = 0;
 	float P1360axisUpValue = 0;
@@ -241,14 +240,14 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		P1360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisLeftValue;
 		P1360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisTopLeftValue;
 	}
-	float AdjustedAmount = defaultHorizontal;
+	float AdjustedAmount = 0;
 
 
 	if (input360axis)
 	{
 		float closeAmount = Amount - P1360axisUpValue;
 		if (fabs(closeAmount) < .01f) 
-			AdjustedAmount = 1;
+			AdjustedAmount = 0;
 		closeAmount = Amount - P1360axisUpRightValue;
 		if (fabs(closeAmount) < .01f) 
 			AdjustedAmount = 1;
@@ -288,8 +287,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (AdjustedAmount < 1)
 		HasDashedRight = false;
 
-
 	HorizontalMovement = AdjustedAmount;
+	UE_LOG(LogUInputParser, Error, TEXT("%f horizontal"), HorizontalMovement);
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(AdjustedAmount);
@@ -324,7 +323,6 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 
 void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 {
-	
 	bool P2input360axis = false;
 	float P2defaultHorizontal = 0;
 	float P2360axisUpValue = 0;
@@ -355,7 +353,7 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 	{
 		float closeAmount = Amount - P2360axisUpValue;
 		if (fabs(closeAmount) < .01f)
-			AdjustedAmount = 1;
+			AdjustedAmount = 0;
 		closeAmount = Amount - P2360axisUpRightValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;

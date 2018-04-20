@@ -1159,6 +1159,7 @@ bool UFighterStateComponent::Grabbed(float Duration)
 			Character->StopAnimMontage();
 		}
 	}
+	Cast<AFighterCharacter>(MyFighter)->attachToOpponent();
 	EndWindow(EWindowEnd::WE_Stunned);
 	bGrabbed = true;
 	GetOwner()->GetWorldTimerManager().SetTimer(
@@ -1174,6 +1175,7 @@ bool UFighterStateComponent::Grabbed(float Duration)
 void UFighterStateComponent::Released()
 {
 	bGrabbed = false;
+	Cast<AFighterCharacter>(MyFighter)->detachFromOpponent();
 }
 
 void UFighterStateComponent::PlayExecutionAnimation()

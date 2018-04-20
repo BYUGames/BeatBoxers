@@ -275,4 +275,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Stop Block Effects"))
 	void StopBlockEffects();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "attach to opponent"))
+	void attachToOpponent();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "detach from opponent"))
+	void detachFromOpponent();
 };

@@ -80,6 +80,7 @@ protected:
 	void InputAxisHorizontal(float amount);
 	void InputAxisHorizontalP2(float amount);
 	void InputAxisVertical(float amount);
+	void InputAxisVerticalP2(float amount);
 	void InputActionUp();
 	void InputActionLeft();
 	void InputActionDown();

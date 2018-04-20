@@ -288,7 +288,6 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		HasDashedRight = false;
 
 	HorizontalMovement = AdjustedAmount;
-	UE_LOG(LogUInputParser, Error, TEXT("%f horizontal"), HorizontalMovement);
 	if (MyFighterState != nullptr)
 	{
 		MyFighterState->SetMoveDirection(AdjustedAmount);
@@ -323,66 +322,66 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 
 void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 {
-	bool P2input360axis = false;
-	float P2defaultHorizontal = 0;
-	float P2360axisUpValue = 0;
-	float P2360axisUpRightValue = 0;
-	float P2360axisRightValue = 0;
-	float P2360axisBottomRightValue = 0;
-	float P2360axisBottomValue = 0;
-	float P2360axisBottomLeftValue = 0;
-	float P2360axisLeftValue = 0;
-	float P2360axisTopLeftValue = 0;
+	bool input360axis = false;
+	float defaultHorizontal = 0;
+	float player360axisUpValue = 0;
+	float player360axisUpRightValue = 0;
+	float player360axisRightValue = 0;
+	float player360axisBottomRightValue = 0;
+	float player360axisBottomValue = 0;
+	float player360axisBottomLeftValue = 0;
+	float player360axisLeftValue = 0;
+	float player360axisTopLeftValue = 0;
 
 	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
-		P2input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P21360Axis;
-		P2defaultHorizontal = GetWorld()->GetGameInstance<UBBGameInstance>()->P2HorizontalDefaultValue;
-		P2360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpValue;
-		P2360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpRightValue;
-		P2360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisRightValue;
-		P2360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomRightValue;
-		P2360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomValue;
-		P2360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomLeftValue;
-		P2360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisLeftValue;
-		P2360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisTopLeftValue;
+		input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P21360Axis;
+		defaultHorizontal = GetWorld()->GetGameInstance<UBBGameInstance>()->P2HorizontalDefaultValue;
+		player360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpValue;
+		player360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpRightValue;
+		player360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisRightValue;
+		player360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomRightValue;
+		player360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomValue;
+		player360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomLeftValue;
+		player360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisLeftValue;
+		player360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisTopLeftValue;
 	}
-	float AdjustedAmount = P2defaultHorizontal;
+	float AdjustedAmount = defaultHorizontal;
 
 
-	if (P2input360axis)
+	if (input360axis)
 	{
-		float closeAmount = Amount - P2360axisUpValue;
+		float closeAmount = Amount - player360axisUpValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
-		closeAmount = Amount - P2360axisUpRightValue;
+		closeAmount = Amount - player360axisUpRightValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
-		closeAmount = Amount - P2360axisRightValue;
+		closeAmount = Amount - player360axisRightValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
-		closeAmount = Amount - P2360axisBottomRightValue;
+		closeAmount = Amount - player360axisBottomRightValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
-		closeAmount = Amount - P2360axisBottomValue;
+		closeAmount = Amount - player360axisBottomValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
-		closeAmount = Amount - P2360axisBottomLeftValue;
+		closeAmount = Amount - player360axisBottomLeftValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
-		closeAmount = Amount - P2360axisLeftValue;
+		closeAmount = Amount - player360axisLeftValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
-		closeAmount = Amount - P2360axisTopLeftValue;
+		closeAmount = Amount - player360axisTopLeftValue;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
-		closeAmount = Amount - P2defaultHorizontal;
+		closeAmount = Amount - defaultHorizontal;
 		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
 	}
 	else {
-		if (Amount > (P2defaultHorizontal + .1))
+		if (Amount > (defaultHorizontal + .1))
 			AdjustedAmount = 1;
-		else if (Amount < (P2defaultHorizontal - .1))
+		else if (Amount < (defaultHorizontal - .1))
 			AdjustedAmount = -1;
 		else
 			AdjustedAmount = 0;
@@ -428,18 +427,82 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 
 void UInputParserComponent::InputAxisVertical(float Amount)
 {
+	bool input360axis = false;
+	float defaultVertical = 0;
+	float player360axisUpValue = 0;
+	float player360axisUpRightValue = 0;
+	float player360axisRightValue = 0;
+	float player360axisBottomRightValue = 0;
+	float player360axisBottomValue = 0;
+	float player360axisBottomLeftValue = 0;
+	float player360axisLeftValue = 0;
+	float player360axisTopLeftValue = 0;
+
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
+		input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360Axis;
+		defaultVertical = GetWorld()->GetGameInstance<UBBGameInstance>()->P1VerticalDefaultValue;
+		player360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisUpValue;
+		player360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisUpRightValue;
+		player360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisRightValue;
+		player360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomRightValue;
+		player360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomValue;
+		player360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisBottomLeftValue;
+		player360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisLeftValue;
+		player360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P1360axisTopLeftValue;
+	}
+	float AdjustedAmount = 0;
+
+
+	if (input360axis)
+	{
+		float closeAmount = Amount - player360axisUpValue;
+		if (fabs(closeAmount) < .01f) 
+			AdjustedAmount = 1;
+		closeAmount = Amount - player360axisUpRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - player360axisRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 0;
+		closeAmount = Amount - player360axisBottomRightValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - player360axisBottomValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - player360axisBottomLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = -1;
+		closeAmount = Amount - player360axisLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 0;
+		closeAmount = Amount - player360axisTopLeftValue;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 1;
+		closeAmount = Amount - defaultVertical;
+		if (fabs(closeAmount) < .01f)
+			AdjustedAmount = 0;
+	}
+	else {
+		if (Amount > (defaultVertical + .1))
+			AdjustedAmount = 1;
+		else if (Amount < (defaultVertical - .1))
+			AdjustedAmount = -1;
+		else
+			AdjustedAmount = 0;
+	}
+
+
+
 	if (MyFighterState != nullptr && !MyFighterState->IsInCrouchMove())
 	{
-		MyFighterState->SetVerticalDirection(Amount);
-		if (Amount < -.25f)
-		{
-			
+		MyFighterState->SetVerticalDirection(AdjustedAmount);
+		if (AdjustedAmount < 0) {
 			MyFighterState->SetWantsToCrouch(true);
 		}
-		else
-		{
+		else {
 			MyFighterState->SetWantsToCrouch(false);
-			if (Amount > 0.5f)
+			if (AdjustedAmount > 0)
 			{
 				MyFighterState->Jump();
 			}
@@ -450,6 +513,115 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		MyFighter->SetWantsToCrouch(true);
 	}
 }
+
+void UInputParserComponent::InputAxisVerticalP2(float Amount)
+{
+	bool input360axis = false;
+	float defaultVertical = 0;
+	float player360axisUpValue = 0;
+	float player360axisUpRightValue = 0;
+	float player360axisRightValue = 0;
+	float player360axisBottomRightValue = 0;
+	float player360axisBottomValue = 0;
+	float player360axisBottomLeftValue = 0;
+	float player360axisLeftValue = 0;
+	float player360axisTopLeftValue = 0;
+
+	if (GetWorld()->GetGameInstance<UBBGameInstance>() != nullptr) {
+		input360axis = GetWorld()->GetGameInstance<UBBGameInstance>()->P21360Axis;
+		defaultVertical = GetWorld()->GetGameInstance<UBBGameInstance>()->P2VerticalDefaultValue;
+		player360axisUpValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpValue;
+		player360axisUpRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisUpRightValue;
+		player360axisRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisRightValue;
+		player360axisBottomRightValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomRightValue;
+		player360axisBottomValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomValue;
+		player360axisBottomLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisBottomLeftValue;
+		player360axisLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisLeftValue;
+		player360axisTopLeftValue = GetWorld()->GetGameInstance<UBBGameInstance>()->P2360axisTopLeftValue;
+	}
+	float AdjustedAmount = 0;
+
+
+	if (input360axis)
+	{
+		float closeAmount = Amount - player360axisUpValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 1;
+			UE_LOG(LogUInputParser, Error, TEXT("a"));
+		}
+		closeAmount = Amount - player360axisUpRightValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 1;
+		UE_LOG(LogUInputParser, Error, TEXT("b"));
+	}
+		closeAmount = Amount - player360axisRightValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 0;
+		UE_LOG(LogUInputParser, Error, TEXT("c"));
+}
+		closeAmount = Amount - player360axisBottomRightValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = -1;
+		UE_LOG(LogUInputParser, Error, TEXT("d"));
+		}
+		closeAmount = Amount - player360axisBottomValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = -1;
+		UE_LOG(LogUInputParser, Error, TEXT("e"));
+		}
+		closeAmount = Amount - player360axisBottomLeftValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = -1;
+		UE_LOG(LogUInputParser, Error, TEXT("f"));
+		}
+		closeAmount = Amount - player360axisLeftValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 0;
+		UE_LOG(LogUInputParser, Error, TEXT("g"));
+		}
+		closeAmount = Amount - player360axisTopLeftValue;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 1;
+		UE_LOG(LogUInputParser, Error, TEXT("h"));
+		}
+		closeAmount = Amount - defaultVertical;
+		if (fabs(closeAmount) < .01f){
+			AdjustedAmount = 0;
+		UE_LOG(LogUInputParser, Error, TEXT("i"));
+		}
+	}
+	else {
+		if (Amount > (defaultVertical + .1))
+			AdjustedAmount = 1;
+		else if (Amount < (defaultVertical - .1))
+			AdjustedAmount = -1;
+		else
+			AdjustedAmount = 0;
+	}
+
+	
+
+
+	if (MyFighterState != nullptr && !MyFighterState->IsInCrouchMove())
+	{
+		MyFighterState->SetVerticalDirection(AdjustedAmount);
+		if (AdjustedAmount < 0) {
+			MyFighterState->SetWantsToCrouch(true);
+		}
+		else {
+			MyFighterState->SetWantsToCrouch(false);
+			if (AdjustedAmount > 0)
+			{
+				MyFighterState->Jump();
+			}
+		}
+	}
+	else if (MyFighter != nullptr)
+	{
+		MyFighter->SetWantsToCrouch(true);
+	}
+}
+
 
 void UInputParserComponent::InputActionDodge(bool IsUp)
 {

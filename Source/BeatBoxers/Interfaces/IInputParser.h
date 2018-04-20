@@ -48,6 +48,9 @@ public:
 	/** Receives controller input for the vertical axis. */
 	virtual void InputAxisVertical(float Amount) = 0;
 
+	/** Receives controller input for the vertical axis for player2. */
+	virtual void InputAxisVerticalP2(float Amount) = 0;
+
 	/** Receives events relating to the D-pad left button. */
 	virtual void InputActionLeft(bool IsUp) = 0;
 

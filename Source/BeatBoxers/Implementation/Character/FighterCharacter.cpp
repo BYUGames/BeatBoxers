@@ -163,7 +163,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 	else{
 		InputComponent->BindAxis("HorizontalP2", this, &AFighterCharacter::InputAxisHorizontalP2);
-		InputComponent->BindAxis("VerticalP2", this, &AFighterCharacter::InputAxisVertical);
+		InputComponent->BindAxis("VerticalP2", this, &AFighterCharacter::InputAxisVerticalP2);
 		InputComponent->BindAction("UpP2", IE_Pressed, this, &AFighterCharacter::InputActionUp);
 		InputComponent->BindAction("LeftP2", IE_Pressed, this, &AFighterCharacter::InputActionLeft);
 		InputComponent->BindAction("DownP2", IE_Pressed, this, &AFighterCharacter::InputActionDown);
@@ -528,6 +528,14 @@ void AFighterCharacter::InputAxisVertical(float amount)
 	if (GetInputParser() != nullptr)
 	{
 		GetInputParser()->InputAxisVertical(amount);
+	}
+}
+
+void AFighterCharacter::InputAxisVerticalP2(float amount)
+{
+	if (GetInputParser() != nullptr)
+	{
+		GetInputParser()->InputAxisVerticalP2(amount);
 	}
 }
 

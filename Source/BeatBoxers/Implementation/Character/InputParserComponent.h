@@ -164,6 +164,7 @@ public:
 	virtual void InputAxisHorizontal(float Amount) override;
 	virtual void InputAxisHorizontalP2(float Amount) override;
 	virtual void InputAxisVertical(float Amount) override;
+	virtual void InputAxisVerticalP2(float Amount) override;
 	virtual void InputActionLeft(bool IsUp) override;
 	virtual void InputActionRight(bool IsUp) override;
 	virtual void InputActionDown(bool IsUp) override;

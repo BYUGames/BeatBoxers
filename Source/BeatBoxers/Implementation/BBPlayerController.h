@@ -16,4 +16,7 @@ class BEATBOXERS_API ABBPlayerController : public APlayerController
 {
 	GENERATED_UCLASS_BODY()
 
-};
+	public:
+		bool CustomInputKey(int32 ControllerId, FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad);
+
+ };

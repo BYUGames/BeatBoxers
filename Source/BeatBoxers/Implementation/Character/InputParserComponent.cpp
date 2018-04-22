@@ -743,7 +743,6 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 
 void UInputParserComponent::InputActionLight(bool IsUp)
 {
-	UE_LOG(LogUInputParser, Error, TEXT("light"));
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {

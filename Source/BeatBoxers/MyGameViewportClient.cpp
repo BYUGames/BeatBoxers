@@ -47,7 +47,7 @@ bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FK
 			ULocalPlayer* const TargetPlayer = GEngine->GetLocalPlayerFromControllerId(this, j);
 			if (TargetPlayer && TargetPlayer->PlayerController)
 			{
-				bResult = Cast<ABBPlayerController>(TargetPlayer->PlayerController)->CustomInputKey(ControllerId, Key, EventType, AmountDepressed, bGamepad);
+				bResult = TargetPlayer->PlayerController->InputKey(Key, EventType, AmountDepressed, bGamepad);
 
 				if (IgnoreInput())
 				{
@@ -77,7 +77,7 @@ bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FK
 					ULocalPlayer* const TargetPlayer = GEngine->GetLocalPlayerFromControllerId(this, ControllerId);
 					if (TargetPlayer && TargetPlayer->PlayerController)
 					{
-						bResult = Cast<ABBPlayerController>(TargetPlayer->PlayerController)->CustomInputKey(ControllerId, Key, EventType, AmountDepressed, bGamepad);
+						bResult = TargetPlayer->PlayerController->InputKey(Key, EventType, AmountDepressed, bGamepad);
 					}
 
 					// A gameviewport is always considered to have responded to a mouse buttons to avoid throttling

@@ -154,6 +154,8 @@ public:
 	TSubclassOf<UInputParserState> CurrentStateClass;
 	bool HasDashedLeft;
 	bool HasDashedRight;
+
+	bool HasInputtedThisBeat;
 	/** IInputParser implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
 	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;
@@ -185,6 +187,7 @@ public:
 	/** End IInputParser implementation */
 
 	void PushInputToken(EInputToken NewToken);
+	void PushInputTokenWithAccuracy(FBufferInputToken NewToken);
 	void StartComboTimer();
 
 	// Called every frame

@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "InputParserComponent.h"
 
 
 // Sets default values
@@ -798,11 +799,6 @@ void AFighterCharacter::MissBeat()
 	}
 }
 
-void AFighterCharacter::SetAttackedThisBeat(bool setValue)
-{
-	AttackedThisBeat = false;
-}
-
 bool AFighterCharacter::IsJumping()
 {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Jump)
@@ -943,10 +939,6 @@ void AFighterCharacter::AddHit()
 	}
 }
 
-bool AFighterCharacter::HasAttackedThisBeat()
-{
-	return AttackedThisBeat;
-}
 
 UBasicFretboard* AFighterCharacter::K2_GetFretBoard() const
 {
@@ -963,4 +955,9 @@ int AFighterCharacter::GetIndex()
 void AFighterCharacter::SetIndex(int NewIndex)
 {
 	PlayerIndex = NewIndex;
+}
+
+void AFighterCharacter::ResetInputParserInputThisBeat()
+{
+	Cast<UInputParserComponent>(GetInputParser())->HasInputtedThisBeat = false;
 }

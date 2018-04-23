@@ -348,7 +348,6 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 							*StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 						);
-						MyFighter->SetAttackedThisBeat(true);
 						if (MyFighterWorld->IsOnBeat(Accuracy) )
 						{
 							MyFighter->InputOnBeatLogic();

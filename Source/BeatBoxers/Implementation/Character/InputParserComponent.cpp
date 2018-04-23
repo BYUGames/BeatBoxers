@@ -35,17 +35,14 @@ void UInputParserComponent::BeginPlay()
 
 void UInputParserComponent::OnInputBufferTimer()
 {
-	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
+	UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
 	InputBuffer.token = EInputToken::IE_None;
 }
 
 void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 {
 	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
-	if (InputBuffer.token == EInputToken::IE_None)
 		InputBuffer = NewToken;
-	else
-		InputBuffer.token = NewToken.token;
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
 		this,
@@ -90,18 +87,42 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			, MyMusicBox->GetTimeBetweenBeats()
 			);
 	}
-	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken));
+	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 	if (MyFighterState != nullptr)
 	{
-		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || MyFighter->HasAttackedThisBeat())
+		if (HasInputtedThisBeat)
 		{
-			if (MyFighter->HasAttackedThisBeat()) {
-				bToken.accuracy = 0.5f;
-			}
+			HasInputtedThisBeat = true;
+			bToken.accuracy = 0.5f;
+			SetInputBuffer(bToken);
+		}
+		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())
+		{
+			HasInputtedThisBeat = true;
 			SetInputBuffer(bToken);
 		}
 		else if (MyMoveset != nullptr)
 		{
+			HasInputtedThisBeat = true;
+			InputBuffer.token = EInputToken::IE_None;
+			MyMoveset->ReceiveInputToken(bToken);
+		}
+	}
+}
+
+void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToken)
+{
+	FBufferInputToken bToken;
+	bToken = NewToken;
+
+	if (MyFighterState != nullptr)
+	{
+		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())
+		{
+		}
+		else if (MyMoveset != nullptr)
+		{
+			InputBuffer.token = EInputToken::IE_None;
 			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
@@ -209,8 +230,9 @@ void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 
 void UInputParserComponent::OnControlReturned()
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent OnControlReturned, input buffer = %s."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), InputBuffer.token));
-	PushInputToken(InputBuffer.token);
+	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None) {
+		PushInputTokenWithAccuracy(InputBuffer); 
+	}
 }
 
 

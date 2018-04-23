@@ -139,8 +139,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FDDRToggleEvent DDRToggleEvent;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool AttackedThisBeat;
+	UFUNCTION(BlueprintCallable)
+	void ResetInputParserInputThisBeat();
 
 	//UFUNCTION(BlueprintCallable)
 	//FDDRToggleEvent& GetDDRToggleEvent() {return DDRToggleEvent;}
@@ -170,7 +170,6 @@ public:
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }
 	virtual void InputOffBeatLogic() override { K2_InputOffBeatLogic(); }
 	virtual void MissBeat() override;
-	virtual void SetAttackedThisBeat(bool setValue) override;
 	virtual bool IsJumping() override;
 	virtual bool IsDead() const override;
 	virtual void Knockdown() override;
@@ -182,7 +181,6 @@ public:
 	virtual void Clash() override;
 	virtual int GetTimesHitThisKnockdown() const override;
 	virtual void AddHit() override;
-	virtual bool HasAttackedThisBeat() override;
 	virtual void UpdateFacing() override;
 	virtual bool Grabbed(float Duration) override;
 	UFUNCTION(BlueprintCallable)

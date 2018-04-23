@@ -320,11 +320,11 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		HasDashedLeft = true;
 		if (GetFighterFacing() > 0)
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+		//	CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
 		else
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+		//	CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
 	}
 
@@ -332,11 +332,11 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		HasDashedRight = true;
 		if (GetFighterFacing() > 0)
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+			//CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
 		else
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+			//CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
 	}
 
@@ -425,12 +425,12 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
 		HasDashedLeft = true;
 		if (GetFighterFacing() > 0)
-		{
+		{//
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
 		else
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+			//CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
 	}
 
@@ -438,11 +438,11 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		HasDashedRight = true;
 		if (GetFighterFacing() > 0)
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
+			//CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
 		else
 		{
-			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
+			//CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
 	}
 }
@@ -909,7 +909,7 @@ void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
-		//ChangeState(Parser, UPreLeftDashState::StaticClass());
+		ChangeState(Parser, UPreLeftDashState::StaticClass());
 	}
 }
 
@@ -919,7 +919,7 @@ void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
-		//ChangeState(Parser, UPreRightDashState::StaticClass());
+		ChangeState(Parser, UPreRightDashState::StaticClass());
 	}
 }
 

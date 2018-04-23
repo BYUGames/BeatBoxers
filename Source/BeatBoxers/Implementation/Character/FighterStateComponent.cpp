@@ -517,7 +517,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			)
 		{
 			IMusicBox *MusicBox = Cast<IMusicBox>(MyFighterWorld->GetMusicBox());
-			float AccInTime = (1.f - CurrentWindowAccuracy) * MusicBox->GetTimeBetweenBeats();
+			float AccInTime = (1.f - MusicBox->GetBeatAccuracy()) * MusicBox->GetTimeBetweenBeats();
 			if ((MyMoveset == nullptr || MyMoveset->GetCurrentWindowInMove() != 0)
 				|| MusicBox->GetTimeBetweenBeats() - AccInTime < CurrentWindow.Windup)
 			{

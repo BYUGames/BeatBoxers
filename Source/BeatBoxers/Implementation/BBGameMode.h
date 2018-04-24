@@ -39,6 +39,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Parry"))
 	void EventsAfterParry(AFighterCharacter* ParryGuy);
 
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "On Match Start"))
+	void K2_OnMatchStart();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Round"))
+	void K2_StartRound();
+
 	/** This is the distance scanned to determine if the target was "against the wall" when hit. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HitscanDistanceConstant;

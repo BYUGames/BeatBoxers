@@ -218,6 +218,16 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	return (WasBlocked) ? EHitResponse::HE_Blocked : EHitResponse::HE_Hit;
 }
 
+void ABBGameMode::K2_OnMatchStart_Implementation()
+{
+	StartRound();
+}
+
+void ABBGameMode::K2_StartRound()
+{
+	StartRound();
+}
+
 void ABBGameMode::HitstopEvents_Implementation(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType, bool WasBlocked)
 {
 	EventsAfterHitstop(DamageType, Hit, Block, Accuracy, RPSType);
@@ -762,7 +772,7 @@ void ABBGameMode::HandleMatchHasStarted()
 	
 	SetPlayerInput(false);
 
-	StartRound();
+	K2_OnMatchStart();
 
 	// Make sure level streaming is up to date before triggering NotifyMatchStarted
 	GEngine->BlockTillLevelStreamingCompleted(GetWorld());
@@ -1229,7 +1239,7 @@ float ABBGameMode::GetScaledTime(float time)
 
 void ABBGameMode::SpawnPawns()
 {
-	for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
 		if (PlayerController->GetPawn() != nullptr)
@@ -1238,6 +1248,10 @@ void ABBGameMode::SpawnPawns()
 			PlayerController->UnPossess();
 			Pawn->Destroy();
 		}
+	}
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
 		if ((PlayerController->GetPawn() == nullptr) && PlayerCanRestart(PlayerController))
 		{
 			RestartPlayer(PlayerController);

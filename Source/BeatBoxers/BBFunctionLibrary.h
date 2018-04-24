@@ -28,4 +28,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static UBBGameUserSettings* GetBBGameUserSettings();
+
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Object")
+	static UObject* GetDefaultObject(TSubclassOf<UObject> ObjectClass);
 };

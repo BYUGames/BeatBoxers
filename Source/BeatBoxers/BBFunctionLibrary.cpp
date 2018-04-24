@@ -59,3 +59,12 @@ UBBGameUserSettings* UBBFunctionLibrary::GetBBGameUserSettings()
 	}
 	return nullptr;
 }
+
+UObject* UBBFunctionLibrary::GetDefaultObject(TSubclassOf<UObject> ObjectClass)
+{
+	if (ObjectClass != nullptr)
+	{
+		return ObjectClass->GetDefaultObject();
+	}
+	return nullptr;
+}

@@ -657,6 +657,9 @@ struct FFighterData
 	UTexture *Portrait;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture *InGamePortrait;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture *StylizedName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -141,7 +141,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	//if ( getstate== 0)
 	//GetFighterState()->
-	if (GetWorld()->GetFirstPlayerController() == Controller)
+	if (true)//GetWorld()->GetFirstPlayerController() == Controller)
 	{
 		InputComponent->BindAxis("Horizontal", this, &AFighterCharacter::InputAxisHorizontal);
 		InputComponent->BindAxis("Vertical", this, &AFighterCharacter::InputAxisVertical);

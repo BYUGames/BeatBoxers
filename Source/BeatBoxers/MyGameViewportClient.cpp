@@ -5,7 +5,7 @@
 #include "Implementation/BBPlayerController.h"
 
 
-/*
+
 bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
 {
 	// Propagate keyboard events to all players
@@ -34,4 +34,3 @@ bool UMyGameViewportClient::InputAxis(FViewport* Viewport, int32 ControllerId, F
 	return bRetVal;
 
 }
-*/

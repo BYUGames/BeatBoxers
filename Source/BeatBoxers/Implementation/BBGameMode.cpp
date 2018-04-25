@@ -365,7 +365,7 @@ bool ABBGameMode::IsOnBeat(float Accuracy)
 	if (MusicBox != nullptr)
 	{
 		AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
-		if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow)
+		if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow || StillOnBeat)
 		{
 			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
 				, Accuracy
@@ -1544,6 +1544,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 
 void ABBGameMode::OnBeat()
 {
+	StillOnBeat = true;
 	if (AfterBeatAccuracyWindow > 0)
 	{
 		GetWorldTimerManager().SetTimer(
@@ -1561,6 +1562,7 @@ void ABBGameMode::OnBeat()
 
 void ABBGameMode::BeatWindowClose()
 {
+	StillOnBeat = false;
 	if (BeatWindowCloseEvent.IsBound())
 	{
 		BeatWindowCloseEvent.Broadcast();

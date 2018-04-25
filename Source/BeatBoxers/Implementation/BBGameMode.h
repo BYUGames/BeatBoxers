@@ -224,7 +224,7 @@ public:
 	FMusicBalanceParams GetMusicBalance();
 
 
-	
+	bool StillOnBeat;
 
 protected:
 	virtual void SpawnPawns();

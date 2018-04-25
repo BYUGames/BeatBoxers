@@ -284,14 +284,10 @@ int ABBGameMode::GetWinnerIndex()
 {
 	ABBPlayerState* Player0State = Cast<ABBPlayerState>(GameState->PlayerArray[0]);
 	ABBPlayerState* Player1State = Cast<ABBPlayerState>(GameState->PlayerArray[1]);
-	if (Player0State != nullptr)
+	if (Player0State != nullptr && Player1State != nullptr)
 	{
-		if (Player1State != nullptr)
-		{
-			if (Player0State->GetHealth() == Player1State->GetHealth()) return -1;
-			return (Player0State->GetHealth() > Player1State->GetHealth()) ? 0 : 1;
-		}
-		return 0;
+		if (Player0State->GetHealth() == Player1State->GetHealth()) return -1;
+		return (Player0State->GetHealth() > Player1State->GetHealth()) ? 0 : 1;
 	}
 	return -1;
 }

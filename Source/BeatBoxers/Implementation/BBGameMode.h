@@ -221,6 +221,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = AdjustLocation))
 	void BPAdjustLocation(AActor *ActorToAdjust);
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "SkippingIntro"))
+	void SkipIntro();
+
+
 	FMusicBalanceParams GetMusicBalance();
 
 

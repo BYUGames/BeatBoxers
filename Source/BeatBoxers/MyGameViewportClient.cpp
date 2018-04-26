@@ -3,11 +3,20 @@
 #include "MyGameViewportClient.h"
 #include "Engine/Console.h"
 #include "Implementation/BBPlayerController.h"
-
+#include "Implementation/BBGameMode.h"
 
 
 bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
 {
+	auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	if (GameMode != nullptr)
+	{
+		auto BBGameMode = Cast<ABBGameMode>(GameMode);
+		if (BBGameMode != nullptr)
+		{
+			BBGameMode->SkipIntro();
+		}
+	}
 	// Propagate keyboard events to all players
 	UEngine* const Engine = GetOuterUEngine();
 	int32 const NumPlayers = Engine ? Engine->GetNumGamePlayers(this) : 0;

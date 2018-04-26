@@ -576,7 +576,7 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 	AFighterCharacter *MyPlayerAsFighter = Cast<AFighterCharacter>(MyFighter);
 	AFighterCharacter *Opponent = Cast<AFighterCharacter>(MyPlayerAsFighter->MyOpponent.Get());
 
-	if (Opponent->IsGrabbed()) 
+	if (!CurrentWindow.Grab)
 	{
 		Opponent->Released();
 	}

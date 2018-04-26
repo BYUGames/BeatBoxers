@@ -859,6 +859,11 @@ bool AFighterCharacter::Grabbed(float Duration)
 	return MyFighterState->Grabbed(Duration); 
 };
 
+void AFighterCharacter::Released()
+{
+	MyFighterState->Released();
+};
+
 bool AFighterCharacter::IsDead() const
 {
 	return bIsDead;

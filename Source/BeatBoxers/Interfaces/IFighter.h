@@ -141,8 +141,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void SetIndex(int NewIndex) = 0;
 
-	/** Put Fighter in brabbed state */
+	/** Put Fighter in grabbed state */
 	virtual bool Grabbed(float Duration) = 0;
+
+	/** Put Fighter in released state */
+	virtual void Released() = 0;
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsGrabbed() = 0;

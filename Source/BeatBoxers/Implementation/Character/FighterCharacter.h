@@ -54,10 +54,10 @@ public:
 	const ISoloTracker* GetSoloTracker() const;
 	IFighterWorld* GetFighterWorld();
 	const IFighterWorld* GetFighterWorld() const;
+	TWeakObjectPtr<AActor> MyOpponent;
 
 protected:
 	IFighterState *MyFighterState;
-	TWeakObjectPtr<AActor> MyOpponent;
 	float Facing;
 	bool bIsDead;
 
@@ -183,6 +183,7 @@ public:
 	virtual void AddHit() override;
 	virtual void UpdateFacing() override;
 	virtual bool Grabbed(float Duration) override;
+	virtual void Released() override;
 	UFUNCTION(BlueprintCallable)
 		virtual int GetIndex() override;
 	UFUNCTION(BlueprintCallable)

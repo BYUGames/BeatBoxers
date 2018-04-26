@@ -573,6 +573,14 @@ void UFighterStateComponent::StartCurrentWindowDuration()
 
 	CurrentWindowStage = EWindowStage::WE_Duration;
 	PlayerAttackerEffects(CurrentWindow.SFX);
+	AFighterCharacter *MyPlayerAsFighter = Cast<AFighterCharacter>(MyFighter);
+	AFighterCharacter *Opponent = Cast<AFighterCharacter>(MyPlayerAsFighter->MyOpponent.Get());
+
+	if (Opponent->IsGrabbed()) 
+	{
+		Opponent->Released();
+	}
+
 	if (CurrentWindow.Duration <= 0)
 	{
 		// Window has no duration.
@@ -1162,20 +1170,22 @@ bool UFighterStateComponent::Grabbed(float Duration)
 	Cast<AFighterCharacter>(MyFighter)->attachToOpponent();
 	EndWindow(EWindowEnd::WE_Stunned);
 	bGrabbed = true;
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		TimerHandle_Grab,
-		this,
-		&UFighterStateComponent::Released,
-		Duration,
-		false
-	);
+	//GetOwner()->GetWorldTimerManager().SetTimer(
+	//	TimerHandle_Grab,
+	//	this,
+	//	&UFighterStateComponent::Released,
+	//	Duration,
+	//	false
+	//);
 	return true;
 }
 
 void UFighterStateComponent::Released()
 {
-	bGrabbed = false;
-	Cast<AFighterCharacter>(MyFighter)->detachFromOpponent();
+	if (bGrabbed) {
+		bGrabbed = false;
+		Cast<AFighterCharacter>(MyFighter)->detachFromOpponent();
+	}
 }
 
 void UFighterStateComponent::PlayExecutionAnimation()

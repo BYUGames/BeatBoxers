@@ -767,19 +767,21 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
-			if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-				CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+		if (!HoldingBlock) {
+			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+				if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
+					CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+				}
+				else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
+					CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
+				}
+				else {
+					CurrentStateClass.GetDefaultObject()->InputActionLight(this);
+				}
 			}
-			else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
-				CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
-			}
-			else {
-				CurrentStateClass.GetDefaultObject()->InputActionLight(this);
-			}
+			else
+				CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);
 		}
-		else
-			CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);
 	}
 }
 
@@ -787,11 +789,13 @@ void UInputParserComponent::InputActionMedium(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
-			CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+		if (!HoldingBlock) {
+			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+				CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+			}
+			else
+				CurrentStateClass.GetDefaultObject()->InputActionMediumCrouch(this);
 		}
-		else
-			CurrentStateClass.GetDefaultObject()->InputActionMediumCrouch(this);
 	}
 }
 

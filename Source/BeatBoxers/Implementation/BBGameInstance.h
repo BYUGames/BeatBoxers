@@ -27,6 +27,11 @@ public:
 	FNewGameData NewGameData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int P1ControlScheme; //1 is keyboard1, 2 is keyboard2, 3 is generic controller, 4 is xbox controller 1, 5 is xbox controller 2
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int P2ControlScheme; //1 is keyboard1, 2 is keyboard2, 3 is generic controller, 4 is xbox controller 1, 5 is xbox controller 2
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float P1HorizontalDefaultValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float P2HorizontalDefaultValue;

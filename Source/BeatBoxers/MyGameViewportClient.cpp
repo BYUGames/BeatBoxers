@@ -17,16 +17,31 @@ bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FK
 			BBGameMode->SkipIntro();
 		}
 	}
-	// Propagate keyboard events to all players
-	UEngine* const Engine = GetOuterUEngine();
-	int32 const NumPlayers = Engine ? Engine->GetNumGamePlayers(this) : 0;
 	bool bRetVal = false;
-	for (int32 i = 0; i < NumPlayers; i++)
-	{
-		bRetVal = Super::InputKey(Viewport, i, Key, EventType, AmountDepressed, bGamepad) || bRetVal;
-	}
 
+
+	int P1ControlScheme = GetWorld()->GetGameInstance<UBBGameInstance>()->P1ControlScheme;
+	int P2ControlScheme = GetWorld()->GetGameInstance<UBBGameInstance>()->P2ControlScheme;
+
+	if ((P1ControlScheme == 3 && P1ControlScheme == 4)|| (P1ControlScheme == 0 && P1ControlScheme == 0)) {
+		bRetVal = Super::InputKey(Viewport, ControllerId, Key, EventType, AmountDepressed, bGamepad) || bRetVal;
+	} else if (P1ControlScheme == 4 && P1ControlScheme == 3) {
+		bRetVal = Super::InputKey(Viewport, (1-ControllerId), Key, EventType, AmountDepressed, bGamepad) || bRetVal;
+	}
+	else {
+		// Propagate keyboard events to all players
+		UEngine* const Engine = GetOuterUEngine();
+		int32 const NumPlayers = Engine ? Engine->GetNumGamePlayers(this) : 0;
+		
+		for (int32 i = 0; i < NumPlayers; i++)
+		{
+			bRetVal = Super::InputKey(Viewport, i, Key, EventType, AmountDepressed, bGamepad) || bRetVal;
+		}
+
+	}
 	return bRetVal;
+
+	
 }
 
 bool UMyGameViewportClient::InputAxis(FViewport* Viewport, int32 ControllerId, FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)

@@ -168,7 +168,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 		switch (res) {
 		case 1:
-			Fighter->StartStun(GetScaledTime(10), false);
+			Fighter->StartStun(GetScaledTime(1), false);
 			//OpponentFighter->Moveset->Parry();
 			break; // The Source won the clash, continue on.
 		case 0:
@@ -182,7 +182,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			}
 			break;
 		case -1:
-			OpponentFighter->StartStun(GetScaledTime(10), false);
+			OpponentFighter->StartStun(GetScaledTime(1), false);
 			//Fighter->Moveset->Parry();
 			return EHitResponse::HE_Missed;
 			break;

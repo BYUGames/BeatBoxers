@@ -295,20 +295,22 @@ bool UFighterStateComponent::IsInCrouchMove()
 
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
-	bIsCurrentStunBlock = WasBlocked;
-	StartDDR();
-	if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
-	{
-		ACharacter *Character = Cast<ACharacter>(MyFighter);
+	if (Duration >0.0001f) {
+		bIsCurrentStunBlock = WasBlocked;
+		StartDDR();
+		if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
+		{
+			ACharacter *Character = Cast<ACharacter>(MyFighter);
+		}
+		EndWindow(EWindowEnd::WE_Stunned);
+		GetOwner()->GetWorldTimerManager().SetTimer(
+			TimerHandle_Stun,
+			this,
+			&UFighterStateComponent::OnStunFinished,
+			Duration,
+			false
+		);
 	}
-	EndWindow(EWindowEnd::WE_Stunned);
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		TimerHandle_Stun,
-		this,
-		&UFighterStateComponent::OnStunFinished,
-		Duration,
-		false
-	);
 }
 
 void UFighterStateComponent::SetMoveDirection(float Direction)

@@ -259,22 +259,23 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
 
-	
-	if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
-		&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
-	{
-		UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
-		//The target is already pushed up against a wall, push back the source instead.
-		//Don't do this for projectiles.
-		if (AfterHitstopSource.IsValid() && AfterHitstopSourceController.IsValid()
-			&& AfterHitstopSource.Get() == AfterHitstopSourceController.Get()->GetPawn())
+	if (Hit.StunLength > 0.000001f) {
+		if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
+			&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
 		{
-			FMovement MovementToAttacker = ImpactData->ImpartedMovement;
-			MovementToAttacker.Delta.X *= -1;
-			MovementToAttacker.Delta.Y = 0;
-			MovementToAttacker.InAirLaunchDelta.X = -100;
-			MovementToAttacker.InAirLaunchDelta.Y = 0;
-			ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker);
+			UE_LOG(LogABBGameMode, Verbose, TEXT("%s::HitActor actor backed into wall, applying to source."), *GetNameSafe(this));
+			//The target is already pushed up against a wall, push back the source instead.
+			//Don't do this for projectiles.
+			if (AfterHitstopSource.IsValid() && AfterHitstopSourceController.IsValid()
+				&& AfterHitstopSource.Get() == AfterHitstopSourceController.Get()->GetPawn())
+			{
+				FMovement MovementToAttacker = ImpactData->ImpartedMovement;
+				MovementToAttacker.Delta.X *= -1;
+				MovementToAttacker.Delta.Y = 0;
+				MovementToAttacker.InAirLaunchDelta.X = -100;
+				MovementToAttacker.InAirLaunchDelta.Y = 0;
+				ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker);
+			}
 		}
 	}
 }

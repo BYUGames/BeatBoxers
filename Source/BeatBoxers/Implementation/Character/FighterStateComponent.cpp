@@ -863,13 +863,12 @@ void UFighterStateComponent::OnStunFinished()
 		{
 			MyInputParser->OnControlReturned();
 
-			if (!IsStunned()) {
 				//int OldCombo = MyFighterPlayerState->GetBeatCombo();
 				//MyFighterPlayerState->SetBeatCombo(0);
 				//APawn *Pawn = Cast<APawn>(Cast<AFighterCharacter>(MyFighter)->MyOpponent.Get());
 				EndCombo();
 				//Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->EndCombo(Cast<APlayerController>(Pawn->GetController()));
-			}
+			
 		}
 	}
 }

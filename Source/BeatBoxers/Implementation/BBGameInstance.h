@@ -79,5 +79,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool P21360Axis;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool FirstControllerPluggedIn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool SecondControllerPluggedIn;
+
 	virtual void Init() override;
 };

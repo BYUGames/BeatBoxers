@@ -25,7 +25,7 @@ bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FK
 
 	if ((P1ControlScheme == 4 && P2ControlScheme == 5) || (P1ControlScheme == 0 && P1ControlScheme == 0)) {
 		bRetVal = Super::InputKey(Viewport, ControllerId, Key, EventType, AmountDepressed, bGamepad) || bRetVal;
-	} else if (P1ControlScheme == 4 && P1ControlScheme == 3) {
+	} else if (P1ControlScheme == 5 && P1ControlScheme == 4) {
 		bRetVal = Super::InputKey(Viewport, (1-ControllerId), Key, EventType, AmountDepressed, bGamepad) || bRetVal;
 	}
 	else {
@@ -46,6 +46,7 @@ bool UMyGameViewportClient::InputKey(FViewport* Viewport, int32 ControllerId, FK
 
 bool UMyGameViewportClient::InputAxis(FViewport* Viewport, int32 ControllerId, FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
 {
+	
 	if (bGamepad) {
 		GetWorld()->GetGameInstance<UBBGameInstance>()->FirstControllerPluggedIn = true;
 	}

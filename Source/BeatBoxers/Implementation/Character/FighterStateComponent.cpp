@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "FighterCharacter.h"
+#include "../BBGameMode.h"
 #include "../../Interfaces/IMusicBox.h"
 
 
@@ -861,6 +862,14 @@ void UFighterStateComponent::OnStunFinished()
 		if (MyInputParser != nullptr)
 		{
 			MyInputParser->OnControlReturned();
+
+			if (!IsStunned()) {
+				//int OldCombo = MyFighterPlayerState->GetBeatCombo();
+				//MyFighterPlayerState->SetBeatCombo(0);
+				//APawn *Pawn = Cast<APawn>(Cast<AFighterCharacter>(MyFighter)->MyOpponent.Get());
+				EndCombo();
+				//Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->EndCombo(Cast<APlayerController>(Pawn->GetController()));
+			}
 		}
 	}
 }
@@ -1076,8 +1085,24 @@ void UFighterStateComponent::OnInvulnerableTimer()
 		if (MyInputParser != nullptr)
 		{
 			MyInputParser->OnControlReturned();
+			EndCombo();
+			//Cast<UFighterStateComponent>((Cast<AFighterCharacter>((Cast<AFighterCharacter>(MyFighter)->MyOpponent.Get()))->GetFighterState())->EndCombo());
 		}
 	}
+}
+
+void UFighterStateComponent::EndCombo() {
+		APawn *Pawn = Cast<APawn>(Cast<AFighterCharacter>(MyFighter)->MyOpponent.Get());
+		APlayerController *AttackerController = Cast<APlayerController>(Pawn->GetController());
+
+		IFighterPlayerState *sourceState = Cast<IFighterPlayerState>(AttackerController->PlayerState);
+
+		int OldCombo = sourceState->GetBeatCombo();
+		sourceState->SetBeatCombo(0);
+		
+
+		Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->EndCombo(AttackerController);
+	
 }
 
 bool UFighterStateComponent::IsIgnoringCollision() const

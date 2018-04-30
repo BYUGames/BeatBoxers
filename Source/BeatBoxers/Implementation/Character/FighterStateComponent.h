@@ -31,7 +31,6 @@ protected:
 	IFighter *MyFighter;
 	IMoveset *MyMoveset;
 	IInputParser *MyInputParser;
-	IFighterPlayerState *MyFighterPlayerState;
 
 	uint32 bIsHitboxActive : 1;
 	uint32 bHasMoveWindowHit : 1;
@@ -195,4 +194,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void PlayExecutionAnimation();
+
+	IFighterPlayerState *MyFighterPlayerState;
+
+	void EndCombo();
 };

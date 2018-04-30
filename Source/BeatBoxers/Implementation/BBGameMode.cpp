@@ -841,16 +841,7 @@ void ABBGameMode::PlayerHitOnBeat(APlayerController* PlayerController)
 {
 	if (PlayerController->PlayerState != nullptr)
 	{
-		ABBPlayerState* BBPlayerState = Cast<ABBPlayerState>(PlayerController->PlayerState);
-		if (BBPlayerState != nullptr)
-		{
-			int OldCombo = BBPlayerState->GetBeatCombo();
-			BBPlayerState->SetBeatCombo(OldCombo + 1);
-			if (PlayerBeatComboChangedEvent.IsBound())
-			{
-				PlayerBeatComboChangedEvent.Broadcast(PlayerController, OldCombo + 1);
-			}
-		}
+
 	}
 	else
 	{
@@ -862,20 +853,19 @@ void ABBGameMode::PlayerMissBeat(APlayerController* PlayerController)
 {
 	if (PlayerController->PlayerState != nullptr)
 	{
-		ABBPlayerState* BBPlayerState = Cast<ABBPlayerState>(PlayerController->PlayerState);
-		if (BBPlayerState != nullptr)
-		{
-			int OldCombo = BBPlayerState->GetBeatCombo();
-			BBPlayerState->SetBeatCombo(0);
-			if (PlayerBeatComboChangedEvent.IsBound())
-			{
-				PlayerBeatComboChangedEvent.Broadcast(PlayerController, 0);
-			}
-		}
+
 	}
 	else
 	{
 		UE_LOG(LogBeatBoxers, Warning, TEXT("ABBGameMode::PlayerMissBeat was given a nullptr for a player controller."));
+	}
+}
+
+void ABBGameMode::EndCombo(APlayerController* PlayerController)
+{
+	if (PlayerBeatComboChangedEvent.IsBound())
+	{
+		PlayerBeatComboChangedEvent.Broadcast(PlayerController, 0);
 	}
 }
 
@@ -1524,9 +1514,20 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 		if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
 		{
 			ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
+			ABBPlayerState* sourceState = Cast<ABBPlayerState>(SourceController.Get()->PlayerState);
 			if (mBBPlayerState != nullptr)
 			{
 				mBBPlayerState->TakeDamage(ImpactData.Damage * GlobalDamageScaling);
+				if (sourceState != nullptr)
+				{
+					int OldCombo = sourceState->GetBeatCombo();
+					sourceState->SetBeatCombo(OldCombo + 1);
+					if (PlayerBeatComboChangedEvent.IsBound())
+					{
+						PlayerBeatComboChangedEvent.Broadcast(Cast<APlayerController>(SourceController.Get()), OldCombo + 1);
+					}
+				}
+
 				AddSpecial(mBBPlayerState, ImpactData.SpecialGenerated / 4.0);
 				if (mBBPlayerState->GetHealth() == 0)
 				{

@@ -181,6 +181,8 @@ public:
 	virtual float GetScaledTime(float time)  override;
 	/** End IFighterWorld implementation */
 
+	void EndCombo(APlayerController* PlayerController);
+
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Time Left In Round"))
 	virtual float K2_GetTimeLeftInRound() { return GetTimeLeftInRound(); }
 

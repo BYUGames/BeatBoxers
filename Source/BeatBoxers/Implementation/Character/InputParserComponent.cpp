@@ -5,6 +5,7 @@
 #include "../BBGameInstance.h"
 #include "FighterCharacter.h"
 
+
 // Sets default values for this component's properties
 UInputParserComponent::UInputParserComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

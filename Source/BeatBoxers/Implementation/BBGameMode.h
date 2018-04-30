@@ -171,6 +171,7 @@ public:
 	virtual FPlayerBeatComboChangedEvent& GetOnPlayerBeatComboChangedEvent() override;
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
+	UFUNCTION(BlueprintCallable)
 	virtual bool IsOnBeat(float Accuracy) override;
 	virtual bool IsInRound() override { return bIsInRound; }
 	virtual float TimeToNextRound() override;

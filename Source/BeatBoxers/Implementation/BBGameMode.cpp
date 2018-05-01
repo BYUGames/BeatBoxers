@@ -1270,15 +1270,20 @@ void ABBGameMode::HandleMatchHasEnded()
 		GetWorldTimerManager().SetTimer(
 			TimerHandle_StartNextRound
 			, this
-			, &ABBGameMode::RestartGame
+			, &ABBGameMode::EndGame
 			, DelayBeforeEnd
 			, false
 		);
 	}
 	else
 	{
-		RestartGame();
+		UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
 	}
+}
+
+void ABBGameMode::EndGame()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
 }
 
 FMusicBalanceParams ABBGameMode::GetMusicBalance()

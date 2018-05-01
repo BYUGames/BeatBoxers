@@ -227,6 +227,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "SkippingIntro"))
 	void SkipIntro();
 
+	void EndGame();
 
 	FMusicBalanceParams GetMusicBalance();
 

@@ -1519,19 +1519,21 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 		if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
 		{
 			ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
-			ABBPlayerState* sourceState = Cast<ABBPlayerState>(SourceController.Get()->PlayerState);
+			//ABBPlayerState* sourceState = Cast<ABBPlayerState>(SourceController.Get()->PlayerState);
 			if (mBBPlayerState != nullptr)
 			{
 				mBBPlayerState->TakeDamage(ImpactData.Damage * GlobalDamageScaling);
-				if (sourceState != nullptr)
+				/*
+				if (Cast<ABBPlayerState>(SourceController.Get()->PlayerState) != nullptr)
 				{
-					int OldCombo = sourceState->GetBeatCombo();
-					sourceState->SetBeatCombo(OldCombo + 1);
+					int OldCombo = Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->GetBeatCombo();
+					Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->SetBeatCombo(OldCombo + 1);
 					if (PlayerBeatComboChangedEvent.IsBound())
 					{
 						PlayerBeatComboChangedEvent.Broadcast(Cast<APlayerController>(SourceController.Get()), OldCombo + 1);
 					}
 				}
+				*/
 
 				AddSpecial(mBBPlayerState, ImpactData.SpecialGenerated / 4.0);
 				if (mBBPlayerState->GetHealth() == 0)

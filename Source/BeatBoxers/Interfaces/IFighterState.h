@@ -176,4 +176,6 @@ public:
 
 	/** Returns true if the player is currently grabbed */
 	virtual bool IsGrabbed() const = 0;
+
+	bool previousBeatHadAttack;
 };

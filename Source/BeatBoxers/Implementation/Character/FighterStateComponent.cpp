@@ -24,6 +24,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	bIsHitboxActive = false;
 	TimesHitThisKnockdown = 0;
 	bIsInDDR = false;
+	previousBeatHadAttack = false;
 }
 
 
@@ -553,6 +554,7 @@ void UFighterStateComponent::SkipWindupOnBeat()
 		bSkipWindupOnBeat = false;
 		SkipWindup();
 	}
+	previousBeatHadAttack = IsMidMove();
 }
 
 void UFighterStateComponent::SkipWindup()

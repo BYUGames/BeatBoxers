@@ -91,21 +91,26 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 	if (MyFighterState != nullptr)
 	{
-		if ((HasInputtedThisBeat || (MyFighterState->IsInputBlocked())) && ((NewToken == EInputToken::IE_DashForward)||(NewToken == EInputToken::IE_DashBackward))) {
+		if ((HasInputtedThisBeat || (MyFighterState->IsMidMove() || (MyFighterState->previousBeatHadAttack && !(MyFighterWorld->IsOnBeat(bToken.accuracy))))) 
+			&& ((NewToken == EInputToken::IE_DashForward)||(NewToken == EInputToken::IE_DashBackward))) {
+			//either you have already inputted this beat
+			//you're in mid move
+			//or the move just recently ended and you're not onbeat
+			
 			AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 			AFighterCharacter *Opponent = Cast<AFighterCharacter>(Fighter->MyOpponent.Get());
 			UMovesetComponent *Moveset = Cast<UMovesetComponent>(Fighter->GetMoveset());
 			if (!(Opponent->FighterState->IsStunned() && ((Moveset->CurrentState == Moveset->GrabbingState) || (Moveset->CurrentState == Moveset->GrabbingOffbeatState)))
-				&& (Moveset->CurrentState != Moveset->SuperState) 
+				&& (Moveset->CurrentState != Moveset->SuperState)
 				//&& (Moveset->CurrentState != Moveset->ParryState) 
 				&& (Moveset->CurrentState != Moveset->DashState)
 				&& (Moveset->CurrentState != Moveset->DashBackState)
+				&& (Fighter->FighterState->GetSpecial() >= 25)
 			){
-
 				if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
 				if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
-				//make next attack to be "onbeat"?
 				bToken.accuracy = 0.0f;
+				Fighter->HasUsedMoveAndHasYetToLand = false;
 				HasInputtedThisBeat = false;
 				InputBuffer.token = EInputToken::IE_None;
 				MyMoveset->ReceiveInputToken(bToken);

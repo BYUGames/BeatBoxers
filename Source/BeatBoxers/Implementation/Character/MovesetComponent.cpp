@@ -25,6 +25,11 @@ void UMovesetComponent::BeginPlay()
 	{
 		DefaultState = MyFighter->GetDefaultMoveState();
 		ParryState = MyFighter->GetParryMoveState();
+		SuperState = MyFighter->GetSuperMoveState();
+		DashState = MyFighter->GetDashMoveState();
+		DashBackState = MyFighter->GetDashBackMoveState();
+		GrabbingState = MyFighter->GetGrabbingMoveState();
+		GrabbingOffbeatState = MyFighter->GetGrabbingOffbeatMoveState();
 	}
 	GotoDefaultState();
 }

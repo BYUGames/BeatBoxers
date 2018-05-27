@@ -134,6 +134,21 @@ public:
 	FDataTableRowHandle ParryMoveState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle SuperMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle DashMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle DashBackMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle GrabbingMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle GrabbingOffbeatMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UDataTable* AnimTable;
 
 	UPROPERTY(BlueprintAssignable)
@@ -165,6 +180,11 @@ public:
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() const override { return DefaultMoveState; }
 	virtual FDataTableRowHandle GetParryMoveState() const override { return ParryMoveState; }
+	virtual FDataTableRowHandle GetSuperMoveState() const override { return SuperMoveState; }
+	virtual FDataTableRowHandle GetDashMoveState() const override { return DashMoveState; }
+	virtual FDataTableRowHandle GetDashBackMoveState() const override { return DashBackMoveState; }
+	virtual FDataTableRowHandle GetGrabbingMoveState() const override { return GrabbingMoveState; }
+	virtual FDataTableRowHandle GetGrabbingOffbeatMoveState() const override { return GrabbingOffbeatMoveState; }
 	virtual UDataTable *GetAnimTable() const override { return AnimTable; }
 	virtual void HitOnBeatLogic() override;
 	virtual void InputOnBeatLogic() override { K2_InputOnBeatLogic(); }

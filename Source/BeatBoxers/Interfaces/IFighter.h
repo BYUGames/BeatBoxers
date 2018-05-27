@@ -79,6 +79,16 @@ public:
 
 	virtual FDataTableRowHandle GetParryMoveState() const = 0;
 
+	virtual FDataTableRowHandle GetSuperMoveState() const = 0;
+
+	virtual FDataTableRowHandle GetDashMoveState() const = 0;
+
+	virtual FDataTableRowHandle GetDashBackMoveState() const = 0;
+
+	virtual FDataTableRowHandle GetGrabbingMoveState() const = 0;
+
+	virtual FDataTableRowHandle GetGrabbingOffbeatMoveState() const = 0;
+
 	virtual UDataTable *GetAnimTable() const = 0;
 
 	/** Called when an on-beat attack hits the opponent. */

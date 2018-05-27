@@ -115,6 +115,12 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_DashBackward:
 		if (DashBackward) return true;
 		break;
+	case EInputToken::IE_DashCancelForward:
+		if (DashCancelForward) return true;
+		break;
+	case EInputToken::IE_DashCancelBackward:
+		if (DashCancelBackward) return true;
+		break;
 	default:
 		return false;
 		break;

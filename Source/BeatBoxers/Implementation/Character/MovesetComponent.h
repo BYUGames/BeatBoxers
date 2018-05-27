@@ -25,7 +25,6 @@ class BEATBOXERS_API UMovesetComponent : public UActorComponent, public IMoveset
 private:
 	FString cs; //Context String
 	FDataTableRowHandle DefaultState;
-	FDataTableRowHandle ParryState;
 	int CurrentWindowInState;
 
 	// Don't call this. It does no checking.
@@ -50,7 +49,7 @@ protected:
 	UPROPERTY()
 	UBasicFretboard *SoloFretboard;
 
-	FDataTableRowHandle CurrentState;
+
 	FDataTableRowHandle PreviousState;
 	FTimerHandle TimerHandle_PostWait;
 
@@ -80,6 +79,14 @@ protected:
 	void ProcessDDRInputToken(EInputToken Token);
 
 public:	
+	FDataTableRowHandle CurrentState;
+	FDataTableRowHandle ParryState;
+	FDataTableRowHandle SuperState;
+	FDataTableRowHandle DashState;
+	FDataTableRowHandle DashBackState;
+	FDataTableRowHandle GrabbingState;
+	FDataTableRowHandle GrabbingOffbeatState;
+
 	UFUNCTION(BlueprintCallable)
 	UBasicFretboard* GetBGFretboard();
 

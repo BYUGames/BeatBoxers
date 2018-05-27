@@ -91,6 +91,28 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 	if (MyFighterState != nullptr)
 	{
+		if ((HasInputtedThisBeat || (MyFighterState->IsInputBlocked())) && ((NewToken == EInputToken::IE_DashForward)||(NewToken == EInputToken::IE_DashBackward))) {
+			AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+			AFighterCharacter *Opponent = Cast<AFighterCharacter>(Fighter->MyOpponent.Get());
+			UMovesetComponent *Moveset = Cast<UMovesetComponent>(Fighter->GetMoveset());
+			if (!(Opponent->FighterState->IsStunned() && ((Moveset->CurrentState == Moveset->GrabbingState) || (Moveset->CurrentState == Moveset->GrabbingOffbeatState)))
+				&& (Moveset->CurrentState != Moveset->SuperState) 
+				//&& (Moveset->CurrentState != Moveset->ParryState) 
+				&& (Moveset->CurrentState != Moveset->DashState)
+				&& (Moveset->CurrentState != Moveset->DashBackState)
+			){
+
+				if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
+				if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
+				//make next attack to be "onbeat"?
+
+				HasInputtedThisBeat = false;
+				InputBuffer.token = EInputToken::IE_None;
+				MyMoveset->ReceiveInputToken(bToken);
+				return;
+			}
+		}
+
 		if (HasInputtedThisBeat)
 		{
 			HasInputtedThisBeat = true;

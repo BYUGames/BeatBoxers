@@ -105,7 +105,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 				if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
 				if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
 				//make next attack to be "onbeat"?
-
+				bToken.accuracy = 0.0f;
 				HasInputtedThisBeat = false;
 				InputBuffer.token = EInputToken::IE_None;
 				MyMoveset->ReceiveInputToken(bToken);

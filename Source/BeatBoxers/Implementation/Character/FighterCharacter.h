@@ -134,6 +134,9 @@ public:
 	FDataTableRowHandle ParryMoveState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FDataTableRowHandle BlockMoveState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FDataTableRowHandle SuperMoveState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -180,6 +183,7 @@ public:
 	virtual void OnInputReceived() override;
 	virtual FDataTableRowHandle GetDefaultMoveState() const override { return DefaultMoveState; }
 	virtual FDataTableRowHandle GetParryMoveState() const override { return ParryMoveState; }
+	virtual FDataTableRowHandle GetBlockMoveState() const override { return BlockMoveState; }
 	virtual FDataTableRowHandle GetSuperMoveState() const override { return SuperMoveState; }
 	virtual FDataTableRowHandle GetDashMoveState() const override { return DashMoveState; }
 	virtual FDataTableRowHandle GetDashBackMoveState() const override { return DashBackMoveState; }

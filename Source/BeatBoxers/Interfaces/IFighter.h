@@ -79,6 +79,8 @@ public:
 
 	virtual FDataTableRowHandle GetParryMoveState() const = 0;
 
+	virtual FDataTableRowHandle GetBlockMoveState() const = 0;
+
 	virtual FDataTableRowHandle GetSuperMoveState() const = 0;
 
 	virtual FDataTableRowHandle GetDashMoveState() const = 0;

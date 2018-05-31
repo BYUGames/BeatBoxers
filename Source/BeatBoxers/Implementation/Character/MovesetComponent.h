@@ -24,7 +24,6 @@ class BEATBOXERS_API UMovesetComponent : public UActorComponent, public IMoveset
 
 private:
 	FString cs; //Context String
-	FDataTableRowHandle DefaultState;
 	int CurrentWindowInState;
 
 	// Don't call this. It does no checking.
@@ -76,8 +75,10 @@ protected:
 	void ProcessDDRInputToken(EInputToken Token);
 
 public:	
+	FDataTableRowHandle DefaultState;
 	FDataTableRowHandle CurrentState;
 	FDataTableRowHandle ParryState;
+	FDataTableRowHandle BlockState;
 	FDataTableRowHandle SuperState;
 	FDataTableRowHandle DashState;
 	FDataTableRowHandle DashBackState;

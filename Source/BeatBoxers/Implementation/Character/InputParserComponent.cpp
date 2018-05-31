@@ -96,7 +96,6 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			//either you have already inputted this beat
 			//you're in mid move
 			//or the move just recently ended and you're not onbeat
-			
 			AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 			AFighterCharacter *Opponent = Cast<AFighterCharacter>(Fighter->MyOpponent.Get());
 			UMovesetComponent *Moveset = Cast<UMovesetComponent>(Fighter->GetMoveset());
@@ -106,9 +105,9 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 				&& (Moveset->CurrentState != Moveset->DashState)
 				&& (Moveset->CurrentState != Moveset->DashBackState)
 			){
-				if (Moveset->CurrentState == Moveset->ParryState) {//cancel parry into normal dodge
+				if ((Moveset->CurrentState == Moveset->BlockState) || (Moveset->CurrentState == Moveset->DefaultState)) {//cancel parry into normal dodge
 					Moveset->GotoDefaultState();
-					bToken.accuracy = 0.0f;
+					//bToken.accuracy = 0.0f;
 					Fighter->HasUsedMoveAndHasYetToLand = false;
 					HasInputtedThisBeat = false;
 					InputBuffer.token = EInputToken::IE_None;

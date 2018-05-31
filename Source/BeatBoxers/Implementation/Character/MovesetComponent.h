@@ -59,9 +59,6 @@ protected:
 	/** Called when MaxDuration has been reached after finishing a move. */
 	void OnPostWaitExpired();
 
-	/** Goes to the default state. */
-	void GotoDefaultState();
-
 	/** Sets the current state to a new instance of the given state. */
 	void GotoState(FDataTableRowHandle NewState);
 
@@ -92,6 +89,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UBasicFretboard* GetSoloFretboard();
+
+	/** Goes to the default state. */
+	void GotoDefaultState();
 
 	/** IMoveset implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;

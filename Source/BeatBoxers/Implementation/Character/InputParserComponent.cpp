@@ -105,16 +105,26 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 				//&& (Moveset->CurrentState != Moveset->ParryState) 
 				&& (Moveset->CurrentState != Moveset->DashState)
 				&& (Moveset->CurrentState != Moveset->DashBackState)
-				&& (Fighter->FighterState->GetSpecial() >= 25)
 			){
-				if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
-				if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
-				bToken.accuracy = 0.0f;
-				Fighter->HasUsedMoveAndHasYetToLand = false;
-				HasInputtedThisBeat = false;
-				InputBuffer.token = EInputToken::IE_None;
-				MyMoveset->ReceiveInputToken(bToken);
-				return;
+				if (Moveset->CurrentState == Moveset->ParryState) {//cancel parry into normal dodge
+					Moveset->GotoDefaultState();
+					bToken.accuracy = 0.0f;
+					Fighter->HasUsedMoveAndHasYetToLand = false;
+					HasInputtedThisBeat = false;
+					InputBuffer.token = EInputToken::IE_None;
+					MyMoveset->ReceiveInputToken(bToken);
+					return;
+				}
+				if (Fighter->FighterState->GetSpecial() >= 25) {//cancel all other valid moves into cancel
+					if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
+					if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
+					bToken.accuracy = 0.0f;
+					Fighter->HasUsedMoveAndHasYetToLand = false;
+					HasInputtedThisBeat = false;
+					InputBuffer.token = EInputToken::IE_None;
+					MyMoveset->ReceiveInputToken(bToken);
+					return;
+				}
 			}
 		}
 

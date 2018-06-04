@@ -11,6 +11,7 @@
 #include "Interfaces/IMoveset.h"
 #include "Interfaces/IFighterState.h"
 #include "Interfaces/IMusicBox.h"
+#include <stack>  
 #include "InputParserComponent.generated.h"
 
 
@@ -121,6 +122,11 @@ private:
 	// Stores the horizontal movement of the player
 	float HorizontalMovement;
 	bool HoldingBlock;
+	
+
+	void ParseCurrentHeldDirection(int NumpadDirection);
+	void OnMotionTimer();
+
 protected:
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -130,12 +136,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ComplexInputWindow;
 
+
+	std::stack<int> PreviousDirections;
+
 	IFighterWorld *MyFighterWorld;
 	IFighter *MyFighter;
 	IFighterState *MyFighterState;
 	IMoveset *MyMoveset;
 	FTimerHandle TimerHandle_InputBuffer;
 	FTimerHandle TimerHandle_ParryWait;
+	FTimerHandle TimerHandle_MotionTimer;
 	FBufferInputToken InputBuffer;
 	FTimerHandle TimerHandle_Combo;
 	IMusicBox *MyMusicBox;

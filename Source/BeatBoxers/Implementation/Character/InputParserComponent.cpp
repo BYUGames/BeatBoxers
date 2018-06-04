@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "../BBGameInstance.h"
 #include "FighterCharacter.h"
-
+ 
 
 // Sets default values for this component's properties
 UInputParserComponent::UInputParserComponent(const class FObjectInitializer& ObjectInitializer)
@@ -551,6 +551,48 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 			AdjustedAmount = 0;
 	}
 
+	if (AdjustedAmount == -1) {
+		if (HorizontalMovement == -1) {
+		//downleft
+			ParseCurrentHeldDirection(1);
+		}
+		else if (HorizontalMovement == 1) {
+		//downright
+			ParseCurrentHeldDirection(3);
+		}
+		else {
+		//down
+			ParseCurrentHeldDirection(2);
+		}
+	}
+	else if (AdjustedAmount == 1) {
+		if (HorizontalMovement == -1) {
+			//upleft
+			ParseCurrentHeldDirection(7);
+		}
+		else if (HorizontalMovement == 1) {
+			//upright
+			ParseCurrentHeldDirection(9);
+		}
+		else {
+			//up
+			ParseCurrentHeldDirection(8);
+		}
+	}
+	else {
+		if (HorizontalMovement == -1) {
+			//left
+			ParseCurrentHeldDirection(4);
+		}
+		else if (HorizontalMovement == 1) {
+			//right
+			ParseCurrentHeldDirection(6);
+		}
+		else {
+			//neutral
+			//ParseCurrentHeldDirection(5);
+		}
+	}
 
 
 	if (MyFighterState != nullptr && !MyFighterState->IsInCrouchMove())
@@ -571,6 +613,36 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	{
 		MyFighter->SetWantsToCrouch(true);
 	}
+}
+void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
+{
+	if (PreviousDirections.size() > 0) {
+		if (PreviousDirections.top() == NumpadDirection) {
+			return;
+		}
+	}
+	UE_LOG(LogUInputParser, Error, TEXT("pushing %d"),NumpadDirection);
+	PreviousDirections.push(NumpadDirection);
+
+	
+	GetOwner()->GetWorldTimerManager().SetTimer(
+		TimerHandle_MotionTimer,
+		this,
+		&UInputParserComponent::OnMotionTimer,
+		.2,
+		false
+	);
+
+	//compare with previous direction held
+	//if different, replace previous direction held
+	//and add to previous 8 moves
+	//timer so this has to be done relatively close to the time you did the motion
+}
+
+void UInputParserComponent::OnMotionTimer()
+{
+	std::stack<int> clearedStack;
+	PreviousDirections = clearedStack;
 }
 
 void UInputParserComponent::InputAxisVerticalP2(float Amount)
@@ -606,47 +678,38 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 		float closeAmount = Amount - player360axisUpValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 1;
-			UE_LOG(LogUInputParser, Error, TEXT("a"));
 		}
 		closeAmount = Amount - player360axisUpRightValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 1;
-		UE_LOG(LogUInputParser, Error, TEXT("b"));
 	}
 		closeAmount = Amount - player360axisRightValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 0;
-		UE_LOG(LogUInputParser, Error, TEXT("c"));
 }
 		closeAmount = Amount - player360axisBottomRightValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = -1;
-		UE_LOG(LogUInputParser, Error, TEXT("d"));
 		}
 		closeAmount = Amount - player360axisBottomValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = -1;
-		UE_LOG(LogUInputParser, Error, TEXT("e"));
 		}
 		closeAmount = Amount - player360axisBottomLeftValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = -1;
-		UE_LOG(LogUInputParser, Error, TEXT("f"));
 		}
 		closeAmount = Amount - player360axisLeftValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 0;
-		UE_LOG(LogUInputParser, Error, TEXT("g"));
 		}
 		closeAmount = Amount - player360axisTopLeftValue;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 1;
-		UE_LOG(LogUInputParser, Error, TEXT("h"));
 		}
 		closeAmount = Amount - defaultVertical;
 		if (fabs(closeAmount) < .01f){
 			AdjustedAmount = 0;
-		UE_LOG(LogUInputParser, Error, TEXT("i"));
 		}
 	}
 	else {
@@ -806,6 +869,35 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	{
 		if (!HoldingBlock) {
 			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+				if (PreviousDirections.size() > 1) {
+					UE_LOG(LogUInputParser, Error, TEXT("first"));
+					if ((PreviousDirections.top() == 6) || (PreviousDirections.top() == 3)) {
+						UE_LOG(LogUInputParser, Error, TEXT("second"));
+						PreviousDirections.pop();
+						if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 2)) {
+							UE_LOG(LogUInputParser, Error, TEXT("final"));
+							std::stack<int> clearedStack;
+							PreviousDirections = clearedStack;
+							//quarter circle forward
+							//CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+							return;
+							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+						}
+					}
+				
+
+					if ((PreviousDirections.top() == 4) || (PreviousDirections.top() == 1)) {
+						PreviousDirections.pop();
+						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
+							PreviousDirections.empty();
+							//quarter circle back
+							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+						}
+					}
+				}
+
+			
+
 				if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
 					CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
 				}

@@ -882,7 +882,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 							std::stack<int> clearedStack;
 							PreviousDirections = clearedStack;
 							//quarter circle forward
-							CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 							return;
 							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
 						}
@@ -894,6 +894,8 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
 							PreviousDirections.empty();
 							//quarter circle back
+							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+							return;
 							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
 						}
 					}

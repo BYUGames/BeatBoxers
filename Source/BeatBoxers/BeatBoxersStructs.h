@@ -127,7 +127,9 @@ enum class EInputToken : uint8
 	IE_Up			UMETA(DisplayName = "Up"),
 	IE_Down			UMETA(DisplayName = "Down"),
 	IE_Left			UMETA(DisplayName = "Left"),
-	IE_Right		UMETA(DisplayName = "Right")
+	IE_Right		UMETA(DisplayName = "Right"),
+	IE_QCF			UMETA(DisplayName = "Quarter Circle Forward"),
+	IE_QCB		UMETA(DisplayName = "Quarter Circle Back")
 };
 
 UENUM(BlueprintType)
@@ -211,6 +213,12 @@ struct FInputTokenBools
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool DashCancelBackward;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool QCF;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool QCB;
 
 	bool FilterInputToken(EInputToken Token) const;
 };

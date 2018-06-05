@@ -45,6 +45,8 @@ public:
 	virtual void InputActionBlock(UInputParserComponent *Parser);
 	virtual void InputActionDashForward(UInputParserComponent *Parser);
 	virtual void InputActionDashBackwards(UInputParserComponent * Parser);
+	virtual void InputActionQCF(UInputParserComponent *Parser);
+	virtual void InputActionQCB(UInputParserComponent * Parser);
 };
 
 UCLASS()
@@ -70,6 +72,8 @@ public:
 	virtual void InputActionBlock(UInputParserComponent *Parser) override;
 	virtual void InputActionDashForward(UInputParserComponent *Parser) override;
 	virtual void InputActionDashBackwards(UInputParserComponent *Parser) override;
+	virtual void InputActionQCF(UInputParserComponent *Parser) override;
+	virtual void InputActionQCB(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -91,6 +95,8 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
+	virtual void InputActionQCF(UInputParserComponent *Parser) override;
+	virtual void InputActionQCB(UInputParserComponent *Parser) override;
 };
 
 UCLASS()
@@ -112,6 +118,8 @@ public:
 	virtual void InputActionSpecial1(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial2(UInputParserComponent *Parser) override;
 	virtual void InputActionSpecial3(UInputParserComponent *Parser) override;
+	virtual void InputActionQCF(UInputParserComponent *Parser) override;
+	virtual void InputActionQCB(UInputParserComponent *Parser) override;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -193,6 +201,8 @@ public:
 	virtual void InputActionSuper(bool IsUp) override;
 	virtual void InputActionBlock(bool IsUp) override;
 	virtual void InputActionStopBlock(bool IsUp) override;
+	virtual void InputActionQCF(bool IsUp) override;
+	virtual void InputActionQCB(bool IsUp) override;
 
 	/** End IInputParser implementation */
 

@@ -98,4 +98,10 @@ public:
 	
 	/** Receives events relating to releasing the Block button. */
 	virtual void InputActionStopBlock(bool IsUp) = 0;
+
+	/** Receives events relating to pressing the quarter circle forward motion + attack. */
+	virtual void InputActionQCF(bool IsUp) = 0;
+
+	/** Receives events relating to releasing the quarter circle back motion + attack. */
+	virtual void InputActionQCB(bool IsUp) = 0;
 };

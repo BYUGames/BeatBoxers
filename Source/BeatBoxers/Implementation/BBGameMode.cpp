@@ -1277,13 +1277,13 @@ void ABBGameMode::HandleMatchHasEnded()
 	}
 	else
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
+		//UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
 	}
 }
 
 void ABBGameMode::EndGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
+	//UGameplayStatics::OpenLevel(GetWorld(), "MainMenuStage");
 }
 
 FMusicBalanceParams ABBGameMode::GetMusicBalance()

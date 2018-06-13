@@ -600,6 +600,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		MyFighterState->SetVerticalDirection(AdjustedAmount);
 		if (AdjustedAmount < 0) {
 			MyFighterState->SetWantsToCrouch(true);
+
 		}
 		else {
 			MyFighterState->SetWantsToCrouch(false);
@@ -640,8 +641,7 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 
 void UInputParserComponent::OnMotionTimer()
 {
-	std::stack<int> clearedStack;
-	PreviousDirections = clearedStack;
+	PreviousDirections.push(10);
 }
 
 void UInputParserComponent::InputAxisVerticalP2(float Amount)
@@ -720,7 +720,48 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 			AdjustedAmount = 0;
 	}
 
-	
+	if (AdjustedAmount == -1) {
+		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+			//downleft
+			ParseCurrentHeldDirection(1);
+		}
+		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
+			//downright
+			ParseCurrentHeldDirection(3);
+		}
+		else {
+			//down
+			ParseCurrentHeldDirection(2);
+		}
+	}
+	else if (AdjustedAmount == 1) {
+		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+			//upleft
+			ParseCurrentHeldDirection(7);
+		}
+		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
+			//upright
+			ParseCurrentHeldDirection(9);
+		}
+		else {
+			//up
+			ParseCurrentHeldDirection(8);
+		}
+	}
+	else {
+		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+			//left
+			ParseCurrentHeldDirection(4);
+		}
+		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
+			//right
+			ParseCurrentHeldDirection(6);
+		}
+		else {
+			//neutral
+			//ParseCurrentHeldDirection(5);
+		}
+	}
 
 
 	if (MyFighterState != nullptr && !MyFighterState->IsInCrouchMove())
@@ -889,7 +930,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 					}
 				
 
-					if ((PreviousDirections.top() == 4) || (PreviousDirections.top() == 1)) {
+					else if ((PreviousDirections.top() == 4) || (PreviousDirections.top() == 1)) {
 						PreviousDirections.pop();
 						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
 							PreviousDirections.empty();

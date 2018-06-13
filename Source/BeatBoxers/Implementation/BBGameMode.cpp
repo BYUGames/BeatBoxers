@@ -404,6 +404,8 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ER
 
 	if (RPSType == ERPSType::RPS_Grab) return false;
 
+	if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned() || Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) return false;
+
 	return true;
 	/*
 	switch (Fighter->GetStance())

@@ -44,6 +44,8 @@ void UMovesetComponent::GotoDefaultState()
 {
 	if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsKnockedDown() && !Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned() && Cast<AFighterCharacter>(MyFighter)->FighterState->IsBlocking())
 	{
+		UE_LOG(LogUMoveset, Error, TEXT("goes to default state"));
+
 		Cast<AFighterCharacter>(MyFighter)->BlockEffects();
 	}
 
@@ -58,7 +60,7 @@ void UMovesetComponent::GotoDefaultState()
 void UMovesetComponent::SetState(FDataTableRowHandle State)
 {
 	Cast<AFighterCharacter>(MyFighter)->K2_BPEventsOnStateBegin(State);
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent changing state to %s"), *GetNameSafe(GetOwner()), *State.RowName.ToString());
+	UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent changing state to %s"), *GetNameSafe(GetOwner()), *State.RowName.ToString());
 	if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait))
 	{
 		GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait);
@@ -73,7 +75,7 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 {
 	Cast<AFighterCharacter>(MyFighter)->HasUsedMoveAndHasYetToLand = true;
 
-	
+	UE_LOG(LogUMoveset, Error, TEXT("goes to state"));
 
 	if (!(Cast<AFighterCharacter>(MyFighter)->InAir
 		|| Cast<AFighterCharacter>(MyFighter)->FighterState != nullptr && (Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove() || Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned())))
@@ -89,6 +91,7 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 	}
 	else
 	{
+		UE_LOG(LogUMoveset, Error, TEXT("else"));
 		SetState(NewState);
 		//Requiring the last move window to have hit on the first window is nonsensical.
 		//Its also currently the only use of this parameter, so just pass true.

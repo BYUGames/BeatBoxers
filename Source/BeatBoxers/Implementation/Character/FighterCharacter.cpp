@@ -228,6 +228,8 @@ const IFighterState* AFighterCharacter::GetFighterState() const
 	if (MyFighterState == nullptr)
 	{
 		return Cast<IFighterState>(FighterState);
+
+
 	}
 	else
 	{

@@ -309,88 +309,99 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 {
-	if (Token == EInputToken::IE_None) {
-		return;
-	}
+	//if (!(Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned()))UE_LOG(LogUMoveset, Warning, TEXT("aaa"));
+	//if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove()) UE_LOG(LogUMoveset, Warning, TEXT("bbb"));
+	//if ( !(Cast<AFighterCharacter>(MyFighter)->FighterState->bIsKnockedDown == true) ) UE_LOG(LogUMoveset, Warning, TEXT("ccc"));
+	//if ((Token == EInputToken::IE_DashCancelForward) ) UE_LOG(LogUMoveset, Warning, TEXT("ddd"));
+	//if ((Token == EInputToken::IE_DashCancelBackward)) UE_LOG(LogUMoveset, Warning, TEXT("eee"));
 
-	UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
-	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
-	{
-		GotoDefaultState();
-		return ProcessInputToken(Token, Accuracy);
-	}
+	if (!(Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned()) && !(Cast<AFighterCharacter>(MyFighter)->FighterState->bIsKnockedDown == true) && !(Cast<AFighterCharacter>(MyFighter)->FighterState->IsGrabbed())) {
+		if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove() || (Token == EInputToken::IE_DashCancelForward) || (Token == EInputToken::IE_DashCancelBackward)) {
+			
+			if (Token == EInputToken::IE_None) {
+				return;
+			}
 
-	FDataTableRowHandle StateToLookAt = CurrentState;
-
-	if ((CurrentState == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
-	{
-		StateToLookAt = PreviousState;
-	}
-
-	for (int i = 0; i < StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
-	{
-
-		FDataTableRowHandle PossibleMove = StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i];
-
-		//if in current state and PostWait timer still going on, check PreviousState transistions first
-		if ((StateToLookAt == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
-		{
-			PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
-		}
-
-		if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
-		{
-			UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *StateToLookAt.RowName.ToString());
-		}
-		else if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
-		{
-			if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
+			UE_LOG(LogUMoveset, Warning, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
+			if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 			{
-				if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(Accuracy))
+				GotoDefaultState();
+				return ProcessInputToken(Token, Accuracy);
+			}
+
+			FDataTableRowHandle StateToLookAt = CurrentState;
+
+			if ((CurrentState == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+			{
+				StateToLookAt = PreviousState;
+			}
+
+			for (int i = 0; i < StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions.Num(); i++)
+			{
+
+				FDataTableRowHandle PossibleMove = StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+
+				//if in current state and PostWait timer still going on, check PreviousState transistions first
+				if ((StateToLookAt == DefaultState) && (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
 				{
-					if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
+					PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
+				}
+
+				if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
+				{
+					UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *StateToLookAt.RowName.ToString());
+				}
+				else if (PossibleMove.GetRow<FMoveData>(cs)->AllowedInputs.FilterInputToken(Token))
+				{
+					if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 					{
-						// Found a state that we can enter.
-						UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
-							*GetNameSafe(GetOwner()),
-							*StateToLookAt.RowName.ToString(),
-							*StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
-							*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
-						);
-						if (MyFighterWorld->IsOnBeat(Accuracy) )
+						if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(Accuracy))
 						{
-							MyFighter->InputOnBeatLogic();
+							if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
+							{
+								// Found a state that we can enter.
+								UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
+									*GetNameSafe(GetOwner()),
+									*StateToLookAt.RowName.ToString(),
+									*StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
+									*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
+								);
+								if (MyFighterWorld->IsOnBeat(Accuracy))
+								{
+									MyFighter->InputOnBeatLogic();
+								}
+								else
+								{
+									MyFighter->MissBeat();
+									MyFighter->InputOffBeatLogic();
+								}
+								GotoState(PossibleMove);
+								return;
+							}
 						}
-						else
-						{
-							MyFighter->MissBeat();
-							MyFighter->InputOffBeatLogic();
-						}
-						GotoState(PossibleMove);
-						return;
 					}
 				}
 			}
-		}
-	}
-	// We weren't able to use any of the possible transitions or there were none to begin with.
+			// We weren't able to use any of the possible transitions or there were none to begin with.
 
-	if (StateToLookAt != DefaultState)
-	{
-		// Reached the end of this combo, return to default and try this input again.
-		GotoDefaultState();
-		return ProcessInputToken(Token, Accuracy);
-	}
-	else if ((GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
-	{
-		//try again but with postwait ended
-		(GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait));
-		return ProcessInputToken(Token, Accuracy);
-	}
-	else
-	{
-		// If we're at default already there are no moves for this input. Do nothing.
-		return;
+			if (StateToLookAt != DefaultState)
+			{
+				// Reached the end of this combo, return to default and try this input again.
+				GotoDefaultState();
+				return ProcessInputToken(Token, Accuracy);
+			}
+			else if ((GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_PostWait)))
+			{
+				//try again but with postwait ended
+				(GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_PostWait));
+				return ProcessInputToken(Token, Accuracy);
+			}
+			else
+			{
+				// If we're at default already there are no moves for this input. Do nothing.
+				return;
+			}
+		}
 	}
 }
 

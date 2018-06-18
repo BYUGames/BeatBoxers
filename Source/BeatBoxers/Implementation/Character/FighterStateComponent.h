@@ -39,7 +39,6 @@ protected:
 	uint32 bIsBlockButtonDown : 1;
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
-	uint32 bIsKnockedDown : 1;
 	uint32 bSkipWindupOnBeat : 1;
 	uint32 bIsInDDR : 1;
 	uint32 bGrabbed : 1;
@@ -196,6 +195,9 @@ public:
 	void PlayExecutionAnimation();
 
 	IFighterPlayerState *MyFighterPlayerState;
+
+
+	uint32 bIsKnockedDown : 1;
 
 	void EndCombo();
 };

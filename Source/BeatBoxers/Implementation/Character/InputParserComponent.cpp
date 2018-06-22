@@ -626,13 +626,13 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
 			if (NumpadDirection == 7) {
-				//MyFighterState->Jump(-1);
+				MyFighterState->Jump(-1);
 			}
 			else if(NumpadDirection == 8){
-				//MyFighterState->Jump(0);
+				MyFighterState->Jump(0);
 			}
 			else if (NumpadDirection == 9) {
-				//MyFighterState->Jump(1);
+				MyFighterState->Jump(1);
 			}
 		}
 

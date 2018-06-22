@@ -473,6 +473,24 @@ void AFighterCharacter::Jump(int direction)
 		}
 		AirMovementDirection = direction * Facing;
 		LaunchCharacter({ 300*((float)direction),300 * ((float)direction),1000 }, true, true);
+		FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();
+		if (JumpEffects.ParticleSystem != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(),
+				JumpEffects.ParticleSystem,
+				RelativeTransform
+			);
+		}
+		if (JumpEffects.SoundCue != nullptr)
+		{
+			UGameplayStatics::SpawnSoundAtLocation(
+				this,
+				JumpEffects.SoundCue,
+				RelativeTransform.GetLocation(),
+				RelativeTransform.GetRotation().Rotator()
+			);
+		}
 	}
 }
 

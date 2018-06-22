@@ -931,7 +931,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (!HoldingBlock) {
+		//if (!HoldingBlock) {
 				if (PreviousDirections.size() > 1) {
 					if ((PreviousDirections.top() == 6) || (PreviousDirections.top() == 3)) {
 						PreviousDirections.pop();
@@ -972,7 +972,7 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 			}
 			else
 				CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);
-		}
+		//}
 	}
 }
 
@@ -980,13 +980,13 @@ void UInputParserComponent::InputActionMedium(bool IsUp)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (!HoldingBlock) {
+		//if (!HoldingBlock) {
 			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
 				CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
 			}
 			else
 				CurrentStateClass.GetDefaultObject()->InputActionMediumCrouch(this);
-		}
+		//}
 	}
 }
 

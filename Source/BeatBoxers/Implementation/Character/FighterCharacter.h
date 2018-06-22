@@ -176,7 +176,7 @@ public:
 	virtual TWeakObjectPtr<AController> GetFighterController() const override;
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetMoveDirection(float Direction) override;
-	virtual void Jump() override;
+	virtual void Jump(int direction) override;
 	virtual FStartJumpEvent& GetOnStartJumpEvent() override;
 	virtual FLandEvent& GetOnLandEvent() override;
 	virtual FClashEvent& GetOnClashEvent() override;

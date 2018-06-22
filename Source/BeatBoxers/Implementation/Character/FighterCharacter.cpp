@@ -442,7 +442,7 @@ void AFighterCharacter::SetMoveDirection(float Direction)
 	GetCharacterMovement()->AddInputVector(FVector(Direction, 0, 0));
 }
 
-void AFighterCharacter::Jump()
+void AFighterCharacter::Jump(int direction)
 {
 	if (!IsJumping())
 	{
@@ -465,6 +465,14 @@ void AFighterCharacter::Jump()
 				false
 			);
 		}
+	}
+	else {
+		if (StartJumpEvent.IsBound())
+		{
+			StartJumpEvent.Broadcast();
+		}
+		AirMovementDirection = direction * Facing;
+		LaunchCharacter({ 300*((float)direction),300 * ((float)direction),1000 }, true, true);
 	}
 }
 

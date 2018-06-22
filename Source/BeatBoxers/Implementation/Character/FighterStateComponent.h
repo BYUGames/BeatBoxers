@@ -143,7 +143,7 @@ public:
 	virtual void SetWantsToCrouch(bool WantsToCrouch) override;
 	virtual void SetWantsToCharge(bool WantsToCharge) override;
 	virtual void ApplyMovement(FMovement Movement) override;
-	virtual void Jump() override;
+	virtual void Jump(int direction) override;
 	virtual void Block() override;
 	virtual void StopBlock() override;
 	virtual void OnLand() override;
@@ -198,6 +198,6 @@ public:
 
 
 	uint32 bIsKnockedDown : 1;
-
+	bool usedAirJump;
 	void EndCombo();
 };

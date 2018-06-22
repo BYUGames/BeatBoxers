@@ -405,11 +405,20 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 	}
 }
 
-void UFighterStateComponent::Jump()
+void UFighterStateComponent::Jump(int direction)
 {
-	if (IsInputBlocked() || MyFighter == nullptr || MyFighter->IsJumping()) return;
+	if (IsInputBlocked() || MyFighter == nullptr) return;
+	if (MyFighter->IsJumping()){
+		if (usedAirJump) return;
+		usedAirJump = true;
+	}
+	else {
+		usedAirJump = false;
+	}
+
 	SetWantsToCrouch(false);
-	MyFighter->Jump();
+	
+	MyFighter->Jump(direction);
 }
 
 void UFighterStateComponent::Block()

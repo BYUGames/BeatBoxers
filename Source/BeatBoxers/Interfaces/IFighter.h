@@ -64,7 +64,7 @@ public:
 	virtual void SetMoveDirection(float Direction) = 0;
 
 	/** Recieves calls from FighterState, gating logic should have been done there. */
-	virtual void Jump() = 0;
+	virtual void Jump(int direction) = 0;
 
 	virtual FStartJumpEvent& GetOnStartJumpEvent() = 0;
 

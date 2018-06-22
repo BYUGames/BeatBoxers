@@ -93,7 +93,7 @@ public:
 	virtual void ApplyMovement(FMovement Movement) = 0;
 
 	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
-	virtual void Jump() = 0;
+	virtual void Jump(int direction) = 0;
 
 	/** Interface to Fighter function, Fighter state can ignore function when it sees fit. */
 	virtual void Block() = 0;

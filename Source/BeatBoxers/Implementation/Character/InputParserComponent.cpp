@@ -590,7 +590,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		}
 		else {
 			//neutral
-			//ParseCurrentHeldDirection(5);
+			ParseCurrentHeldDirection(5);
 		}
 	}
 
@@ -623,8 +623,24 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 		}
 	}
 	PreviousDirections.push(NumpadDirection);
+	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
+		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
+			if (NumpadDirection == 7) {
+				//MyFighterState->Jump(-1);
+			}
+			else if(NumpadDirection == 8){
+				//MyFighterState->Jump(0);
+			}
+			else if (NumpadDirection == 9) {
+				//MyFighterState->Jump(1);
+			}
+		}
 
-	
+	}
+	if (CurrentHeldDirection != NumpadDirection) {
+		CurrentHeldDirection = NumpadDirection;
+	}
+
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_MotionTimer,
 		this,
@@ -759,7 +775,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 		}
 		else {
 			//neutral
-			//ParseCurrentHeldDirection(5);
+			ParseCurrentHeldDirection(5);
 		}
 	}
 
@@ -774,7 +790,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 			MyFighterState->SetWantsToCrouch(false);
 			if (AdjustedAmount > 0)
 			{
-				//MyFighterState->Jump();
+			//	MyFighterState->Jump();
 			}
 		}
 	}

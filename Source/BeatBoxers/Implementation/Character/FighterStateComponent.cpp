@@ -21,6 +21,7 @@ UFighterStateComponent::UFighterStateComponent(const class FObjectInitializer& O
 	
 	ActorsToIgnore = TArray<TWeakObjectPtr<AActor>>();
 	CurrentWindowStage = EWindowStage::WE_None;
+	isMidMove = false;
 	bIsHitboxActive = false;
 	TimesHitThisKnockdown = 0;
 	bIsInDDR = false;
@@ -257,7 +258,11 @@ bool UFighterStateComponent::IsInvulnerable() const
 
 bool UFighterStateComponent::IsMidMove() const
 {
-	return CurrentWindowStage != EWindowStage::WE_None;
+	//if (CurrentWindowStage == EWindowStage::WE_Windup)UE_LOG(LogUFighterState, Warning, TEXT("windup"));
+//	if (CurrentWindowStage == EWindowStage::WE_Duration)UE_LOG(LogUFighterState, Warning, TEXT("current"));
+//	if (CurrentWindowStage == EWindowStage::WE_Winddown)UE_LOG(LogUFighterState, Warning, TEXT("winddown"));
+	return isMidMove;
+	//return CurrentWindowStage != EWindowStage::WE_None;
 }
 
 void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
@@ -305,6 +310,8 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 			ACharacter *Character = Cast<ACharacter>(MyFighter);
 		}
 		EndWindow(EWindowEnd::WE_Stunned);
+		isMidMove = false;
+		CurrentWindowStage = EWindowStage::WE_None;
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Stun,
 			this,
@@ -703,7 +710,7 @@ void UFighterStateComponent::EndWindow(EWindowEnd WindowEnd)
 {
 	if (IsMidMove())
 	{
-		CurrentWindowStage = EWindowStage::WE_None;
+		//CurrentWindowStage = EWindowStage::WE_None;
 		if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
 		{
 			GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
@@ -1212,6 +1219,8 @@ bool UFighterStateComponent::Grabbed(float Duration)
 		}
 	}
 	Cast<AFighterCharacter>(MyFighter)->attachToOpponent();
+	isMidMove = false;
+	CurrentWindowStage = EWindowStage::WE_None;
 	EndWindow(EWindowEnd::WE_Stunned);
 	bGrabbed = true;
 	//GetOwner()->GetWorldTimerManager().SetTimer(

@@ -39,12 +39,12 @@ protected:
 	uint32 bIsBlockButtonDown : 1;
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
-	uint32 bSkipWindupOnBeat : 1;
+
 	uint32 bIsInDDR : 1;
 	uint32 bGrabbed : 1;
 
 
-	EWindowStage CurrentWindowStage;
+
 	EWindowEnd CurrentWindowEnd;
 	FMovement CurrentMovement;
 	FMoveWindow CurrentWindow;
@@ -196,8 +196,10 @@ public:
 
 	IFighterPlayerState *MyFighterPlayerState;
 
-
+	EWindowStage CurrentWindowStage;
 	uint32 bIsKnockedDown : 1;
 	bool usedAirJump;
 	void EndCombo();
+	bool isMidMove;
+	uint32 bSkipWindupOnBeat : 1;
 };

@@ -68,6 +68,9 @@ void UMovesetComponent::SetState(FDataTableRowHandle State)
 	PreviousState = CurrentState;
 	CurrentState = State;
 	CurrentWindowInState = 0;
+	Cast<AFighterCharacter>(MyFighter)->FighterState->bSkipWindupOnBeat = false;
+	Cast<AFighterCharacter>(MyFighter)->FighterState->isMidMove = false;
+	Cast<AFighterCharacter>(MyFighter)->FighterState->CurrentWindowStage = EWindowStage::WE_None;
 
 }
 
@@ -101,6 +104,7 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 
 void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 {
+	Cast<AFighterCharacter>(MyFighter)->FighterState->isMidMove = true;
 	if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("%s UMovesetComponent CurrentStateClass invalid when trying to start next window."), *GetNameSafe(GetOwner()));
@@ -117,6 +121,8 @@ void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 
 	if (NextWindow == nullptr || (!LastWindowHit && RequiresLastWindowHit))
 	{
+		Cast<AFighterCharacter>(MyFighter)->FighterState->isMidMove = false;
+		Cast<AFighterCharacter>(MyFighter)->FighterState->CurrentWindowStage = EWindowStage::WE_None;
 		// We've reached the end of this window list for this state.
 		if (CurrentState.GetRow<FMoveData>(cs)->MaxPostWait == 0)
 		{

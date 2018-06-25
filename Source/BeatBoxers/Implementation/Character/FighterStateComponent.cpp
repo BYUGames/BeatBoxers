@@ -202,7 +202,7 @@ bool UFighterStateComponent::IsInputBlocked() const
 bool UFighterStateComponent::IsBlocking() const
 {
 	float ToOpponent = (MyFighter != nullptr) ? MyFighter->GetOpponentDirection() : 0.f;
-	UE_LOG(LogUFighterState, VeryVerbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %d, %f, %s, %s, %f"),
+	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %d, %f, %s, %s, %f"),
 		*GetNameSafe(GetOwner()),
 		IsStunned(),
 		bIsCurrentStunBlock,

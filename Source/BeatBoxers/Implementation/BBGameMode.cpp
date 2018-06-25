@@ -400,11 +400,21 @@ void ABBGameMode::AddSpecial(APlayerState *PlayerState, float Amount)
 
 bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ERPSType RPSType) const
 {
+	//UE_LOG(LogUMoveset, Warning, TEXT("doesblock"));
+	
+	//if (Fighter->IsBlocking()) UE_LOG(LogUMoveset, Warning, TEXT("Fighter->IsBlocking()"));
+	//if (Fighter == nullptr) UE_LOG(LogUMoveset, Warning TEXT("Fighter == nullptr"));
 	if (Fighter == nullptr || !Fighter->IsBlocking()) return false;
 
+
+	//if (RPSType == ERPSType::RPS_Grab) UE_LOG(LogUMoveset, Warning, TEXT("RPSType == ERPSType::RPS_Grab"));
 	if (RPSType == ERPSType::RPS_Grab) return false;
 
-	if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned() || Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) return false;
+	//if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned()) UE_LOG(LogUMoveset, Warning, TEXT("Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned()"));
+	//if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) UE_LOG(LogUMoveset, Warning, TEXT("Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()"));
+	//if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned() || Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) return false;
+
+	//UE_LOG(LogUMoveset, Warning, TEXT("none"));
 
 	return true;
 	/*

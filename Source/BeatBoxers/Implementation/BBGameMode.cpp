@@ -195,8 +195,15 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType, RPSType);
-	Fighter->StartStun(20, WasBlocked);
+
+
+
 	if (Hit.HitstopAmount > 0) {
+		if (Fighter != nullptr)
+		{
+			Fighter->StopAnimMontage();
+		}
+		Fighter->StartStun(20, WasBlocked);
 		//shake camera as part of hitstop
 		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
 	}

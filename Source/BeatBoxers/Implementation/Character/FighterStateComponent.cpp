@@ -196,7 +196,7 @@ void UFighterStateComponent::RegisterFighterPlayerState(TWeakObjectPtr<UObject> 
 
 bool UFighterStateComponent::IsInputBlocked() const
 {
-	return IsMidMove() || IsStunned() || bIsFrozenForSolo;
+	return IsMidMove() || IsStunned() || bIsFrozenForSolo || bGrabbed;
 }
 
 bool UFighterStateComponent::IsBlocking() const
@@ -213,12 +213,16 @@ bool UFighterStateComponent::IsBlocking() const
 		*GetEnumValueToString<EStance>(TEXT("EStance"), (MyFighter != nullptr) ? MyFighter->GetStance() : EStance::SE_NA),
 		ToOpponent
 	);
-	if (!IsInputBlocked() && bIsBlockButtonDown) return true;
-	if (IsStunned() && bIsCurrentStunBlock) return true;
-	if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
-	if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
+	if (!bGrabbed) {
+		if (bIsBlockButtonDown || bIsCurrentStunBlock) {
+			if (IsStunned() && bIsCurrentStunBlock) return true;
+			if (!IsInputBlocked() && !IsStunned()) return true;
+		}
+	}
+	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
+	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
-	if (ToOpponent == 0) return false;
+	//if (ToOpponent == 0) return false;
 
 	//if (ToOpponent > 0 && MoveDirection < 0) return true;
 	//if (ToOpponent < 0 && MoveDirection > 0) return true;
@@ -312,6 +316,8 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 		EndWindow(EWindowEnd::WE_Stunned);
 		isMidMove = false;
 		CurrentWindowStage = EWindowStage::WE_None;
+		//UE_LOG(LogAFighterCharacter, Warning, TEXT("duration %f"), Duration);
+
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Stun,
 			this,
@@ -879,6 +885,7 @@ void UFighterStateComponent::PerformHitboxScan()
 
 void UFighterStateComponent::OnStunFinished()
 {
+	UE_LOG(LogAFighterCharacter, Warning, TEXT("finished stun"));
 	EndDDR();
 	if (!bIsKnockedDown)
 	{

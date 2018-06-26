@@ -355,7 +355,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 
 	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
 		HasDashedLeft = true;
-		if (GetFighterFacing() > 0)
+		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		if (!Fighter->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -367,7 +368,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
-		if (GetFighterFacing() > 0)
+		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		if (!Fighter->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -461,7 +463,9 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 
 	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
 		HasDashedLeft = true;
-		if (GetFighterFacing() > 0)
+		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		if (!Fighter->IsToRightOfOpponent())
+		//if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -473,7 +477,8 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
-		if (GetFighterFacing() > 0)
+		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		if (!Fighter->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}

@@ -994,3 +994,7 @@ void AFighterCharacter::ResetInputParserInputThisBeat()
 {
 	Cast<UInputParserComponent>(GetInputParser())->HasInputtedThisBeat = false;
 }
+
+bool AFighterCharacter::IsToRightOfOpponent() {
+	return (GetActorLocation().X > Cast<AFighterCharacter>(MyOpponent.Get())->GetActorLocation().X);
+}

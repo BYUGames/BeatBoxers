@@ -304,4 +304,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "detach from opponent"))
 	void detachFromOpponent();
+
+	bool IsToRightOfOpponent();
 };

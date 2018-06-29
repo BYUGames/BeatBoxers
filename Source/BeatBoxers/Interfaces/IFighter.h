@@ -119,7 +119,10 @@ public:
 	virtual FMusicBalanceParams GetMusicBalance() const = 0;
 
 	/** If DoesCollide is true then the player will collide with other players, if false it will ignore them. */
-	virtual void SetFighterCollisions(bool DoesCollide) = 0;
+	virtual void SetFighterCollisions(bool DoesCollide) = 0; 
+
+	/**returns name of current move */
+	virtual FString GetCurrentMoveName() = 0;
 
 	/** Interrupts any ongoing move windows and starts a stun. */
 	virtual void StartStun(float Duration, bool WasBlocked) = 0;

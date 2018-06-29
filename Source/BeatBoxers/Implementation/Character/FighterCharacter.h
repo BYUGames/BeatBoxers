@@ -229,6 +229,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void SetFighterCollisions(bool DoesCollide) override;
 
+	//returns the name of the current move
+	UFUNCTION(BlueprintCallable)
+	virtual FString GetCurrentMoveName() override;
+
 	/** HitOnBeatLogic will fire if the attack was on the beat and it hit a player*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hit On Beat Logic"))
 	void K2_HitOnBeatLogic();
@@ -253,6 +257,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Blueprint Event Called Whenever State Starts- to add unique effects"))
 	void K2_BPEventsOnStateBegin(FDataTableRowHandle state);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Blueprint Event Reset Connected Attack Function"))
+	void K2_BPEventsResetOnMoveConnect();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -306,4 +313,8 @@ public:
 	void detachFromOpponent();
 
 	bool IsToRightOfOpponent();
+
+	//UFUNCTION(BlueprintCallable)
+	//FString GetCurrentMoveName();
+	//
 };

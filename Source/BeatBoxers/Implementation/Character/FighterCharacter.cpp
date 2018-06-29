@@ -877,6 +877,11 @@ void AFighterCharacter::SetFighterCollisions(bool DoesCollide)
 	}	
 }
 
+FString AFighterCharacter::GetCurrentMoveName()
+{
+	return Cast<UMovesetComponent>(GetMoveset())->CurrentState.RowName.ToString();
+}
+
 void AFighterCharacter::StartStun(float Duration, bool WasBlocked) 
 {
 	FighterState->StartStun(Duration, WasBlocked);

@@ -196,8 +196,6 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType, RPSType);
 
-
-
 	if (Hit.HitstopAmount > 0) {
 		if (Fighter != nullptr)
 		{

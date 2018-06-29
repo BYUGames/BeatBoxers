@@ -315,6 +315,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 		}
 		EndWindow(EWindowEnd::WE_Stunned);
 		isMidMove = false;
+		Cast<AFighterCharacter>(MyFighter)->K2_BPEventsResetOnMoveConnect();
 		CurrentWindowStage = EWindowStage::WE_None;
 		//UE_LOG(LogAFighterCharacter, Warning, TEXT("duration %f"), Duration);
 
@@ -1227,6 +1228,7 @@ bool UFighterStateComponent::Grabbed(float Duration)
 	}
 	Cast<AFighterCharacter>(MyFighter)->attachToOpponent();
 	isMidMove = false;
+	Cast<AFighterCharacter>(MyFighter)->K2_BPEventsResetOnMoveConnect();
 	CurrentWindowStage = EWindowStage::WE_None;
 	EndWindow(EWindowEnd::WE_Stunned);
 	bGrabbed = true;

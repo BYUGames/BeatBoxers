@@ -627,6 +627,7 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 			return;
 		}
 	}
+	if (NumpadDirection == 5) return;
 	PreviousDirections.push(NumpadDirection);
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
@@ -662,7 +663,8 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 
 void UInputParserComponent::OnMotionTimer()
 {
-	PreviousDirections.push(10);
+		PreviousDirections.push(10);
+	
 }
 
 void UInputParserComponent::InputAxisVerticalP2(float Amount)
@@ -938,27 +940,57 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	{
 		//if (!HoldingBlock) {
 				if (PreviousDirections.size() > 1) {
-					if ((PreviousDirections.top() == 6) || (PreviousDirections.top() == 3)) {
+					if ((PreviousDirections.top() == 3)) {
 						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 2)) {
-							std::stack<int> clearedStack;
-							PreviousDirections = clearedStack;
+						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 6)) {
+							PreviousDirections.empty();
 							//quarter circle forward
 							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 							return;
-							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
 						}
 					}
-				
+					else if ((PreviousDirections.top() == 6)) {
+						PreviousDirections.pop();
+						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 3)) {
+							PreviousDirections.empty();
+							//quarter circle forward
+							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
+							return;
+						}
+					}
 
-					else if ((PreviousDirections.top() == 4) || (PreviousDirections.top() == 1)) {
+
+					else if ((PreviousDirections.top() == 4)) {
 						PreviousDirections.pop();
 						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
 							PreviousDirections.empty();
 							//quarter circle back
 							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 							return;
-							//CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+						}
+					}
+					else if ((PreviousDirections.top() == 1)) {
+						PreviousDirections.pop();
+						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 4)) {
+							PreviousDirections.empty();
+							//quarter circle back
+							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+							return;
+						}
+					}
+					else if ((PreviousDirections.top() == 2)) {
+						PreviousDirections.pop();
+						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 4)) {
+							PreviousDirections.empty();
+							//quarter circle back
+							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+							return;
+						}
+						else if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 6)) {
+							PreviousDirections.empty();
+							//quarter circle forward
+							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
+							return;
 						}
 					}
 				}

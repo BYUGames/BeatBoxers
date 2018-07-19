@@ -43,6 +43,7 @@ ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	DefaultClashImpact.ImpartedMovement.IsRelativeToAttackerFacing = true;
 	DefaultClashImpact.ImpartedMovement.UsePhysicsLaunch = false;
 	DefaultClashImpact.StunLength = 0.5f;
+	
 	ComboImpactScaling = 0.8f;
 	GlobalImpactScaling = 1.f;
 }
@@ -840,7 +841,7 @@ FImpactData ABBGameMode::GetScaledImpactData_Implementation(AActor *Target, cons
 		ScaledImpact.ImpartedMovement.Delta *= GlobalImpactScaling;
 		if (ScaledImpact.ImpartedMovement.UsePhysicsLaunch)
 		{
-			ScaledImpact.ImpartedMovement.Delta *= Scale;// * scalar;
+			ScaledImpact.ImpartedMovement.Delta.Y *= Scale;// * scalar;
 		}
 		return ScaledImpact;
 	}

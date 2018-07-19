@@ -99,7 +99,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 			AFighterCharacter *Opponent = Cast<AFighterCharacter>(Fighter->MyOpponent.Get());
 			UMovesetComponent *Moveset = Cast<UMovesetComponent>(Fighter->GetMoveset());
-			if (!(Opponent->FighterState->IsStunned() && ((Moveset->CurrentState == Moveset->GrabbingState) || (Moveset->CurrentState == Moveset->GrabbingOffbeatState)))
+			if (!(Opponent->FighterState->IsStunned() && ((Moveset->CurrentState == Moveset->GrabbingState) || (Moveset->CurrentState == Moveset->GrabbingOffbeatState) || Opponent->FighterState->IsGrabbed()))
 				&& (Moveset->CurrentState != Moveset->SuperState)
 				//&& (Moveset->CurrentState != Moveset->ParryState) 
 				&& (Moveset->CurrentState != Moveset->DashState)

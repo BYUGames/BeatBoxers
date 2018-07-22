@@ -623,11 +623,13 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 {
 	if (PreviousDirections.size() > 0) {
-		if (PreviousDirections.top() == NumpadDirection) {
+		if ((PreviousDirections.top() == NumpadDirection) && (NumpadDirection!=7)&& (NumpadDirection != 8) && (NumpadDirection != 9)) {
 			return;
+
 		}
 	}
-	if (NumpadDirection == 5) return;
+	if (NumpadDirection == 5) { 
+		return; }
 	PreviousDirections.push(NumpadDirection);
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
@@ -642,6 +644,9 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 			}
 		}
 
+	}
+	else {
+		UE_LOG(LogABBGameMode, Warning, TEXT("it was actually: %d"), CurrentHeldDirection);
 	}
 	if (CurrentHeldDirection != NumpadDirection) {
 		CurrentHeldDirection = NumpadDirection;
@@ -664,7 +669,7 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 void UInputParserComponent::OnMotionTimer()
 {
 		PreviousDirections.push(10);
-	
+		CurrentHeldDirection = 10;
 }
 
 void UInputParserComponent::InputAxisVerticalP2(float Amount)

@@ -421,7 +421,11 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 void UFighterStateComponent::Jump(int direction)
 {
-	if (IsInputBlocked() || MyFighter == nullptr) return;
+	UE_LOG(LogABBGameMode, Warning, TEXT("tried to jump"));
+	if (IsInputBlocked() || MyFighter == nullptr) 
+	{
+		return;
+	}
 	if (MyFighter->IsJumping()){
 		if (usedAirJump) return;
 		usedAirJump = true;
@@ -429,7 +433,6 @@ void UFighterStateComponent::Jump(int direction)
 	else {
 		usedAirJump = false;
 	}
-
 	SetWantsToCrouch(false);
 	
 	MyFighter->Jump(direction);
@@ -452,6 +455,7 @@ void UFighterStateComponent::StopBlock()
 
 void UFighterStateComponent::OnLand()
 {
+	Cast<UInputParserComponent>(MyInputParser)->CurrentHeldDirection = 10;//
 	if (IsMidMove())
 	{
 		if (CurrentWindow.LandingInterrupts)

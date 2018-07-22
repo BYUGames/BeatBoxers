@@ -441,19 +441,23 @@ void AFighterCharacter::SetMoveDirection(float Direction)
 
 void AFighterCharacter::Jump(int direction)
 {
+	UE_LOG(LogABBGameMode, Warning, TEXT("f"));
 	if (!IsJumping())
 	{
-
+		UE_LOG(LogABBGameMode, Warning, TEXT("g"));
 		if (StartJumpEvent.IsBound())
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("h"));
 			StartJumpEvent.Broadcast();
 		}
 		if (JumpDelay <= 0.f)
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("i"));
 			OnJumpTimer();
 		}
 		else
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("j"));
 			GetWorldTimerManager().SetTimer(
 				TimerHandle_Jump,
 				this,
@@ -464,8 +468,10 @@ void AFighterCharacter::Jump(int direction)
 		}
 	}
 	else {
+		UE_LOG(LogABBGameMode, Warning, TEXT("l"));
 		if (StartJumpEvent.IsBound())
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("k"));
 			StartJumpEvent.Broadcast();
 		}
 		AirMovementDirection = direction * Facing;
@@ -473,6 +479,7 @@ void AFighterCharacter::Jump(int direction)
 		FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();
 		if (JumpEffects.ParticleSystem != nullptr)
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("m"));
 			UGameplayStatics::SpawnEmitterAtLocation(
 				GetWorld(),
 				JumpEffects.ParticleSystem,
@@ -481,6 +488,7 @@ void AFighterCharacter::Jump(int direction)
 		}
 		if (JumpEffects.SoundCue != nullptr)
 		{
+			UE_LOG(LogABBGameMode, Warning, TEXT("n"));
 			UGameplayStatics::SpawnSoundAtLocation(
 				this,
 				JumpEffects.SoundCue,

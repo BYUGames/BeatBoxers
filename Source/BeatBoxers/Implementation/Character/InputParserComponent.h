@@ -134,7 +134,6 @@ private:
 
 	void ParseCurrentHeldDirection(int NumpadDirection);
 	void OnMotionTimer();
-	int CurrentHeldDirection;
 
 protected:
 	// Amount of time the parser will hold the last token waiting for control to be returned before discarding it.
@@ -221,5 +220,7 @@ public:
 	float GetFighterFacing();
 
 	void ParryTimerEnd();
+
+	int CurrentHeldDirection;
 };
 

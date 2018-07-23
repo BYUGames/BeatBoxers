@@ -123,6 +123,7 @@ void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 	if (NextWindow == nullptr || (!LastWindowHit && RequiresLastWindowHit))
 	{
 		Cast<AFighterCharacter>(MyFighter)->FighterState->isMidMove = false;
+		Cast<AFighterCharacter>(MyFighter)->FighterState->SetWantsToCrouch(false);
 		Cast<AFighterCharacter>(MyFighter)->K2_BPEventsResetOnMoveConnect();
 		Cast<AFighterCharacter>(MyFighter)->FighterState->CurrentWindowStage = EWindowStage::WE_None;
 		// We've reached the end of this window list for this state.

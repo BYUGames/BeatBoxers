@@ -365,7 +365,6 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
 	}
-
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
@@ -620,8 +619,13 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		MyFighter->SetWantsToCrouch(true);
 	}
 }
-void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
-{
+void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection){
+if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
+	Cast<AFighterCharacter>(MyFighter)->UnCrouch();
+}
+else {
+	Cast<AFighterCharacter>(MyFighter)->Crouch();
+}
 	if (PreviousDirections.size() > 0) {
 		if ((PreviousDirections.top() == NumpadDirection) && (NumpadDirection!=7)&& (NumpadDirection != 8) && (NumpadDirection != 9)) {
 			return;
@@ -629,7 +633,8 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 		}
 	}
 	if (NumpadDirection == 5) { 
-		return; }
+		return;
+	}
 	PreviousDirections.push(NumpadDirection);
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
@@ -644,9 +649,6 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection)
 			}
 		}
 
-	}
-	else {
-		UE_LOG(LogABBGameMode, Warning, TEXT("it was actually: %d"), CurrentHeldDirection);
 	}
 	if (CurrentHeldDirection != NumpadDirection) {
 		CurrentHeldDirection = NumpadDirection;

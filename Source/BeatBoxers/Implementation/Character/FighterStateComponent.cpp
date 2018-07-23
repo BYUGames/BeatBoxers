@@ -421,7 +421,6 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 
 void UFighterStateComponent::Jump(int direction)
 {
-	UE_LOG(LogABBGameMode, Warning, TEXT("tried to jump"));
 	if (IsInputBlocked() || MyFighter == nullptr) 
 	{
 		return;

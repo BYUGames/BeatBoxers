@@ -626,6 +626,10 @@ if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
 else {
 	Cast<AFighterCharacter>(MyFighter)->Crouch();
 }
+
+if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
+	CurrentHeldDirection = NumpadDirection;
+}
 	if (PreviousDirections.size() > 0) {
 		if ((PreviousDirections.top() == NumpadDirection) && (NumpadDirection!=7)&& (NumpadDirection != 8) && (NumpadDirection != 9)) {
 			return;

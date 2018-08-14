@@ -131,11 +131,11 @@ public:
 	FPlayerBeatComboChangedEvent PlayerBeatComboChangedEvent;
 
 	/** Maximum time, in seconds, a move can be early and still considered on beat. */
-	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
+	UPROPERTY(BlueprintReadWrite, Meta = (BeatWindow))
 	float BeforeBeatAccuracyWindow = 0.1f;
 
 	/** Maximum time, in seconds, a move can be late and still considered on beat. */
-	UPROPERTY(EditAnywhere, Meta = (BeatWindow))
+	UPROPERTY(BlueprintReadWrite, Meta = (BeatWindow))
 	float AfterBeatAccuracyWindow = 0.2f;
 
 	/** This actor must implement the IMusicBox interface. */

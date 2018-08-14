@@ -7,7 +7,9 @@
 #include "Interfaces/IMusicBox.h"
 #include "Interfaces/IFretboardFeed.h"
 #include "BasicFretboardFeed.h"
+#include "CoreMinimal.h"
 #include "BasicMusicBox.generated.h"
+
 
 UCLASS(BlueprintType)
 class BEATBOXERS_API ABasicMusicBox : public AActor, public IMusicBox, public IFretboardFeed
@@ -19,6 +21,8 @@ protected:
 	UBasicFretboardFeed *MyFretboardFeed;
 
 public:
+
+
 	UPROPERTY(BlueprintAssignable)
 	FBeatEvent BeatEvent;
 
@@ -88,4 +92,5 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Event", BlueprintCallable, meta = (displayname = "Stop Music"))
 	int K2_StopMusic();
+	
 };

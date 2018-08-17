@@ -10,7 +10,7 @@ UBBGameUserSettings::UBBGameUserSettings(const FObjectInitializer& ObjectInitial
 
 void UBBGameUserSettings::SetCrowdDetailLevel(int32 Value)
 {
-	CrowdDetailLevel = FMath::Clamp(Value, 0, 3);
+	CrowdDetailLevel = FMath::Clamp(Value, -1, 3);
 }
 
 int32 UBBGameUserSettings::GetCrowdDetailLevel() const

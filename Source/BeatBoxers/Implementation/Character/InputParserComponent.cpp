@@ -1152,7 +1152,7 @@ void UInputParserDefaultState::InputActionDashForward(UInputParserComponent *Par
 
 void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionLeft()"));
+	UE_LOG(LogUInputParser, Error, TEXT("UInputParserDefaultState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
 		ChangeState(Parser, UPreLeftDashState::StaticClass());

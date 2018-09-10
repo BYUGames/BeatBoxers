@@ -140,6 +140,8 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	//GetFighterState()->
 	if (GetWorld()->GetFirstPlayerController() == Controller)
 	{
+		UE_LOG(LogUInputParser, Error, TEXT("mapped1"));
+
 		InputComponent->BindAxis("Horizontal", this, &AFighterCharacter::InputAxisHorizontal);
 		InputComponent->BindAxis("Vertical", this, &AFighterCharacter::InputAxisVertical);
 		InputComponent->BindAction("Up", IE_Pressed, this, &AFighterCharacter::InputActionUp);
@@ -160,6 +162,7 @@ void AFighterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		InputComponent->BindAction("DashRightButton", IE_Pressed, this, &AFighterCharacter::InputActionDashRightButton);
 	}
 	else{
+		UE_LOG(LogUInputParser, Error, TEXT("mapped2"));
 		InputComponent->BindAxis("HorizontalP2", this, &AFighterCharacter::InputAxisHorizontalP2);
 		InputComponent->BindAxis("VerticalP2", this, &AFighterCharacter::InputAxisVerticalP2);
 		InputComponent->BindAction("UpP2", IE_Pressed, this, &AFighterCharacter::InputActionUp);

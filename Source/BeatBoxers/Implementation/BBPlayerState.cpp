@@ -28,7 +28,7 @@ void ABBPlayerState::AddSpecial(float Amount)
 
 bool ABBPlayerState::UseSpecial(float Amount)
 {
-	if (Special >= Amount)
+	if (Special >= Amount || Amount<1)
 	{
 		Special -= Amount;
 		return true;

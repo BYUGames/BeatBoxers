@@ -950,6 +950,7 @@ void UInputParserComponent::InputActionBlock(bool IsUp)
 {
 	if (MyFighterState != nullptr)
 	{
+		Cast<UFighterStateComponent>(MyFighterState)->bIsBlockButtonDown = true;
 		CurrentStateClass.GetDefaultObject()->InputActionBlock(this);
 		MyFighterState->Block();
 		HoldingBlock = true;
@@ -960,6 +961,7 @@ void UInputParserComponent::InputActionStopBlock(bool IsUp)
 {
 	if (MyFighterState != nullptr)
 	{
+		Cast<UFighterStateComponent>(MyFighterState)->bIsBlockButtonDown = false;
 		MyFighterState->StopBlock();
 		HoldingBlock = false;
 	}

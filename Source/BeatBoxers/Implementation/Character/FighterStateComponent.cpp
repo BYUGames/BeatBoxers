@@ -214,11 +214,23 @@ bool UFighterStateComponent::IsBlocking() const
 		ToOpponent
 	);
 	if (!bGrabbed) {
-		if (bIsBlockButtonDown || bIsCurrentStunBlock) {
-			if (IsStunned() && bIsCurrentStunBlock) return true;
-			if (!IsInputBlocked() && !IsStunned()) return true;
+		if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) || IsBlockStunned()) {//(holding away from opponent) || 
+			if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0))) { UE_LOG(LogUMoveset, Error, TEXT("%s (bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) "), *GetNameSafe(GetOwner())); }
+			if (IsBlockStunned()) { UE_LOG(LogUMoveset, Error, TEXT("%s IsBlockStunned()"), *GetNameSafe(GetOwner())); }
+			
+			if (IsStunned() && IsBlockStunned()) {
+				UE_LOG(LogUMoveset, Error, TEXT("%sblockstun"), *GetNameSafe(GetOwner()));
+
+				return true; }
+			if (!IsInputBlocked() && !IsStunned()) {
+				UE_LOG(LogUMoveset, Error, TEXT("%sregularblock"), *GetNameSafe(GetOwner()));
+				return true;
+			}
+			UE_LOG(LogUMoveset, Warning, TEXT("%sincorrectblock"), *GetNameSafe(GetOwner()));
+
 		}
 	}
+	UE_LOG(LogUMoveset, Warning, TEXT("%sblockfail"), *GetNameSafe(GetOwner()));
 	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
 	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
@@ -306,8 +318,12 @@ bool UFighterStateComponent::IsInCrouchMove()
 
 void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 {
-	if (Duration >0.0001f) {
+	if (Duration > 0.0001f) {
 		bIsCurrentStunBlock = WasBlocked;
+		if (IsBlockStunned()){UE_LOG(LogABBGameMode, Error, TEXT("%sstun started with with block"), *GetNameSafe(this));
+		}
+		else { UE_LOG(LogABBGameMode, Error, TEXT("%sstun started without block"), *GetNameSafe(this)); }
+
 		StartDDR();
 		if (IsMidMove() && CurrentMontage != nullptr && MyFighter != nullptr)
 		{
@@ -318,7 +334,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 		Cast<AFighterCharacter>(MyFighter)->K2_BPEventsResetOnMoveConnect();
 		CurrentWindowStage = EWindowStage::WE_None;
 		//UE_LOG(LogAFighterCharacter, Warning, TEXT("duration %f"), Duration);
-
+		//GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Stun);
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Stun,
 			this,
@@ -439,7 +455,6 @@ void UFighterStateComponent::Jump(int direction)
 
 void UFighterStateComponent::Block()
 {
-	bIsBlockButtonDown = true;
 	if (!bIsKnockedDown && !IsStunned())
 	{
 		Cast<AFighterCharacter>(MyFighter)->BlockEffects();
@@ -448,7 +463,8 @@ void UFighterStateComponent::Block()
 
 void UFighterStateComponent::StopBlock()
 {
-	bIsBlockButtonDown = false;
+	UE_LOG(LogUMoveset, Error, TEXT("stopped blocking"));
+
 	Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 }
 

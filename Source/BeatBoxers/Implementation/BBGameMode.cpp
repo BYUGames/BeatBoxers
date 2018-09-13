@@ -169,6 +169,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 		switch (res) {
 		case 1:
+			UE_LOG(LogABBGameMode, Error, TEXT("%sstun1"), *GetNameSafe(this));
 			Fighter->StartStun(GetScaledTime(1), false);
 			//OpponentFighter->Moveset->Parry();
 			break; // The Source won the clash, continue on.
@@ -183,6 +184,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 			}
 			break;
 		case -1:
+			UE_LOG(LogABBGameMode, Error, TEXT("%sstun2"), *GetNameSafe(this));
 			OpponentFighter->StartStun(GetScaledTime(1), false);
 			//Fighter->Moveset->Parry();
 			return EHitResponse::HE_Missed;
@@ -202,6 +204,7 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 		{
 			Fighter->StopAnimMontage();
 		}
+		UE_LOG(LogABBGameMode, Error, TEXT("%sstun3"), *GetNameSafe(this));
 		Fighter->StartStun(20, WasBlocked);
 		//shake camera as part of hitstop
 		UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetGameState<ABBGameState>()->MainCamera->GetActorLocation(), 0.0f, 500.0f, 1.0f, false);
@@ -227,7 +230,7 @@ void ABBGameMode::K2_StartRound()
 
 void ABBGameMode::HitstopEvents_Implementation(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType, bool WasBlocked)
 {
-	EventsAfterHitstop(DamageType, Hit, Block, Accuracy, RPSType);
+	EventsAfterHitstop(DamageType, Hit, Block, Accuracy, RPSType, WasBlocked);
 }
 
 void ABBGameMode::ParryHitstop_Implementation(int WinnerIndex, AFighterCharacter* winner)
@@ -240,10 +243,9 @@ void ABBGameMode::EventsAfterParry(AFighterCharacter* winner)
 	winner->Moveset->Parry();
 }
 
-void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType)
+void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType,bool WasBlocked)
 {
 	AFighterCharacter *Fighter = Cast<AFighterCharacter>(AfterHitstopActor.Get());
-	bool WasBlocked = DoesBlock(Fighter, DamageType, RPSType);
 
 
 	if (Fighter != nullptr)
@@ -256,7 +258,7 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
 	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
 
-	if (Hit.StunLength > 0.000001f) {
+	if (Hit.StunLength > 0.000001f && !WasBlocked) {
 		if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
 			&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
 		{
@@ -275,12 +277,14 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 			}
 		}
 	}
+
 	if (Hit.StunLength > 0)
 	{
 		if (Fighter != nullptr)
 		{
 			Fighter->StopAnimMontage();
 		}
+		UE_LOG(LogABBGameMode, Error, TEXT("%sstun4"), *GetNameSafe(this));
 		Fighter->StartStun(GetScaledTime(Hit.StunLength), WasBlocked);
 	}
 }
@@ -409,15 +413,18 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ER
 	
 	//if (Fighter->IsBlocking()) UE_LOG(LogUMoveset, Warning, TEXT("Fighter->IsBlocking()"));
 	//if (Fighter == nullptr) UE_LOG(LogUMoveset, Warning TEXT("Fighter == nullptr"));
-	if (Fighter == nullptr || !Fighter->IsBlocking()) return false;
-
+	if (Fighter == nullptr || !Fighter->IsBlocking()) {
+		return false;
+	}
 
 	//if (RPSType == ERPSType::RPS_Grab) UE_LOG(LogUMoveset, Warning, TEXT("RPSType == ERPSType::RPS_Grab"));
-	if (RPSType == ERPSType::RPS_Grab) return false;
+	if (RPSType == ERPSType::RPS_Grab) {
+		return false; }
 
 	//if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned()) UE_LOG(LogUMoveset, Warning, TEXT("Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned()"));
 	//if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) UE_LOG(LogUMoveset, Warning, TEXT("Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()"));
-	if (Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned() || Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) return false;
+	if ((Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsStunned() && !Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsBlockStunned()) || Cast<AFighterCharacter>(Fighter)->GetFighterState()->IsKnockedDown()) {
+		return false; }
 
 	//UE_LOG(LogUMoveset, Warning, TEXT("none"));
 

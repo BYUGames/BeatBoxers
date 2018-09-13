@@ -36,7 +36,6 @@ protected:
 	uint32 bHasMoveWindowHit : 1;
 	uint32 bIsBeingMoved : 1;
 	uint32 bIsCurrentStunBlock : 1;
-	uint32 bIsBlockButtonDown : 1;
 	uint32 bIsFrozenForSolo : 1;
 	uint32 bWantsToCharge: 1;
 
@@ -202,4 +201,5 @@ public:
 	void EndCombo();
 	bool isMidMove;
 	uint32 bSkipWindupOnBeat : 1;
+	uint32 bIsBlockButtonDown : 1;
 };

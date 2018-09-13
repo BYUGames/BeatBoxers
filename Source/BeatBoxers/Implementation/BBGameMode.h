@@ -31,7 +31,7 @@ public:
 	void HitstopEvents(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, float HitstopAmount, int OpponentIndex, ERPSType RPSType, bool WasBlocked);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Events After Hitstop"))
-	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType);
+	void EventsAfterHitstop(EFighterDamageType DamageType, FImpactData Hit, FImpactData Block, float Accuracy, ERPSType RPSType, bool WasBlocked);
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Parry Hitstop"))
 	void ParryHitstop(int WinnerIndex, AFighterCharacter* winner);

@@ -99,8 +99,8 @@ void AFighterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!(GetMovementComponent() != nullptr && InAir
-		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned() || bIsDead)))
+	if (!FighterState->bIsBlockButtonDown && (!(GetMovementComponent() != nullptr && InAir
+		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned() || bIsDead))))
 	{
 		UpdateFacing();
 	}

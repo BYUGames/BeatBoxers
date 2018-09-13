@@ -81,8 +81,8 @@ void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 
 	//UE_LOG(LogUMoveset, Error, TEXT("goes to state"));
 
-	if (!(Cast<AFighterCharacter>(MyFighter)->InAir
-		|| Cast<AFighterCharacter>(MyFighter)->FighterState != nullptr && (Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove() || Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned())))
+	if (!Cast<AFighterCharacter>(MyFighter)->FighterState->bIsBlockButtonDown && (!(Cast<AFighterCharacter>(MyFighter)->InAir
+		|| Cast<AFighterCharacter>(MyFighter)->FighterState != nullptr && (Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove() || Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned()))))
 	{
 		Cast<AFighterCharacter>(MyFighter)->UpdateFacing();
 	}

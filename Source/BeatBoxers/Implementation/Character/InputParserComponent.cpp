@@ -356,7 +356,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
 		HasDashedLeft = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
-		if (!Fighter->IsToRightOfOpponent())
+		//if (!Fighter->IsToRightOfOpponent())
+		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -368,7 +369,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
-		if (!Fighter->IsToRightOfOpponent())
+		//if (!Fighter->IsToRightOfOpponent())
+		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -463,8 +465,8 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 	if (HoldingBlock && AdjustedAmount == -1 && !HasDashedLeft) {
 		HasDashedLeft = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
-		if (!Fighter->IsToRightOfOpponent())
-			//if (GetFighterFacing() > 0)
+	//	if (!Fighter->IsToRightOfOpponent())
+			if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -477,7 +479,8 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
-		if (!Fighter->IsToRightOfOpponent())
+//		if (!Fighter->IsToRightOfOpponent())
+		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -934,7 +937,8 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
+		//if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
+		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -1312,12 +1316,15 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
-		if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
+		//if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent() || (Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent() && (Parser->GetFighterFacing() > 0)))
+		if(Parser->GetFighterFacing() > 0)
 		{
+			UE_LOG(LogUInputParser, Error, TEXT("is left of opponent, dash back"));
 			Parser->PushInputToken(EInputToken::IE_DashBackward);
 		}
 		else
 		{
+			UE_LOG(LogUInputParser, Error, TEXT("is right of opponent, dash forward"));
 			Parser->PushInputToken(EInputToken::IE_DashForward);
 		}
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
@@ -1463,7 +1470,8 @@ void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
-		if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
+		//if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
+		if (Parser->GetFighterFacing() > 0)
 		{
 			Parser->PushInputToken(EInputToken::IE_DashForward);
 		}

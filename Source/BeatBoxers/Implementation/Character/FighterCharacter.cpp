@@ -1001,5 +1001,6 @@ void AFighterCharacter::ResetInputParserInputThisBeat()
 }
 
 bool AFighterCharacter::IsToRightOfOpponent() {
+	UE_LOG(LogUInputParser, Error, TEXT("actorx: %f opponentx: %f"), GetActorLocation().X, Cast<AFighterCharacter>(MyOpponent.Get())->GetActorLocation().X);
 	return (GetActorLocation().X > Cast<AFighterCharacter>(MyOpponent.Get())->GetActorLocation().X);
 }

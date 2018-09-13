@@ -574,47 +574,100 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		else
 			AdjustedAmount = 0;
 	}
-
+	//if (!Fighter->IsToRightOfOpponent())
+	//if (GetFighterFacing() > 0)
+	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	if (AdjustedAmount == -1) {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//downleft
-			ParseCurrentHeldDirection(1);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1){
+				//if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+					//downleft
+				ParseCurrentHeldDirection(1);
+			}
+			else if (FMath::Sign(HorizontalMovement) == -1){
+				//downright
+				ParseCurrentHeldDirection(3);
+			}
+			else {
+				//down
+				ParseCurrentHeldDirection(2);
+			}
 		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//downright
-			ParseCurrentHeldDirection(3);
-		}
-		else {
-			//down
-			ParseCurrentHeldDirection(2);
+		else{
+			if (FMath::Sign(-HorizontalMovement) == 1){
+				//if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+				//downleft
+				ParseCurrentHeldDirection(1);
+			}
+			else if (FMath::Sign(-HorizontalMovement) == -1){
+				//downright
+				ParseCurrentHeldDirection(3);
+			}
+			else {
+				//down
+				ParseCurrentHeldDirection(2);
+			}
 		}
 	}
 	else if (AdjustedAmount == 1) {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//upleft
-			ParseCurrentHeldDirection(7);
-		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//upright
-			ParseCurrentHeldDirection(9);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1){
+				//upleft
+				ParseCurrentHeldDirection(7);
+			}
+			else if (FMath::Sign(HorizontalMovement) == -1){
+				//upright
+				ParseCurrentHeldDirection(9);
+			}
+			else {
+				//up
+				ParseCurrentHeldDirection(8);
+			}
 		}
 		else {
-			//up
-			ParseCurrentHeldDirection(8);
+			if (FMath::Sign(-HorizontalMovement) == 1){
+				//upleft
+				ParseCurrentHeldDirection(7);
+			}
+			else if (FMath::Sign(-HorizontalMovement) == -1){
+				//upright
+				ParseCurrentHeldDirection(9);
+			}
+			else {
+				//up
+				ParseCurrentHeldDirection(8);
+			}
 		}
 	}
 	else {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//left
-			ParseCurrentHeldDirection(4);
-		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//right
-			ParseCurrentHeldDirection(6);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1) {
+				//left
+				ParseCurrentHeldDirection(4);
+			}
+			if (FMath::Sign(HorizontalMovement) == -1) {
+				//right
+				ParseCurrentHeldDirection(6);
+			}
+			else {
+				//neutral
+				ParseCurrentHeldDirection(5);
+			}
 		}
 		else {
-			//neutral
-			ParseCurrentHeldDirection(5);
+			if (FMath::Sign(-HorizontalMovement) == 1) {
+				//left
+				ParseCurrentHeldDirection(4);
+			}
+			if (FMath::Sign(-HorizontalMovement) == -1) {
+				//right
+				ParseCurrentHeldDirection(6);
+			}
+			else {
+				//neutral
+				ParseCurrentHeldDirection(5);
+			}
+			
 		}
 	}
 
@@ -774,46 +827,98 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 			AdjustedAmount = 0;
 	}
 
+	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	if (AdjustedAmount == -1) {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//downleft
-			ParseCurrentHeldDirection(1);
-		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//downright
-			ParseCurrentHeldDirection(3);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1) {
+				//if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+				//downleft
+				ParseCurrentHeldDirection(1);
+			}
+			else if (FMath::Sign(HorizontalMovement) == -1) {
+				//downright
+				ParseCurrentHeldDirection(3);
+			}
+			else {
+				//down
+				ParseCurrentHeldDirection(2);
+			}
 		}
 		else {
-			//down
-			ParseCurrentHeldDirection(2);
+			if (FMath::Sign(-HorizontalMovement) == 1) {
+				//if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
+				//downleft
+				ParseCurrentHeldDirection(1);
+			}
+			else if (FMath::Sign(-HorizontalMovement) == -1) {
+				//downright
+				ParseCurrentHeldDirection(3);
+			}
+			else {
+				//down
+				ParseCurrentHeldDirection(2);
+			}
 		}
 	}
 	else if (AdjustedAmount == 1) {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//upleft
-			ParseCurrentHeldDirection(7);
-		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//upright
-			ParseCurrentHeldDirection(9);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1) {
+				//upleft
+				ParseCurrentHeldDirection(7);
+			}
+			else if (FMath::Sign(HorizontalMovement) == -1) {
+				//upright
+				ParseCurrentHeldDirection(9);
+			}
+			else {
+				//up
+				ParseCurrentHeldDirection(8);
+			}
 		}
 		else {
-			//up
-			ParseCurrentHeldDirection(8);
+			if (FMath::Sign(-HorizontalMovement) == 1) {
+				//upleft
+				ParseCurrentHeldDirection(7);
+			}
+			else if (FMath::Sign(-HorizontalMovement) == -1) {
+				//upright
+				ParseCurrentHeldDirection(9);
+			}
+			else {
+				//up
+				ParseCurrentHeldDirection(8);
+			}
 		}
 	}
 	else {
-		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-			//left
-			ParseCurrentHeldDirection(4);
-		}
-		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-			//right
-			ParseCurrentHeldDirection(6);
+		if (Fighter->IsToRightOfOpponent()) {
+			if (FMath::Sign(HorizontalMovement) == 1) {
+				//left
+				ParseCurrentHeldDirection(4);
+			}
+			if (FMath::Sign(HorizontalMovement) == -1) {
+				//right
+				ParseCurrentHeldDirection(6);
+			}
+			else {
+				//neutral
+				ParseCurrentHeldDirection(5);
+			}
 		}
 		else {
-			//neutral
-			ParseCurrentHeldDirection(5);
+			if (FMath::Sign(-HorizontalMovement) == 1) {
+				//left
+				ParseCurrentHeldDirection(4);
+			}
+			if (FMath::Sign(-HorizontalMovement) == -1) {
+				//right
+				ParseCurrentHeldDirection(6);
+			}
+			else {
+				//neutral
+				ParseCurrentHeldDirection(5);
+			}
+			
 		}
 	}
 

@@ -471,7 +471,7 @@ void AFighterCharacter::Jump(int direction)
 		{
 			StartJumpEvent.Broadcast();
 		}
-		AirMovementDirection = direction * Facing;
+		AirMovementDirection = direction;// * Facing;
 		LaunchCharacter({ 300*((float)direction),300 * ((float)direction),1000 }, true, true);
 		FTransform RelativeTransform = JumpEffects.RelativeTransform * GetActorTransform();
 		if (JumpEffects.ParticleSystem != nullptr)

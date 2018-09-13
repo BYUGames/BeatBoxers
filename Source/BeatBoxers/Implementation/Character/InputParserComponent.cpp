@@ -610,21 +610,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		}
 	}
 	else if (AdjustedAmount == 1) {
-		if (Fighter->IsToRightOfOpponent()) {
-			if (FMath::Sign(HorizontalMovement) == 1){
-				//upleft
-				ParseCurrentHeldDirection(7);
-			}
-			else if (FMath::Sign(HorizontalMovement) == -1){
-				//upright
-				ParseCurrentHeldDirection(9);
-			}
-			else {
-				//up
-				ParseCurrentHeldDirection(8);
-			}
-		}
-		else {
+		//ok, so this is breaking the rules, making these directions non-relative... but we wont be adding any more motions, so it should be fine
 			if (FMath::Sign(-HorizontalMovement) == 1){
 				//upleft
 				ParseCurrentHeldDirection(7);
@@ -637,7 +623,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 				//up
 				ParseCurrentHeldDirection(8);
 			}
-		}
+		
 	}
 	else {
 		if (Fighter->IsToRightOfOpponent()) {

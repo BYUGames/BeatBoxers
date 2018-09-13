@@ -919,7 +919,7 @@ void UInputParserComponent::InputActionDashLeft(bool Isup)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (GetFighterFacing() > 0)
+		if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -934,7 +934,7 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		if (GetFighterFacing() > 0)
+		if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -1312,7 +1312,7 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
-		if (Parser->GetFighterFacing() > 0)
+		if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
 		{
 			Parser->PushInputToken(EInputToken::IE_DashBackward);
 		}
@@ -1463,7 +1463,7 @@ void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
-		if (Parser->GetFighterFacing() > 0)
+		if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
 		{
 			Parser->PushInputToken(EInputToken::IE_DashForward);
 		}

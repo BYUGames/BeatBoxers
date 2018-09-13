@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "../BBGameInstance.h"
 #include "FighterCharacter.h"
- 
+
 
 // Sets default values for this component's properties
 UInputParserComponent::UInputParserComponent(const class FObjectInitializer& ObjectInitializer)
@@ -43,7 +43,7 @@ void UInputParserComponent::OnInputBufferTimer()
 void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 {
 	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
-		InputBuffer = NewToken;
+	InputBuffer = NewToken;
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
 		this,
@@ -86,13 +86,13 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			, bToken.accuracy
 			, MyMusicBox->GetTimeToNextBeat()
 			, MyMusicBox->GetTimeBetweenBeats()
-			);
+		);
 	}
 	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 	if (MyFighterState != nullptr)
 	{
-		if ((HasInputtedThisBeat || (MyFighterState->IsMidMove() || (MyFighterState->previousBeatHadAttack && !(MyFighterWorld->IsOnBeat(bToken.accuracy))))) 
-			&& ((NewToken == EInputToken::IE_DashForward)||(NewToken == EInputToken::IE_DashBackward))) {
+		if ((HasInputtedThisBeat || (MyFighterState->IsMidMove() || (MyFighterState->previousBeatHadAttack && !(MyFighterWorld->IsOnBeat(bToken.accuracy)))))
+			&& ((NewToken == EInputToken::IE_DashForward) || (NewToken == EInputToken::IE_DashBackward))) {
 			//either you have already inputted this beat
 			//you're in mid move
 			//or the move just recently ended and you're not onbeat
@@ -104,7 +104,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 				//&& (Moveset->CurrentState != Moveset->ParryState) 
 				&& (Moveset->CurrentState != Moveset->DashState)
 				&& (Moveset->CurrentState != Moveset->DashBackState)
-			){
+				) {
 				if ((Moveset->CurrentState == Moveset->BlockState) || (Moveset->CurrentState == Moveset->DefaultState)) {//cancel parry into normal dodge
 					Moveset->GotoDefaultState();
 					//bToken.accuracy = 0.0f;
@@ -191,7 +191,7 @@ void UInputParserComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighter
 	}
 	else
 	{
-		
+
 		MyFighterWorld = Cast<IFighterWorld>(FighterWorld.Get());
 		if (MyFighterWorld == nullptr)
 		{
@@ -268,7 +268,7 @@ void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 void UInputParserComponent::OnControlReturned()
 {
 	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None) {
-		PushInputTokenWithAccuracy(InputBuffer); 
+		PushInputTokenWithAccuracy(InputBuffer);
 	}
 }
 
@@ -305,43 +305,43 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 	if (input360axis)
 	{
 		float closeAmount = Amount - P1360axisUpValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
 		closeAmount = Amount - P1360axisUpRightValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
 		closeAmount = Amount - P1360axisRightValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
 		closeAmount = Amount - P1360axisBottomRightValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
 		closeAmount = Amount - P1360axisBottomValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
 		closeAmount = Amount - P1360axisBottomLeftValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
 		closeAmount = Amount - P1360axisLeftValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
 		closeAmount = Amount - P1360axisTopLeftValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = -1;
 		closeAmount = Amount - defaultHorizontal;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 0;
 	}
 	else {
-		if (Amount > (defaultHorizontal + .1)) 
+		if (Amount > (defaultHorizontal + .1))
 			AdjustedAmount = 1;
-		else if (Amount < (defaultHorizontal - .1)) 
+		else if (Amount < (defaultHorizontal - .1))
 			AdjustedAmount = -1;
-		else 
+		else
 			AdjustedAmount = 0;
 	}
 
-	if(AdjustedAmount > -1)
+	if (AdjustedAmount > -1)
 		HasDashedLeft = false;
 	if (AdjustedAmount < 1)
 		HasDashedRight = false;
@@ -464,7 +464,7 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		HasDashedLeft = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 		if (!Fighter->IsToRightOfOpponent())
-		//if (GetFighterFacing() > 0)
+			//if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
@@ -519,7 +519,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	if (input360axis)
 	{
 		float closeAmount = Amount - player360axisUpValue;
-		if (fabs(closeAmount) < .01f) 
+		if (fabs(closeAmount) < .01f)
 			AdjustedAmount = 1;
 		closeAmount = Amount - player360axisUpRightValue;
 		if (fabs(closeAmount) < .01f)
@@ -557,15 +557,15 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 
 	if (AdjustedAmount == -1) {
 		if (FMath::Sign(GetFighterFacing()) == FMath::Sign(-HorizontalMovement)) {
-		//downleft
+			//downleft
 			ParseCurrentHeldDirection(1);
 		}
 		else if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-		//downright
+			//downright
 			ParseCurrentHeldDirection(3);
 		}
 		else {
-		//down
+			//down
 			ParseCurrentHeldDirection(2);
 		}
 	}
@@ -614,29 +614,29 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 			}
 		}
 	}
-	else if(MyFighter != nullptr)
+	else if (MyFighter != nullptr)
 	{
 		MyFighter->SetWantsToCrouch(true);
 	}
 }
-void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection){
-if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
-	Cast<AFighterCharacter>(MyFighter)->UnCrouch();
-}
-else {
-	Cast<AFighterCharacter>(MyFighter)->Crouch();
-}
+void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
+	if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
+		Cast<AFighterCharacter>(MyFighter)->UnCrouch();
+	}
+	else {
+		Cast<AFighterCharacter>(MyFighter)->Crouch();
+	}
 
-if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
-	CurrentHeldDirection = NumpadDirection;
-}
+	if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
+		CurrentHeldDirection = NumpadDirection;
+	}
 	if (PreviousDirections.size() > 0) {
-		if ((PreviousDirections.top() == NumpadDirection) && (NumpadDirection!=7)&& (NumpadDirection != 8) && (NumpadDirection != 9)) {
+		if ((PreviousDirections.top() == NumpadDirection) && (NumpadDirection != 7) && (NumpadDirection != 8) && (NumpadDirection != 9)) {
 			return;
 
 		}
 	}
-	if (NumpadDirection == 5) { 
+	if (NumpadDirection == 5) {
 		return;
 	}
 	PreviousDirections.push(NumpadDirection);
@@ -645,7 +645,7 @@ if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
 			if (NumpadDirection == 7) {
 				MyFighterState->Jump(-1);
 			}
-			else if(NumpadDirection == 8){
+			else if (NumpadDirection == 8) {
 				MyFighterState->Jump(0);
 			}
 			else if (NumpadDirection == 9) {
@@ -674,8 +674,8 @@ if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
 
 void UInputParserComponent::OnMotionTimer()
 {
-		PreviousDirections.push(10);
-		CurrentHeldDirection = 10;
+	PreviousDirections.push(10);
+	CurrentHeldDirection = 10;
 }
 
 void UInputParserComponent::InputAxisVerticalP2(float Amount)
@@ -709,39 +709,39 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 	if (input360axis)
 	{
 		float closeAmount = Amount - player360axisUpValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 1;
 		}
 		closeAmount = Amount - player360axisUpRightValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 1;
-	}
+		}
 		closeAmount = Amount - player360axisRightValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 0;
-}
+		}
 		closeAmount = Amount - player360axisBottomRightValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = -1;
 		}
 		closeAmount = Amount - player360axisBottomValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = -1;
 		}
 		closeAmount = Amount - player360axisBottomLeftValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = -1;
 		}
 		closeAmount = Amount - player360axisLeftValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 0;
 		}
 		closeAmount = Amount - player360axisTopLeftValue;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 1;
 		}
 		closeAmount = Amount - defaultVertical;
-		if (fabs(closeAmount) < .01f){
+		if (fabs(closeAmount) < .01f) {
 			AdjustedAmount = 0;
 		}
 	}
@@ -808,7 +808,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 			MyFighterState->SetWantsToCrouch(false);
 			if (AdjustedAmount > 0)
 			{
-			//	MyFighterState->Jump();
+				//	MyFighterState->Jump();
 			}
 		}
 	}
@@ -823,7 +823,7 @@ void UInputParserComponent::InputActionDodge(bool IsUp)
 {
 	if (MyFighterState != nullptr)
 	{
-		if (HorizontalMovement == 0 || FMath::Sign(GetFighterFacing()) ==  FMath::Sign(HorizontalMovement))
+		if (HorizontalMovement == 0 || FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement))
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
@@ -950,76 +950,76 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		//if (!HoldingBlock) {
-				if (PreviousDirections.size() > 1) {
-					if ((PreviousDirections.top() == 3)) {
-						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 6)) {
-							PreviousDirections.empty();
-							//quarter circle forward
-							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
-							return;
-						}
-					}
-					else if ((PreviousDirections.top() == 6)) {
-						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 3)) {
-							PreviousDirections.empty();
-							//quarter circle forward
-							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
-							return;
-						}
-					}
-
-
-					else if ((PreviousDirections.top() == 4)) {
-						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
-							PreviousDirections.empty();
-							//quarter circle back
-							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
-							return;
-						}
-					}
-					else if ((PreviousDirections.top() == 1)) {
-						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 4)) {
-							PreviousDirections.empty();
-							//quarter circle back
-							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
-							return;
-						}
-					}
-					else if ((PreviousDirections.top() == 2)) {
-						PreviousDirections.pop();
-						if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 4)) {
-							PreviousDirections.empty();
-							//quarter circle back
-							CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
-							return;
-						}
-						else if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 6)) {
-							PreviousDirections.empty();
-							//quarter circle forward
-							CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
-							return;
-						}
-					}
-				}
-
-			
-			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
-				if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
-					CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
-				}
-				else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
-					CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
-				}
-				else {
-					CurrentStateClass.GetDefaultObject()->InputActionLight(this);
+		if (PreviousDirections.size() > 1) {
+			if ((PreviousDirections.top() == 3)) {
+				PreviousDirections.pop();
+				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 6)) {
+					PreviousDirections.empty();
+					//quarter circle forward
+					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
+					return;
 				}
 			}
-			else
-				CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);
+			else if ((PreviousDirections.top() == 6)) {
+				PreviousDirections.pop();
+				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 3)) {
+					PreviousDirections.empty();
+					//quarter circle forward
+					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
+					return;
+				}
+			}
+
+
+			else if ((PreviousDirections.top() == 4)) {
+				PreviousDirections.pop();
+				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
+					PreviousDirections.empty();
+					//quarter circle back
+					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+					return;
+				}
+			}
+			else if ((PreviousDirections.top() == 1)) {
+				PreviousDirections.pop();
+				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 4)) {
+					PreviousDirections.empty();
+					//quarter circle back
+					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+					return;
+				}
+			}
+			else if ((PreviousDirections.top() == 2)) {
+				PreviousDirections.pop();
+				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 4)) {
+					PreviousDirections.empty();
+					//quarter circle back
+					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
+					return;
+				}
+				else if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 6)) {
+					PreviousDirections.empty();
+					//quarter circle forward
+					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
+					return;
+				}
+			}
+		}
+
+
+		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+			if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
+				CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+			}
+			else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
+				CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
+			}
+			else {
+				CurrentStateClass.GetDefaultObject()->InputActionLight(this);
+			}
+		}
+		else
+			CurrentStateClass.GetDefaultObject()->InputActionLightCrouch(this);
 		//}
 	}
 }
@@ -1029,11 +1029,11 @@ void UInputParserComponent::InputActionMedium(bool IsUp)
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		//if (!HoldingBlock) {
-			if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
-				CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
-			}
-			else
-				CurrentStateClass.GetDefaultObject()->InputActionMediumCrouch(this);
+		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+			CurrentStateClass.GetDefaultObject()->InputActionMedium(this);
+		}
+		else
+			CurrentStateClass.GetDefaultObject()->InputActionMediumCrouch(this);
 		//}
 	}
 }

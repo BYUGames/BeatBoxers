@@ -92,7 +92,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	if (MyFighterState != nullptr)
 	{
 		if ((HasInputtedThisBeat || (MyFighterState->IsMidMove() || (MyFighterState->previousBeatHadAttack && !(MyFighterWorld->IsOnBeat(bToken.accuracy)))))
-			&& ((NewToken == EInputToken::IE_DashForward) || (NewToken == EInputToken::IE_DashBackward))) {
+			&& ((NewToken == EInputToken::IE_DashLeft) || (NewToken == EInputToken::IE_DashRight))) {
 			//either you have already inputted this beat
 			//you're in mid move
 			//or the move just recently ended and you're not onbeat
@@ -115,8 +115,15 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 					return;
 				}
 				if (Fighter->FighterState->GetSpecial() >= 25) {//cancel all other valid moves into cancel
-					if (NewToken == EInputToken::IE_DashForward)bToken.token = EInputToken::IE_DashCancelForward;
-					if (NewToken == EInputToken::IE_DashBackward)bToken.token = EInputToken::IE_DashCancelBackward;
+
+					if (NewToken == EInputToken::IE_DashRight )UE_LOG(LogBeatBoxers, Warning, TEXT("1"));
+					if (NewToken == EInputToken::IE_DashLeft)UE_LOG(LogBeatBoxers, Warning, TEXT("2"));
+					if (NewToken == EInputToken::IE_DashRight && (GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelForward;
+					if (NewToken == EInputToken::IE_DashRight && !(GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelBackward;
+					if (NewToken == EInputToken::IE_DashLeft && !(GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelForward;
+					if (NewToken == EInputToken::IE_DashLeft && (GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelBackward;
+					
+
 					bToken.accuracy = 0.0f;
 					Fighter->HasUsedMoveAndHasYetToLand = false;
 					HasInputtedThisBeat = false;
@@ -357,6 +364,8 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		HasDashedLeft = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 		//if (!Fighter->IsToRightOfOpponent())
+		PushInputToken(EInputToken::IE_DashLeft);
+		/*
 		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
@@ -365,10 +374,13 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
+		*/
 	}
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		PushInputToken(EInputToken::IE_DashRight);
+		/*
 		//if (!Fighter->IsToRightOfOpponent())
 		if (GetFighterFacing() > 0)
 		{
@@ -378,6 +390,7 @@ void UInputParserComponent::InputAxisHorizontal(float Amount)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
 		}
+		*/
 	}
 
 }
@@ -466,6 +479,8 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		HasDashedLeft = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	//	if (!Fighter->IsToRightOfOpponent())
+		PushInputToken(EInputToken::IE_DashLeft);
+		/*
 			if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
@@ -473,13 +488,15 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		else
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
-		}
+		}*/
 	}
 
 	if (HoldingBlock && AdjustedAmount == 1 && !HasDashedRight) {
 		HasDashedRight = true;
 		AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
+		PushInputToken(EInputToken::IE_DashRight);
 //		if (!Fighter->IsToRightOfOpponent())
+		/*
 		if (GetFighterFacing() > 0)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
@@ -487,7 +504,7 @@ void UInputParserComponent::InputAxisHorizontalP2(float Amount)
 		else
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
-		}
+		}*/
 	}
 }
 
@@ -922,6 +939,7 @@ void UInputParserComponent::InputActionDashLeft(bool Isup)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
+		/*
 		if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
@@ -930,6 +948,7 @@ void UInputParserComponent::InputActionDashLeft(bool Isup)
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashForward(this);
 		}
+		*/
 	}
 }
 
@@ -937,6 +956,8 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 {
 	if (CurrentStateClass.Get() != nullptr)
 	{
+		PushInputToken(EInputToken::IE_DashRight);
+		/*
 		//if (!Cast<AFighterCharacter>(GetOwner())->IsToRightOfOpponent())
 		if (GetFighterFacing() > 0)
 		{
@@ -945,7 +966,7 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 		else
 		{
 			CurrentStateClass.GetDefaultObject()->InputActionDashBackwards(this);
-		}
+		}*/
 	}
 }
 
@@ -1316,6 +1337,8 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
+		Parser->PushInputToken(EInputToken::IE_DashLeft);
+		/*
 		//if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent() || (Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent() && (Parser->GetFighterFacing() > 0)))
 		if(Parser->GetFighterFacing() > 0)
 		{
@@ -1326,7 +1349,7 @@ void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 		{
 			UE_LOG(LogUInputParser, Error, TEXT("is right of opponent, dash forward"));
 			Parser->PushInputToken(EInputToken::IE_DashForward);
-		}
+		}*/
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 
@@ -1470,6 +1493,8 @@ void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
+		Parser->PushInputToken(EInputToken::IE_DashRight);
+		/*
 		//if (!Cast<AFighterCharacter>(Parser->GetOwner())->IsToRightOfOpponent())
 		if (Parser->GetFighterFacing() > 0)
 		{
@@ -1478,7 +1503,7 @@ void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 		else
 		{
 			Parser->PushInputToken(EInputToken::IE_DashBackward);
-		}
+		}*/
 		ChangeState(Parser, UInputParserDefaultState::StaticClass());
 	}
 }

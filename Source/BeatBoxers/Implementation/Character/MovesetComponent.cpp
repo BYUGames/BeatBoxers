@@ -355,8 +355,8 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 				{
 					PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
 				}
-				/*
-				if (Cast<AFighterCharacter>(MyFighter)->IsToRightOfOpponent()) {
+				
+				if (!(Cast<AFighterCharacter>(MyFighter)->InputParser->GetFighterFacing() > 0)) {
 					if (Token == EInputToken::IE_DashLeft)Token = EInputToken::IE_DashForward;
 					else if (Token == EInputToken::IE_DashRight)Token = EInputToken::IE_DashBackward;
 					else if (Token == EInputToken::IE_DashCancelLeft)Token = EInputToken::IE_DashCancelForward;
@@ -368,7 +368,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 					else if (Token == EInputToken::IE_DashCancelLeft)Token = EInputToken::IE_DashCancelBackward;
 					else if (Token == EInputToken::IE_DashCancelRight)Token = EInputToken::IE_DashCancelForward;
 				}
-				*/
+				
 				if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
 				{
 					UE_LOG(LogBeatBoxers, Error, TEXT("Data Error: Move %s contains invalid state as a possible transition."), *StateToLookAt.RowName.ToString());

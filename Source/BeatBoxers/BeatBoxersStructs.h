@@ -129,7 +129,11 @@ enum class EInputToken : uint8
 	IE_Left			UMETA(DisplayName = "Left"),
 	IE_Right		UMETA(DisplayName = "Right"),
 	IE_QCF			UMETA(DisplayName = "Quarter Circle Forward"),
-	IE_QCB		UMETA(DisplayName = "Quarter Circle Back")
+	IE_QCB		UMETA(DisplayName = "Quarter Circle Back"),
+	IE_DashRight	UMETA(DisplayName = "DashRight"),
+	IE_DashLeft	UMETA(DisplayName = "DashLeft"),
+	IE_DashCancelRight	UMETA(DisplayName = "DashCancelRight"),
+	IE_DashCancelLeft	UMETA(DisplayName = "DashCancelLeft")
 };
 
 UENUM(BlueprintType)
@@ -220,6 +224,19 @@ struct FInputTokenBools
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool QCB;
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DashLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DashRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DashCancelLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DashCancelRight;
+	
 	bool FilterInputToken(EInputToken Token) const;
 };
 

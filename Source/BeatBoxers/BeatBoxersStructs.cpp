@@ -127,6 +127,18 @@ bool FInputTokenBools::FilterInputToken(EInputToken Token) const
 	case EInputToken::IE_QCB:
 		if (QCB) return true;
 		break;
+	case EInputToken::IE_DashRight:
+		if (DashRight) return true;
+		break;
+	case EInputToken::IE_DashLeft:
+		if (DashLeft) return true;
+		break;
+	case EInputToken::IE_DashCancelRight:
+		if (DashCancelRight) return true;
+		break;
+	case EInputToken::IE_DashCancelLeft:
+		if (DashCancelLeft) return true;
+		break;
 	default:
 		return false;
 		break;

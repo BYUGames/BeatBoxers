@@ -467,6 +467,7 @@ void AFighterCharacter::Jump(int direction)
 		}
 	}
 	else {
+		StopAnimMontage();
 		if (StartJumpEvent.IsBound())
 		{
 			StartJumpEvent.Broadcast();

@@ -349,6 +349,7 @@ void UFighterStateComponent::SetMoveDirection(float Direction)
 {
 	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!bIsBlockButtonDown))
 	{
+		Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);
 	}
@@ -478,12 +479,14 @@ void UFighterStateComponent::OnLand()
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandInt;
 			OnCurrentWindowWinddownFinished();
+			Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
 		}
 		else if (CurrentWindow.LandingEndsWindow)
 		{
 			OnMovementTimer();
 			CurrentWindowEnd = EWindowEnd::WE_LandSkip;
 			OnCurrentWindowWinddownFinished();
+			Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
 		}
 		else
 		{

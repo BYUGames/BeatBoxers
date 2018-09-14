@@ -314,6 +314,8 @@ public:
 
 	bool IsToRightOfOpponent();
 
+	bool holdingAway;
+
 	//UFUNCTION(BlueprintCallable)
 	//FString GetCurrentMoveName();
 	//

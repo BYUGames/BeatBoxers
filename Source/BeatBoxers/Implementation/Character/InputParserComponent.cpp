@@ -628,14 +628,16 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	else {
 		if (Fighter->IsToRightOfOpponent()) {
 			if (FMath::Sign(HorizontalMovement) == 1) {
+				//UE_LOG(LogUMoveset, Error, TEXT("%s holding right"), *GetNameSafe(GetOwner()));
 				//left
 				ParseCurrentHeldDirection(4);
 			}
-			if (FMath::Sign(HorizontalMovement) == -1) {
+			else if (FMath::Sign(HorizontalMovement) == -1) {
 				//right
 				ParseCurrentHeldDirection(6);
 			}
 			else {
+				//UE_LOG(LogUMoveset, Error, TEXT("%s holding 5a"), *GetNameSafe(GetOwner()));
 				//neutral
 				ParseCurrentHeldDirection(5);
 			}
@@ -643,13 +645,15 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		else {
 			if (FMath::Sign(-HorizontalMovement) == 1) {
 				//left
+				//UE_LOG(LogUMoveset, Error, TEXT("%s holding left"), *GetNameSafe(GetOwner()));
 				ParseCurrentHeldDirection(4);
 			}
-			if (FMath::Sign(-HorizontalMovement) == -1) {
+			else if (FMath::Sign(-HorizontalMovement) == -1) {
 				//right
 				ParseCurrentHeldDirection(6);
 			}
 			else {
+				//UE_LOG(LogUMoveset, Error, TEXT("%s holding 5b"), *GetNameSafe(GetOwner()));
 				//neutral
 				ParseCurrentHeldDirection(5);
 			}
@@ -679,13 +683,19 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 }
 void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
+	UE_LOG(LogUMoveset, Error, TEXT("%s holding %d"), *GetNameSafe(GetOwner()), NumpadDirection);
 	if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
 		Cast<AFighterCharacter>(MyFighter)->UnCrouch();
 	}
 	else {
 		Cast<AFighterCharacter>(MyFighter)->Crouch();
 	}
-
+	if (NumpadDirection != 1 && NumpadDirection != 4) {
+		Cast<AFighterCharacter>(MyFighter)->holdingAway = false;
+	}
+	else {
+		Cast<AFighterCharacter>(MyFighter)->holdingAway = true;
+	}
 	if (NumpadDirection != 7 && NumpadDirection != 8 && NumpadDirection != 9) {
 		CurrentHeldDirection = NumpadDirection;
 	}
@@ -847,33 +857,18 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 		}
 	}
 	else if (AdjustedAmount == 1) {
-		if (Fighter->IsToRightOfOpponent()) {
-			if (FMath::Sign(HorizontalMovement) == 1) {
-				//upleft
-				ParseCurrentHeldDirection(7);
-			}
-			else if (FMath::Sign(HorizontalMovement) == -1) {
-				//upright
-				ParseCurrentHeldDirection(9);
-			}
-			else {
-				//up
-				ParseCurrentHeldDirection(8);
-			}
+		//ok, so this is breaking the rules, making these directions non-relative... but we wont be adding any more motions, so it should be fine
+		if (FMath::Sign(-HorizontalMovement) == 1) {
+			//upleft
+			ParseCurrentHeldDirection(7);
+		}
+		else if (FMath::Sign(-HorizontalMovement) == -1) {
+			//upright
+			ParseCurrentHeldDirection(9);
 		}
 		else {
-			if (FMath::Sign(-HorizontalMovement) == 1) {
-				//upleft
-				ParseCurrentHeldDirection(7);
-			}
-			else if (FMath::Sign(-HorizontalMovement) == -1) {
-				//upright
-				ParseCurrentHeldDirection(9);
-			}
-			else {
-				//up
-				ParseCurrentHeldDirection(8);
-			}
+			//up
+			ParseCurrentHeldDirection(8);
 		}
 	}
 	else {
@@ -882,7 +877,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 				//left
 				ParseCurrentHeldDirection(4);
 			}
-			if (FMath::Sign(HorizontalMovement) == -1) {
+			else if (FMath::Sign(HorizontalMovement) == -1) {
 				//right
 				ParseCurrentHeldDirection(6);
 			}
@@ -896,7 +891,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 				//left
 				ParseCurrentHeldDirection(4);
 			}
-			if (FMath::Sign(-HorizontalMovement) == -1) {
+			else if (FMath::Sign(-HorizontalMovement) == -1) {
 				//right
 				ParseCurrentHeldDirection(6);
 			}

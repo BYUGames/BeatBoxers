@@ -214,7 +214,7 @@ bool UFighterStateComponent::IsBlocking() const
 		ToOpponent
 	);
 	if (!bGrabbed) {
-		if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) || IsBlockStunned()) {//(holding away from opponent) || 
+		if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) || Cast<AFighterCharacter>(MyFighter)->holdingAway || IsBlockStunned()) {//(holding away from opponent) || 
 			if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0))) { UE_LOG(LogUMoveset, Error, TEXT("%s (bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) "), *GetNameSafe(GetOwner())); }
 			if (IsBlockStunned()) { UE_LOG(LogUMoveset, Error, TEXT("%s IsBlockStunned()"), *GetNameSafe(GetOwner())); }
 			
@@ -347,7 +347,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 
 void UFighterStateComponent::SetMoveDirection(float Direction)
 {
-	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!MyFighter->IsBlocking()))
+	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!bIsBlockButtonDown))
 	{
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);

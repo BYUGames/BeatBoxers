@@ -42,7 +42,7 @@ void UMovesetComponent::OnPostWaitExpired()
 
 void UMovesetComponent::GotoDefaultState()
 {
-	if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsKnockedDown() && !Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned() && Cast<AFighterCharacter>(MyFighter)->FighterState->IsBlocking())
+	if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsKnockedDown() && !Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned() && Cast<AFighterCharacter>(MyFighter)->FighterState->bIsBlockButtonDown)
 	{
 		UE_LOG(LogUMoveset, Error, TEXT("goes to default state"));
 

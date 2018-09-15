@@ -349,7 +349,9 @@ void UFighterStateComponent::SetMoveDirection(float Direction)
 {
 	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!bIsBlockButtonDown))
 	{
-		Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
+		if (Direction > 0.0 || Direction < 0.0 || Cast<AFighterCharacter>(MyFighter)->bIsCrouched){
+			Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
+		}
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);
 	}

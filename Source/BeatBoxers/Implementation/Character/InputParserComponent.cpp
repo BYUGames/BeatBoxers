@@ -42,15 +42,16 @@ void UInputParserComponent::OnInputBufferTimer()
 
 void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 {
-	UE_LOG(LogUInputParser, VeryVerbose, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
+	UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
 	InputBuffer = NewToken;
+	/*
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
 		this,
 		&UInputParserComponent::OnInputBufferTimer,
 		InputBufferLength,
 		false
-	);
+	);*/
 }
 
 void UInputParserComponent::StartComboTimer()
@@ -76,6 +77,7 @@ void UInputParserComponent::OnComboTimer()
 
 void UInputParserComponent::PushInputToken(EInputToken NewToken)
 {
+	//initially pushing a token from here
 	FBufferInputToken bToken;
 	bToken.token = NewToken;
 	bToken.accuracy = calcAccuracy();
@@ -88,11 +90,13 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			, MyMusicBox->GetTimeBetweenBeats()
 		);
 	}
-	UE_LOG(LogUInputParser, Verbose, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
+	UE_LOG(LogUInputParser, Warning, TEXT("%s UInputParserComponent Pushing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 	if (MyFighterState != nullptr)
 	{
+		//stuff for dash cancelling
 		if ((HasInputtedThisBeat || (MyFighterState->IsMidMove() || (MyFighterState->previousBeatHadAttack && !(MyFighterWorld->IsOnBeat(bToken.accuracy)))))
 			&& ((NewToken == EInputToken::IE_DashLeft) || (NewToken == EInputToken::IE_DashRight))) {
+			UE_LOG(LogUInputParser, Error, TEXT("%s you're already inputted this beat or mid move or move recently ended and you're not onbeat"), *GetNameSafe(GetOwner()));
 			//either you have already inputted this beat
 			//you're in mid move
 			//or the move just recently ended and you're not onbeat
@@ -109,15 +113,17 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 					Moveset->GotoDefaultState();
 					//bToken.accuracy = 0.0f;
 					Fighter->HasUsedMoveAndHasYetToLand = false;
+					UE_LOG(LogUInputParser, Error, TEXT("%s re-enabled2"), *GetNameSafe(GetOwner()));
 					HasInputtedThisBeat = false;
 					InputBuffer.token = EInputToken::IE_None;
+					UE_LOG(LogUInputParser, Warning, TEXT("%s sent token %s with accuracy %f 1111"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
 					MyMoveset->ReceiveInputToken(bToken);
 					return;
 				}
 				if (Fighter->FighterState->GetSpecial() >= 25) {//cancel all other valid moves into cancel
 
-					if (NewToken == EInputToken::IE_DashRight )UE_LOG(LogBeatBoxers, Warning, TEXT("1"));
-					if (NewToken == EInputToken::IE_DashLeft)UE_LOG(LogBeatBoxers, Warning, TEXT("2"));
+					//if (NewToken == EInputToken::IE_DashRight )UE_LOG(LogBeatBoxers, Warning, TEXT("1"));
+					//if (NewToken == EInputToken::IE_DashLeft)UE_LOG(LogBeatBoxers, Warning, TEXT("2"));
 					if (NewToken == EInputToken::IE_DashRight && (GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelForward;
 					if (NewToken == EInputToken::IE_DashRight && !(GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelBackward;
 					if (NewToken == EInputToken::IE_DashLeft && !(GetFighterFacing() > 0))bToken.token = EInputToken::IE_DashCancelForward;
@@ -126,29 +132,38 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 					bToken.accuracy = 0.0f;
 					Fighter->HasUsedMoveAndHasYetToLand = false;
+					UE_LOG(LogUInputParser, Error, TEXT("%s re-enabled1"), *GetNameSafe(GetOwner()));
 					HasInputtedThisBeat = false;
 					InputBuffer.token = EInputToken::IE_None;
+					UE_LOG(LogUInputParser, Warning, TEXT("%s sent token %s with accuracy %f 2222"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
+
 					MyMoveset->ReceiveInputToken(bToken);
 					return;
 				}
 			}
 		}
 
+
+		//case 1- you have already done an action this beat, so you cant do another one until the beat opens up again-buffer
 		if (HasInputtedThisBeat)
 		{
-			HasInputtedThisBeat = true;
+			UE_LOG(LogUInputParser, Error, TEXT("%sa"), *GetNameSafe(GetOwner()));
 			bToken.accuracy = 0.5f;
 			SetInputBuffer(bToken);
 		}
-		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())
+		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())//case 2- youre in the middle of a move or stunned-buffer
 		{
+			UE_LOG(LogUInputParser, Error, TEXT("%sb"), *GetNameSafe(GetOwner()));
 			HasInputtedThisBeat = true;
 			SetInputBuffer(bToken);
 		}
-		else if (MyMoveset != nullptr)
+		else if (MyMoveset != nullptr)//case 3- no problems, send the input
 		{
+			UE_LOG(LogUInputParser, Error, TEXT("%sc"), *GetNameSafe(GetOwner()));
 			HasInputtedThisBeat = true;
 			InputBuffer.token = EInputToken::IE_None;
+			UE_LOG(LogUInputParser, Warning, TEXT("%s sent token %s with accuracy %f 3333"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken), bToken.accuracy);
+
 			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
@@ -156,6 +171,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToken)
 {
+	UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy"));
 	FBufferInputToken bToken;
 	bToken = NewToken;
 
@@ -167,6 +183,8 @@ void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToke
 		else if (MyMoveset != nullptr)
 		{
 			InputBuffer.token = EInputToken::IE_None;
+			UE_LOG(LogUInputParser, Warning, TEXT("%s sent token %s with accuracy %f 4444"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), bToken.token), bToken.accuracy);
+
 			MyMoveset->ReceiveInputToken(bToken);
 		}
 	}
@@ -274,7 +292,8 @@ void UInputParserComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 
 void UInputParserComponent::OnControlReturned()
 {
-	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None) {
+	UE_LOG(LogBeatBoxers, Warning, TEXT("OnControlReturned"));
+	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None && !HasInputtedThisBeat) {
 		PushInputTokenWithAccuracy(InputBuffer);
 	}
 }
@@ -683,7 +702,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 }
 void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
-	UE_LOG(LogUMoveset, Error, TEXT("%s holding %d"), *GetNameSafe(GetOwner()), NumpadDirection);
+	//UE_LOG(LogUMoveset, Error, TEXT("%s holding %d"), *GetNameSafe(GetOwner()), NumpadDirection);
 	if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
 		Cast<AFighterCharacter>(MyFighter)->UnCrouch();
 	}

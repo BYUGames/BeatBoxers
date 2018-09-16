@@ -134,7 +134,7 @@ public:
 	virtual bool IsKnockedDown() const override;
 	virtual bool IsInvulnerable() const override;
 	virtual bool IsMidMove() const override;
-	virtual void StartMoveWindow(FMoveWindow& Window, float Accuracy) override;
+	virtual void StartMoveWindow(FMoveWindow& Window, bool isOnbeat) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
 	virtual void SetMoveDirection(float Direction) override;
 	virtual void SetVerticalDirection(float Direction) override;

@@ -69,7 +69,7 @@ public:
 	virtual bool IsMidMove() const = 0;
 
 	/** Begins a move window. */
-	virtual void StartMoveWindow(FMoveWindow& Window, float Accuracy) = 0;
+	virtual void StartMoveWindow(FMoveWindow& Window, bool isOnbeat) = 0;
 
 	/** Interrupts any ongoing move windows and starts a stun. */
 	virtual void StartStun(float Duration, bool WasBlocked) = 0;

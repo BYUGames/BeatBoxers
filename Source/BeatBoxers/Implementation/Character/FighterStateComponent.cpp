@@ -281,13 +281,13 @@ bool UFighterStateComponent::IsMidMove() const
 	//return CurrentWindowStage != EWindowStage::WE_None;
 }
 
-void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, float Accuracy)
+void UFighterStateComponent::StartMoveWindow(FMoveWindow& Window, bool isOnbeat)
 {
 	Cast<AFighterCharacter>(MyFighter)->StopBlockEffects();
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent starting new move window."), *GetNameSafe(GetOwner()));
-	UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UFighterStateComponent starting new move window with accuracy %f."), *GetNameSafe(GetOwner()), Accuracy);
+	//UE_LOG(LogBeatTiming, VeryVerbose, TEXT("%s UFighterStateComponent starting new move window with accuracy %f."), *GetNameSafe(GetOwner()), Accuracy);
 	CurrentWindow = Window;
-	CurrentWindowAccuracy = Accuracy;
+	CurrentWindowAccuracy = isOnbeat;
 	if (CurrentWindow.IsHitboxActive)
 	{
 		if (!CurrentWindow.DefenderHit.SFX.IsValid())
@@ -621,6 +621,11 @@ void UFighterStateComponent::SkipWindup()
 			OnCurrentWindowWindupFinished();
 		}
 	}
+	UE_LOG(LogUInputParser, Error, TEXT("%s skipwindup (so end of beat window)"), *GetNameSafe(GetOwner()));
+	Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->StillOnBeat = false;
+	Cast<UInputParserComponent>(MyInputParser)->HasInputtedThisBeat = false;
+	Cast<UInputParserComponent>(MyInputParser)->ManualOffbeat = false;
+	Cast<UInputParserComponent>(MyInputParser)->SentInputThisBeat = false;
 }
 
 void UFighterStateComponent::StartCurrentWindowDuration()
@@ -838,7 +843,7 @@ void UFighterStateComponent::PerformHitboxScan()
 							CurrentWindowEnd = EWindowEnd::WE_Hit;
 							if (MyFighterWorld != nullptr)
 							{
-								if (MyFighterWorld->IsOnBeat(CurrentWindowAccuracy))
+								if (CurrentWindowAccuracy)
 								{
 									MyFighter->HitOnBeatLogic();
 								}

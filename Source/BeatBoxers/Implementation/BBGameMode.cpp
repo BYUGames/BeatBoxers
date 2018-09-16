@@ -364,17 +364,18 @@ void ABBGameMode::EndRound()
 
 
 
-bool ABBGameMode::IsOnBeat(float Accuracy)
+bool ABBGameMode::IsOnBeat(bool ManualOffbeat)
 {
 	float AccInTime = -1;
 	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
+	if (ManualOffbeat) return false;
 	if (MusicBox != nullptr)
 	{
-		AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
-		if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow || StillOnBeat)
+		//AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
+		//if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow || StillOnBeat)
+		if (!(GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowRightBeforeOpen) && !GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowClose)))
 		{
-			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
-				, Accuracy
+			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat() with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
 				, BeforeBeatAccuracyWindow
 				, AfterBeatAccuracyWindow
 				, AccInTime
@@ -382,8 +383,7 @@ bool ABBGameMode::IsOnBeat(float Accuracy)
 			);
 			return true;
 		}
-		UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat(%f) with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? False, AccInTime +%f -%f.")
-			, Accuracy
+		UE_LOG(LogBeatTiming, Warning, TEXT("IsOnBeat() with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? False, AccInTime +%f -%f.")
 			, BeforeBeatAccuracyWindow
 			, AfterBeatAccuracyWindow
 			, AccInTime
@@ -1582,6 +1582,14 @@ void ABBGameMode::OnBeat()
 			, &ABBGameMode::BeatWindowClose
 			, AfterBeatAccuracyWindow
 		);
+		IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_BeatWindowRightBeforeOpen
+			, this
+			, &ABBGameMode::BeatWindowOpen
+			, MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow
+		);
+		UE_LOG(LogBBAnimation, Warning, TEXT("%s::time between beats is %f"), *GetNameSafe(this), MusicBox->GetTimeBetweenBeats());
 	}
 	else
 	{
@@ -1589,9 +1597,16 @@ void ABBGameMode::OnBeat()
 	}
 }
 
+void ABBGameMode::BeatWindowOpen()
+{
+	//open beat bool
+
+}
+
+
 void ABBGameMode::BeatWindowClose()
 {
-	StillOnBeat = false;
+
 	if (BeatWindowCloseEvent.IsBound())
 	{
 		BeatWindowCloseEvent.Broadcast();

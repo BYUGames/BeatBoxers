@@ -174,6 +174,8 @@ public:
 	bool HasDashedRight;
 
 	bool HasInputtedThisBeat;
+	bool SentInputThisBeat;
+	bool ManualOffbeat;
 	/** IInputParser implementation */
 	virtual void RegisterFighterWorld(TWeakObjectPtr<UObject> FighterWorld) override;
 	virtual void RegisterFighter(TWeakObjectPtr<UObject> Fighter) override;

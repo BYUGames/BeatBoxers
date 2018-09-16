@@ -710,6 +710,12 @@ struct FBufferInputToken
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float accuracy;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ManuallyOffbeat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isOnBeat;
+
 	FBufferInputToken operator=(const FBufferInputToken toSet)
 	{
 		token = toSet.token;
@@ -721,6 +727,7 @@ struct FBufferInputToken
 	{
 		token = EInputToken::IE_None;
 		accuracy = -1;
+		ManuallyOffbeat = false;
 	}
 };
 

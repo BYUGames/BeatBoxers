@@ -74,7 +74,7 @@ public:
 	virtual UObject* GetMusicBox() = 0;
 
 	/** Determines if the given accuracy is considered on the beat. */
-	virtual bool IsOnBeat(float Accuracy) = 0;
+	virtual bool IsOnBeat(bool ManuallyOffBeat) = 0;
 
 	/** Whether or not we are in the middle of a round. */
 	virtual bool IsInRound() = 0;

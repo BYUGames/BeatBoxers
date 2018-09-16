@@ -148,6 +148,7 @@ public:
 	FTimerHandle TimerHandle_RoundEnd;
 	FTimerHandle TimerHandle_StartNextRound;
 	FTimerHandle TimerHandle_BeatWindowClose;
+	FTimerHandle TimerHandle_BeatWindowRightBeforeOpen;
 	FTimerHandle TimerHandle_StartCombat;
 	FTimerHandle TimerHandle_FightStarted;
 	FTimerHandle TimerHandle_Hitstop;
@@ -172,7 +173,7 @@ public:
 	virtual void AdjustLocation(AActor* ActorToAdjust) override;
 	virtual UObject* GetMusicBox() override;
 	UFUNCTION(BlueprintCallable)
-	virtual bool IsOnBeat(float Accuracy) override;
+	virtual bool IsOnBeat(bool ManualOffbeat) override;
 	virtual bool IsInRound() override { return bIsInRound; }
 	virtual float TimeToNextRound() override;
 	virtual void PlayerHitOnBeat(APlayerController* PlayerController) override;
@@ -213,6 +214,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnBeat();
+	void BeatWindowOpen();
 	virtual void BeatWindowClose();
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;

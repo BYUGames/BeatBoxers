@@ -39,8 +39,8 @@ protected:
 
 	EInputToken BufferToken;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = InputInformation)
-	float BufferAccuracy;
-	float MoveAccuracy;
+	bool BufferAccuracy;
+	bool MoveAccuracy;
 
 	UPROPERTY()
 	UBasicFretboard *BGFretboard;
@@ -70,7 +70,7 @@ protected:
 	UFUNCTION()
 	void OnBeat();
 
-	void ProcessInputToken(EInputToken Token, float Accuracy);
+	void ProcessInputToken(EInputToken Token, bool Accuracy);
 
 	void ProcessDDRInputToken(EInputToken Token);
 

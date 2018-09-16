@@ -11,7 +11,7 @@
 UMovesetComponent::UMovesetComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	BufferAccuracy = -1.f;
+	BufferAccuracy = true;
 }
 
 
@@ -278,14 +278,14 @@ void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 {
 	bool diff = BufferToken != Token.token;
 	BufferToken = Token.token;
-	BufferAccuracy = Token.accuracy;
+	BufferAccuracy = Token.isOnBeat;
 	MoveAccuracy = BufferAccuracy;
 	ABBGameMode* mGame = (ABBGameMode*)GetWorld()->GetAuthGameMode();
 	if (mGame != nullptr)
 	{
 		if (mGame->IsInRound())
 		{
-			ProcessInputToken(Token.token, Token.accuracy);
+			ProcessInputToken(Token.token, Token.isOnBeat);
 		}
 		else
 		{
@@ -316,7 +316,7 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 	}
 }
 
-void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
+void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 {
 	//if (!(Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned()))UE_LOG(LogUMoveset, Warning, TEXT("aaa"));
 	//if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove()) UE_LOG(LogUMoveset, Warning, TEXT("bbb"));
@@ -331,7 +331,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 				return;
 			}
 
-			UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
+			//UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 			if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 			{
 				GotoDefaultState();
@@ -377,7 +377,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 				{
 					if (MyFighterState != nullptr && PossibleMove.GetRow<FMoveData>(cs)->StanceFilter.FilterStance(MyFighterState->GetStance()))
 					{
-						if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && MyFighterWorld->IsOnBeat(Accuracy))
+						if (!PossibleMove.GetRow<FMoveData>(cs)->bRequiresOnBeat || MyFighterWorld != nullptr && Accuracy)
 						{
 							if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
 							{
@@ -388,7 +388,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, float Accuracy)
 									*StateToLookAt.GetRow<FMoveData>(cs)->PossibleTransitions[i].RowName.ToString(),
 									*GetEnumValueToString<EInputToken>(TEXT("EInputToken"), Token)
 								);
-								if (MyFighterWorld->IsOnBeat(Accuracy))
+								if (Accuracy)
 								{
 									MyFighter->InputOnBeatLogic();
 								}

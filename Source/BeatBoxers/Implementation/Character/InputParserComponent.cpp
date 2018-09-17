@@ -59,14 +59,14 @@ void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 	else {
 		UE_LOG(LogBeatBoxers, Warning, TEXT("buffer ends up being-isoffbeat"));
 	}
-	/*
+	
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		TimerHandle_InputBuffer,
 		this,
 		&UInputParserComponent::OnInputBufferTimer,
 		InputBufferLength,
 		false
-	);*/
+	);
 }
 
 void UInputParserComponent::StartComboTimer()

@@ -50,7 +50,7 @@ protected:
 
 
 	FDataTableRowHandle PreviousState;
-	FTimerHandle TimerHandle_PostWait;
+
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -75,6 +75,8 @@ protected:
 	void ProcessDDRInputToken(EInputToken Token);
 
 public:	
+	FTimerHandle TimerHandle_PostWait;
+
 	FDataTableRowHandle DefaultState;
 	FDataTableRowHandle CurrentState;
 	FDataTableRowHandle ParryState;

@@ -1436,7 +1436,12 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 				mFighterA->Clash();
 				mFighterB->Clash();
 
+				mFighterA->Moveset->GotoDefaultState();
+				mFighterB->Moveset->GotoDefaultState();
 
+				mFighterA->GetWorldTimerManager().ClearTimer(mFighterB->Moveset->TimerHandle_PostWait);
+				mFighterB->GetWorldTimerManager().ClearTimer(mFighterB->Moveset->TimerHandle_PostWait);
+				//gotodefaultmovestateandstopposttimer
 
 				if (DefaultClashImpact.SFX.ParticleSystem != nullptr)
 				{

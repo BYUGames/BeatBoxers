@@ -276,6 +276,12 @@ void UMovesetComponent::RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox)
 
 void UMovesetComponent::ReceiveInputToken(FBufferInputToken Token)
 {
+	if (Token.isOnBeat) {
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ReceiveInputToken-isonbeat"));
+	}
+	else {
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ReceiveInputTokeny-isoffbeat"));
+	}
 	bool diff = BufferToken != Token.token;
 	BufferToken = Token.token;
 	BufferAccuracy = Token.isOnBeat;
@@ -318,6 +324,12 @@ void UMovesetComponent::ProcessDDRInputToken(EInputToken Token)
 
 void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 {
+	if (Accuracy) {
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ProcessInputToken-isonbeat"));
+	}
+	else {
+		UE_LOG(LogBeatBoxers, Warning, TEXT("ProcessInputToken-isoffbeat"));
+	}
 	//if (!(Cast<AFighterCharacter>(MyFighter)->FighterState->IsStunned()))UE_LOG(LogUMoveset, Warning, TEXT("aaa"));
 	//if (!Cast<AFighterCharacter>(MyFighter)->FighterState->IsMidMove()) UE_LOG(LogUMoveset, Warning, TEXT("bbb"));
 	//if ( !(Cast<AFighterCharacter>(MyFighter)->FighterState->bIsKnockedDown == true) ) UE_LOG(LogUMoveset, Warning, TEXT("ccc"));
@@ -390,10 +402,13 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 								);
 								if (Accuracy)
 								{
+								UE_LOG(LogBeatBoxers, Warning, TEXT("InputOnBeatLogic"));
+
 									MyFighter->InputOnBeatLogic();
 								}
 								else
 								{
+									UE_LOG(LogBeatBoxers, Warning, TEXT("MISSBEAT"));
 									MyFighter->MissBeat();
 									MyFighter->InputOffBeatLogic();
 								}

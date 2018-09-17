@@ -720,6 +720,7 @@ struct FBufferInputToken
 	{
 		token = toSet.token;
 		accuracy = toSet.accuracy;
+		isOnBeat = toSet.isOnBeat;
 		return toSet;
 	}
 

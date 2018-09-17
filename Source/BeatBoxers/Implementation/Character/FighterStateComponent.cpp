@@ -215,22 +215,15 @@ bool UFighterStateComponent::IsBlocking() const
 	);
 	if (!bGrabbed) {
 		if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) || Cast<AFighterCharacter>(MyFighter)->holdingAway || IsBlockStunned()) {//(holding away from opponent) || 
-			if ((bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0))) { UE_LOG(LogUMoveset, Error, TEXT("%s (bIsBlockButtonDown && (MyFighter->GetFacing() *ToOpponent >0)) "), *GetNameSafe(GetOwner())); }
-			if (IsBlockStunned()) { UE_LOG(LogUMoveset, Error, TEXT("%s IsBlockStunned()"), *GetNameSafe(GetOwner())); }
 			
 			if (IsStunned() && IsBlockStunned()) {
-				UE_LOG(LogUMoveset, Error, TEXT("%sblockstun"), *GetNameSafe(GetOwner()));
-
 				return true; }
 			if (!IsInputBlocked() && !IsStunned()) {
-				UE_LOG(LogUMoveset, Error, TEXT("%sregularblock"), *GetNameSafe(GetOwner()));
 				return true;
 			}
-			UE_LOG(LogUMoveset, Warning, TEXT("%sincorrectblock"), *GetNameSafe(GetOwner()));
 
 		}
 	}
-	UE_LOG(LogUMoveset, Warning, TEXT("%sblockfail"), *GetNameSafe(GetOwner()));
 	//if (IsInputBlocked() || MoveDirection == 0 || MyFighter == nullptr) return false;
 	//if (MyFighter->GetStance() == EStance::SE_Jumping || MyFighter->GetStance() == EStance::SE_NA) return false;
 
@@ -349,8 +342,9 @@ void UFighterStateComponent::SetMoveDirection(float Direction)
 {
 	if ((!IsInputBlocked()) && (MyFighter != nullptr) && (!bIsBlockButtonDown))
 	{
-		if (Direction > 0.0 || Direction < 0.0 || Cast<AFighterCharacter>(MyFighter)->bIsCrouched){
-			Cast<AFighterCharacter>(MyFighter)->StopAnimMontage();
+		AFighterCharacter* castedFighter = Cast<AFighterCharacter>(MyFighter);
+		if (!castedFighter->InAir && (Cast<UMovesetComponent>(MyMoveset)->PreviousState != Cast<UMovesetComponent>(MyMoveset)->DashState&&Cast<UMovesetComponent>(MyMoveset)->PreviousState != Cast<UMovesetComponent>(MyMoveset)->DashBackState && Cast<UMovesetComponent>(MyMoveset)->CurrentState == Cast<UMovesetComponent>(MyMoveset)->DefaultState && (Direction > 0.0 || Direction < 0.0) || Cast<AFighterCharacter>(MyFighter)->bIsCrouched)){
+			castedFighter->StopAnimMontage();
 		}
 		MoveDirection = Direction;
 		MyFighter->SetMoveDirection(Direction);

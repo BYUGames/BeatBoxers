@@ -49,7 +49,6 @@ protected:
 	UBasicFretboard *SoloFretboard;
 
 
-	FDataTableRowHandle PreviousState;
 
 
 	// Called when the game starts
@@ -76,6 +75,8 @@ protected:
 
 public:	
 	FTimerHandle TimerHandle_PostWait;
+
+	FDataTableRowHandle PreviousState;
 
 	FDataTableRowHandle DefaultState;
 	FDataTableRowHandle CurrentState;

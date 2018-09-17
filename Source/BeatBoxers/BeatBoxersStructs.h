@@ -26,6 +26,7 @@ enum class ERPSType : uint8
 	, RPS_Attack	UMETA(DisplayName = "Attack")
 	, RPS_Grab		UMETA(DisplayName = "Grab")
 	, RPS_Block		UMETA(DisplayName = "Block")
+	, RPS_Super		UMETA(DisplayName = "Super")
 };
 
 // Returns winner: 0 for tie, 1 for a, 2 for b
@@ -721,6 +722,7 @@ struct FBufferInputToken
 		token = toSet.token;
 		accuracy = toSet.accuracy;
 		isOnBeat = toSet.isOnBeat;
+		ManuallyOffbeat = toSet.ManuallyOffbeat;
 		return toSet;
 	}
 

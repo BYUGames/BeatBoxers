@@ -1418,8 +1418,28 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 	AFighterCharacter* mFighterA = Cast<AFighterCharacter>(FighterA.Get());
 	AFighterCharacter* mFighterB = Cast<AFighterCharacter>(FighterB.Get());
 
+	 
+
+
 	if (mFighterA != nullptr && mFighterB != nullptr)
 	{
+		if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Super) {
+			if (mFighterB->GetFighterHitbox().RPSCategory == ERPSType::RPS_Super) 
+				return 0;
+			if (mFighterB->GetFighterHitbox().RPSCategory == ERPSType::RPS_Block) return 0;
+			//if super, nothing
+			//if block, block
+			return 1;
+		}
+		if (mFighterB->GetFighterHitbox().RPSCategory == ERPSType::RPS_Super) {
+			if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Super) return 0;
+			if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Block) return 0;
+			return -1;
+
+		}
+
+
+
 		IFighter* winner = DetermineClashWinner(mFighterA, mFighterB);
 		// Passes the fighters themselves as the source so the clash impact will be relative to their facing.
 

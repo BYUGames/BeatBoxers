@@ -1142,23 +1142,30 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 
 void UInputParserComponent::InputActionLight(bool IsUp)
 {
+	UE_LOG(LogBeatBoxers, Error, TEXT("lightattack."));
 	if (CurrentStateClass.Get() != nullptr)
 	{
+		UE_LOG(LogBeatBoxers, Error, TEXT("1"));
 		//if (!HoldingBlock) {
 		if (PreviousDirections.size() > 1) {
+			UE_LOG(LogBeatBoxers, Error, TEXT("2"));
 			if ((PreviousDirections.top() == 3)) {
+				UE_LOG(LogBeatBoxers, Error, TEXT("3"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 6)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("4"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 6)) {
+				UE_LOG(LogBeatBoxers, Error, TEXT("5"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 3)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("6"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
@@ -1167,33 +1174,40 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 
 
 			else if ((PreviousDirections.top() == 4)) {
+				UE_LOG(LogBeatBoxers, Error, TEXT("7"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("8"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 1)) {
+				UE_LOG(LogBeatBoxers, Error, TEXT("9"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 4)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("10"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 2)) {
+				UE_LOG(LogBeatBoxers, Error, TEXT("11"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 4)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("12"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 				else if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 6)) {
 					PreviousDirections.empty();
+					UE_LOG(LogBeatBoxers, Error, TEXT("13"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
@@ -1203,13 +1217,17 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 
 
 		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
+			UE_LOG(LogBeatBoxers, Error, TEXT("14"));
 			if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
 				CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
+				UE_LOG(LogBeatBoxers, Error, TEXT("15"));
 			}
 			else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
 				CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
+				UE_LOG(LogBeatBoxers, Error, TEXT("16"));
 			}
 			else {
+				UE_LOG(LogBeatBoxers, Error, TEXT("17"));
 				CurrentStateClass.GetDefaultObject()->InputActionLight(this);
 			}
 		}
@@ -1475,7 +1493,7 @@ void UInputParserDefaultState::InputActionSuper(UInputParserComponent *Parser)
 
 void UInputParserDefaultState::InputActionBlock(UInputParserComponent * Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionBlock()"));
+	UE_LOG(LogUInputParser, Warning, TEXT("UInputParserDefaultState::InputActionBlock()"));
 	if (Parser != nullptr)
 	{
 		Parser->PushInputToken(EInputToken::IE_Block);

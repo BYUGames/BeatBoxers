@@ -36,8 +36,8 @@ void UInputParserComponent::BeginPlay()
 
 void UInputParserComponent::OnInputBufferTimer()
 {
-	UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
-	UE_LOG(LogUInputParser, Warning, TEXT("token nullified5"));
+	//UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent input buffer expired."), *GetNameSafe(GetOwner()));
+	//UE_LOG(LogUInputParser, Warning, TEXT("token nullified5"));
 	InputBuffer.token = EInputToken::IE_None;
 }
 
@@ -45,19 +45,19 @@ void UInputParserComponent::SetInputBuffer(FBufferInputToken NewToken)
 {
 
 	if (NewToken.isOnBeat) {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("setting buffer-isonbeat"));
+	//	UE_LOG(LogBeatBoxers, Warning, TEXT("setting buffer-isonbeat"));
 	}
 	else {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("setting buffer-isoffbeat"));
+	//	UE_LOG(LogBeatBoxers, Warning, TEXT("setting buffer-isoffbeat"));
 	}
-	UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
+	//UE_LOG(LogUInputParser, Error, TEXT("%s UInputParserComponent setting input buffer to %s with %f on timer."), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>(TEXT("EInputToken"), NewToken.token), InputBufferLength);
 	InputBuffer = NewToken;
 
 	if (InputBuffer.isOnBeat) {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("buffer ends up being-isonbeat"));
+	//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffer ends up being-isonbeat"));
 	}
 	else {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("buffer ends up being-isoffbeat"));
+	//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffer ends up being-isoffbeat"));
 	}
 	
 	GetOwner()->GetWorldTimerManager().SetTimer(
@@ -99,15 +99,17 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 	bToken.accuracy = calcAccuracy();
 
 	if (HasInputtedThisBeat) {
-		UE_LOG(LogUInputParser, Error, TEXT("%s already did something this beat, so this next input should fail"), *GetNameSafe(GetOwner()));
+		//UE_LOG(LogUInputParser, Error, TEXT("%s already did something this beat, so this next input should fail"), *GetNameSafe(GetOwner()));
 		bToken.isOnBeat = false;
 		ManualOffbeat = true;
 	}
 	else	{
 		
 		bToken.isOnBeat = MyFighterWorld->IsOnBeat(false);
-		if (bToken.isOnBeat) { UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasonbeat"), *GetNameSafe(GetOwner())); }
-		else{ UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasoffbeat"), *GetNameSafe(GetOwner())); 
+		if (bToken.isOnBeat) {
+			//UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasonbeat"), *GetNameSafe(GetOwner()));
+		}
+		else{ //UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasoffbeat"), *GetNameSafe(GetOwner())); 
 		ManualOffbeat = true;
 
 		}
@@ -115,10 +117,10 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 
 	if (bToken.isOnBeat) {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isonbeat"));
+		//UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isonbeat"));
 	}
 	else {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isoffbeat"));
+		//UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isoffbeat"));
 	}
 
 
@@ -173,7 +175,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 					
 
 					bToken.accuracy = 0.0f;
-					UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 1"));
+					//UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 1"));
 					Fighter->HasUsedMoveAndHasYetToLand = false;
 					HasInputtedThisBeat = false;
 					ManualOffbeat = false;	
@@ -194,7 +196,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 		{
 
 			InputBuffer.isOnBeat = false;
-			UE_LOG(LogBeatBoxers, Warning, TEXT("halt. hasinputted this beat"));
+			//UE_LOG(LogBeatBoxers, Warning, TEXT("halt. hasinputted this beat"));
 			//bToken.isOnBeat = false;
 			//ManualOffbeat = true;
 			//SetInputBuffer(bToken);
@@ -202,17 +204,17 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || InputBuffer.token != EInputToken::IE_None )//case 2- youre in the middle of a move or stunned-buffer
 		{
 			if (bToken.isOnBeat) {
-				UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isonbeat"));
+			//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isonbeat"));
 			}
 			else {
-				UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isoffbeat"));
+			//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isoffbeat"));
 			}
 
 			SetInputBuffer(bToken);
 		}
 		else if (MyMoveset != nullptr)//case 3- no problems, send the input
 		{
-			UE_LOG(LogBeatBoxers, Warning, TEXT("everything's good, go forward"));
+			//UE_LOG(LogBeatBoxers, Warning, TEXT("everything's good, go forward"));
 			InputBuffer.token = EInputToken::IE_None;
 
 			SentInputThisBeat = true;
@@ -227,10 +229,10 @@ void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToke
 {
 
 	if (NewToken.isOnBeat) {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isonbeat"));
+		//UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isonbeat"));
 	}
 	else {
-		UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isoffbeat"));
+	//	UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isoffbeat"));
 	}
 	FBufferInputToken bToken;
 	bToken = NewToken;
@@ -357,10 +359,10 @@ void UInputParserComponent::OnControlReturned()
 {
 	UE_LOG(LogBeatBoxers, Warning, TEXT("OnControlReturned"));
 
-	if(!MyFighterState->IsInputBlocked())UE_LOG(LogBeatBoxers, Warning, TEXT("!MyFighterState->IsInputBlocked()"));
-	if(!MyFighterState->IsStunned())UE_LOG(LogBeatBoxers, Warning, TEXT("!MyFighterState->IsStunned()"));
-	if(InputBuffer.token != EInputToken::IE_None)UE_LOG(LogBeatBoxers, Warning, TEXT("InputBuffer.token != EInputToken::IE_None"));
-	if (!SentInputThisBeat)UE_LOG(LogBeatBoxers, Warning, TEXT("!SentInputThisBeat"));
+	//if(!MyFighterState->IsInputBlocked())UE_LOG(LogBeatBoxers, Warning, TEXT("!MyFighterState->IsInputBlocked()"));
+	//if(!MyFighterState->IsStunned())UE_LOG(LogBeatBoxers, Warning, TEXT("!MyFighterState->IsStunned()"));
+	//if(InputBuffer.token != EInputToken::IE_None)UE_LOG(LogBeatBoxers, Warning, TEXT("InputBuffer.token != EInputToken::IE_None"));
+	//if (!SentInputThisBeat)UE_LOG(LogBeatBoxers, Warning, TEXT("!SentInputThisBeat"));
 	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None && !SentInputThisBeat) {
 		PushInputTokenWithAccuracy(InputBuffer);
 		
@@ -1148,30 +1150,30 @@ void UInputParserComponent::InputActionDashRight(bool Isup)
 
 void UInputParserComponent::InputActionLight(bool IsUp)
 {
-	UE_LOG(LogBeatBoxers, Error, TEXT("lightattack."));
+	//UE_LOG(LogBeatBoxers, Error, TEXT("lightattack."));
 	if (CurrentStateClass.Get() != nullptr)
 	{
-		UE_LOG(LogBeatBoxers, Error, TEXT("1"));
+	//	UE_LOG(LogBeatBoxers, Error, TEXT("1"));
 		//if (!HoldingBlock) {
 		if (PreviousDirections.size() > 1) {
-			UE_LOG(LogBeatBoxers, Error, TEXT("2"));
+	//		UE_LOG(LogBeatBoxers, Error, TEXT("2"));
 			if ((PreviousDirections.top() == 3)) {
-				UE_LOG(LogBeatBoxers, Error, TEXT("3"));
+		//		UE_LOG(LogBeatBoxers, Error, TEXT("3"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 6)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("4"));
+	//				UE_LOG(LogBeatBoxers, Error, TEXT("4"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 6)) {
-				UE_LOG(LogBeatBoxers, Error, TEXT("5"));
+		//		UE_LOG(LogBeatBoxers, Error, TEXT("5"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 3)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("6"));
+		//			UE_LOG(LogBeatBoxers, Error, TEXT("6"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
@@ -1180,40 +1182,40 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 
 
 			else if ((PreviousDirections.top() == 4)) {
-				UE_LOG(LogBeatBoxers, Error, TEXT("7"));
+		//		UE_LOG(LogBeatBoxers, Error, TEXT("7"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 2)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("8"));
+	//				UE_LOG(LogBeatBoxers, Error, TEXT("8"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 1)) {
-				UE_LOG(LogBeatBoxers, Error, TEXT("9"));
+	//			UE_LOG(LogBeatBoxers, Error, TEXT("9"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 2) || (PreviousDirections.top() == 4)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("10"));
+	//				UE_LOG(LogBeatBoxers, Error, TEXT("10"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 			}
 			else if ((PreviousDirections.top() == 2)) {
-				UE_LOG(LogBeatBoxers, Error, TEXT("11"));
+	//			UE_LOG(LogBeatBoxers, Error, TEXT("11"));
 				PreviousDirections.pop();
 				if ((PreviousDirections.top() == 1) || (PreviousDirections.top() == 4)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("12"));
+	//				UE_LOG(LogBeatBoxers, Error, TEXT("12"));
 					//quarter circle back
 					CurrentStateClass.GetDefaultObject()->InputActionQCB(this);
 					return;
 				}
 				else if ((PreviousDirections.top() == 3) || (PreviousDirections.top() == 6)) {
 					PreviousDirections.empty();
-					UE_LOG(LogBeatBoxers, Error, TEXT("13"));
+	//				UE_LOG(LogBeatBoxers, Error, TEXT("13"));
 					//quarter circle forward
 					CurrentStateClass.GetDefaultObject()->InputActionQCF(this);
 					return;
@@ -1223,17 +1225,17 @@ void UInputParserComponent::InputActionLight(bool IsUp)
 
 
 		if (MyFighterState->GetCurrentVerticalDirection() >= 0) {
-			UE_LOG(LogBeatBoxers, Error, TEXT("14"));
+	//		UE_LOG(LogBeatBoxers, Error, TEXT("14"));
 			if (FMath::Sign(GetFighterFacing()) == FMath::Sign(HorizontalMovement)) {
 				CurrentStateClass.GetDefaultObject()->InputActionLightForward(this);
-				UE_LOG(LogBeatBoxers, Error, TEXT("15"));
+//				UE_LOG(LogBeatBoxers, Error, TEXT("15"));
 			}
 			else if (FMath::Sign(GetFighterFacing()) == -FMath::Sign(HorizontalMovement)) {
 				CurrentStateClass.GetDefaultObject()->InputActionLightBack(this);
-				UE_LOG(LogBeatBoxers, Error, TEXT("16"));
+	//			UE_LOG(LogBeatBoxers, Error, TEXT("16"));
 			}
 			else {
-				UE_LOG(LogBeatBoxers, Error, TEXT("17"));
+	//			UE_LOG(LogBeatBoxers, Error, TEXT("17"));
 				CurrentStateClass.GetDefaultObject()->InputActionLight(this);
 			}
 		}

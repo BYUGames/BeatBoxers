@@ -604,6 +604,7 @@ void UFighterStateComponent::SkipWindupOnBeat()
 
 void UFighterStateComponent::SkipWindup()
 {
+
 	if (CurrentWindowStage == EWindowStage::WE_Windup)
 	{
 		if (MyMoveset != nullptr && MyMoveset->GetCurrentWindowInMove() == 0)

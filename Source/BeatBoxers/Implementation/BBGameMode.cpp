@@ -14,7 +14,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "BBWorldSettings.h"
-
+#include <algorithm>
 
 ABBGameMode::ABBGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -1382,7 +1382,47 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 				ActorsToIgnore
 			);
 			
-			if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+
+
+			FMoveHitbox Hitbox2;
+			Hitbox2.Radius = mFighterB->GetFighterHitbox().Radius;
+			Hitbox2.Origin = mFighterB->GetFighterHitbox().Origin;
+			Hitbox2.End = mFighterB->GetFighterHitbox().End;
+
+			//Make hitboxes relative to facing
+			Hitbox2.Origin.X *= mFighterB->GetFacing();
+			Hitbox2.End.X *= mFighterB->GetFacing();
+
+
+			float furthest_left_hitboxA = std::min(Hitbox.Origin.X - Hitbox.Radius, Hitbox.End.X - Hitbox.Radius);
+			float furthest_right_hitboxA = std::max(Hitbox.Origin.X + Hitbox.Radius, Hitbox.End.X + Hitbox.Radius);
+			float furthest_up_hitboxA = std::max(Hitbox.Origin.Y + Hitbox.Radius, Hitbox.End.Y + Hitbox.Radius);
+			float furthest_down_hitboxA = std::min(Hitbox.Origin.Y - Hitbox.Radius, Hitbox.End.Y - Hitbox.Radius);
+
+			float furthest_left_hitboxB = std::min(Hitbox.Origin.X - Hitbox.Radius, Hitbox.End.X - Hitbox.Radius);
+			float furthest_right_hitboxB = std::max(Hitbox.Origin.X + Hitbox.Radius, Hitbox.End.X + Hitbox.Radius);
+			float furthest_up_hitboxB = std::max(Hitbox.Origin.Y + Hitbox.Radius, Hitbox.End.Y + Hitbox.Radius);
+			float furthest_down_hitboxB = std::min(Hitbox.Origin.Y - Hitbox.Radius, Hitbox.End.Y - Hitbox.Radius);
+			//
+			bool overlapsX = ((furthest_left_hitboxA < furthest_right_hitboxB && furthest_right_hitboxA > furthest_left_hitboxB) || (furthest_left_hitboxB < furthest_right_hitboxA && furthest_right_hitboxB > furthest_left_hitboxA));
+			bool overlapsY = ((furthest_up_hitboxA > furthest_down_hitboxB && furthest_down_hitboxA < furthest_up_hitboxB) || (furthest_up_hitboxB > furthest_down_hitboxA && furthest_down_hitboxB < furthest_up_hitboxA));
+
+			/*
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_left_hitboxA: %f"), furthest_left_hitboxA);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_right_hitboxA: %f"), furthest_right_hitboxA);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_up_hitboxA: %f"), furthest_up_hitboxA);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_down_hitboxA: %f"), furthest_down_hitboxA);
+
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_left_hitboxB: %f"), furthest_left_hitboxB);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_right_hitboxB: %f"), furthest_right_hitboxB);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_up_hitboxB: %f"), furthest_up_hitboxB);
+			UE_LOG(LogBeatBoxers, Warning, TEXT("furthest_down_hitboxB: %f"), furthest_down_hitboxB);
+			if (overlapsX)UE_LOG(LogBeatBoxers, Warning, TEXT("overlapsx"));
+			if (overlapsY)UE_LOG(LogBeatBoxers, Warning, TEXT("overlapsY"));
+
+			*/
+
+			if ((HitResult.bBlockingHit && HitResult.Actor.IsValid()) || (overlapsX && overlapsY))
 			{
 				ActorsToIgnore.Empty();
 				ActorsToIgnore.Add(ActorB);
@@ -1399,7 +1439,7 @@ bool ABBGameMode::CheckClash(TWeakObjectPtr<AActor> ActorA, TWeakObjectPtr<AActo
 					Hitbox,
 					ActorsToIgnore
 				);
-				if (HitResult.bBlockingHit && HitResult.Actor.IsValid())
+				if (HitResult.bBlockingHit && HitResult.Actor.IsValid() || (overlapsX && overlapsY))
 				{
 					Cast<UFighterStateComponent>(mFighterA->GetFighterState())->PlayExecutionAnimation();
 					Cast<UFighterStateComponent>(mFighterB->GetFighterState())->PlayExecutionAnimation();

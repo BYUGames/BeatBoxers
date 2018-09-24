@@ -343,7 +343,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 				return;
 			}
 
-			//UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
+			UE_LOG(LogUMoveset, Warning, TEXT("%s UMovesetComponent processing input token %s with accuracy %f"), *GetNameSafe(GetOwner()), *GetEnumValueToString<EInputToken>("EInputToken", Token), Accuracy);
 			if (CurrentState.GetRow<FMoveData>(cs) == nullptr)
 			{
 				GotoDefaultState();

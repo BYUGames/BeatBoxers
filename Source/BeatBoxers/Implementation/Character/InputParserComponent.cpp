@@ -173,6 +173,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 					
 
 					bToken.accuracy = 0.0f;
+					UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 1"));
 					Fighter->HasUsedMoveAndHasYetToLand = false;
 					HasInputtedThisBeat = false;
 					ManualOffbeat = false;	
@@ -189,13 +190,16 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 
 		//case 1- you have already done an action this beat, so you cant do another one until the beat opens up again-buffer
-		if (HasInputtedThisBeat)
+		if (HasInputtedThisBeat || SentInputThisBeat)
 		{
+
+			InputBuffer.isOnBeat = false;
+			UE_LOG(LogBeatBoxers, Warning, TEXT("halt. hasinputted this beat"));
 			//bToken.isOnBeat = false;
 			//ManualOffbeat = true;
 			//SetInputBuffer(bToken);
 		}
-		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())//case 2- youre in the middle of a move or stunned-buffer
+		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || InputBuffer.token != EInputToken::IE_None )//case 2- youre in the middle of a move or stunned-buffer
 		{
 			if (bToken.isOnBeat) {
 				UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isonbeat"));
@@ -208,7 +212,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 		}
 		else if (MyMoveset != nullptr)//case 3- no problems, send the input
 		{
-			
+			UE_LOG(LogBeatBoxers, Warning, TEXT("everything's good, go forward"));
 			InputBuffer.token = EInputToken::IE_None;
 
 			SentInputThisBeat = true;
@@ -240,8 +244,9 @@ void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToke
 		}
 		else if (MyMoveset != nullptr)
 		{
+			SentInputThisBeat = true;
 			InputBuffer.token = EInputToken::IE_None;
-	
+			HasInputtedThisBeat = true;
 
 			MyMoveset->ReceiveInputToken(NewToken);
 		}
@@ -358,6 +363,7 @@ void UInputParserComponent::OnControlReturned()
 	if (!SentInputThisBeat)UE_LOG(LogBeatBoxers, Warning, TEXT("!SentInputThisBeat"));
 	if (!MyFighterState->IsInputBlocked() && !MyFighterState->IsStunned() && InputBuffer.token != EInputToken::IE_None && !SentInputThisBeat) {
 		PushInputTokenWithAccuracy(InputBuffer);
+		
 	}
 }
 

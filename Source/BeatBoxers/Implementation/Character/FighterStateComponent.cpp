@@ -98,7 +98,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 	{
 		MyFighterWorld->GetOnSoloStartEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().RemoveDynamic(this, &UFighterStateComponent::OnSoloEnd);
-		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::SkipWindup);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().RemoveDynamic(this, &UFighterStateComponent::SkipWindupClose);
 		if (MyFighterWorld->GetMusicBox() != nullptr
 			&& Cast<IMusicBox>(MyFighterWorld->GetMusicBox()) != nullptr)
 		{
@@ -120,7 +120,7 @@ void UFighterStateComponent::RegisterFighterWorld(TWeakObjectPtr<UObject> Fighte
 
 		MyFighterWorld->GetOnSoloStartEvent().AddDynamic(this, &UFighterStateComponent::OnSoloStart);
 		MyFighterWorld->GetOnSoloEndEvent().AddDynamic(this, &UFighterStateComponent::OnSoloEnd);
-		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::SkipWindup);
+		MyFighterWorld->GetOnBeatWindowCloseEvent().AddDynamic(this, &UFighterStateComponent::SkipWindupClose);
 		if (MyFighterWorld->GetMusicBox() != nullptr
 			&& Cast<IMusicBox>(MyFighterWorld->GetMusicBox()) != nullptr)
 		{
@@ -615,8 +615,26 @@ void UFighterStateComponent::SkipWindup()
 			OnCurrentWindowWindupFinished();
 		}
 	}
+
+
+}
+
+void UFighterStateComponent::SkipWindupClose()
+{
+	if (CurrentWindowStage == EWindowStage::WE_Windup)
+	{
+		if (MyMoveset != nullptr && MyMoveset->GetCurrentWindowInMove() == 0)
+		{
+			if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+			{
+				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
+			}
+			OnCurrentWindowWindupFinished();
+		}
+	}
 	UE_LOG(LogUInputParser, Error, TEXT("%s skipwindup (so end of beat window)"), *GetNameSafe(GetOwner()));
 	Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->StillOnBeat = false;
+	UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 2"));
 	Cast<UInputParserComponent>(MyInputParser)->HasInputtedThisBeat = false;
 	Cast<UInputParserComponent>(MyInputParser)->ManualOffbeat = false;
 	Cast<UInputParserComponent>(MyInputParser)->SentInputThisBeat = false;

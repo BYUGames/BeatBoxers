@@ -188,6 +188,9 @@ public:
 	UFUNCTION()
 	void SkipWindup();
 
+	UFUNCTION()
+	void SkipWindupClose();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

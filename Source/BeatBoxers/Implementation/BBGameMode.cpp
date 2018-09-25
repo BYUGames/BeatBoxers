@@ -1654,7 +1654,7 @@ void ABBGameMode::OnBeat()
 			, &ABBGameMode::BeatWindowOpen
 			, MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow
 		);
-		UE_LOG(LogBBAnimation, Warning, TEXT("%s::time between beats is %f"), *GetNameSafe(this), MusicBox->GetTimeBetweenBeats());
+		//UE_LOG(LogBBAnimation, Warning, TEXT("%s::time between beats is %f"), *GetNameSafe(this), MusicBox->GetTimeBetweenBeats());
 	}
 	else
 	{

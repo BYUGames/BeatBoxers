@@ -998,7 +998,7 @@ void AFighterCharacter::SetIndex(int NewIndex)
 
 void AFighterCharacter::ResetInputParserInputThisBeat()
 {
-	UE_LOG(LogUInputParser, Error, TEXT("%s re-enabled3"), *GetNameSafe(GetOwner()));
+	//UE_LOG(LogUInputParser, Error, TEXT("%s re-enabled3"), *GetNameSafe(GetOwner()));
 }
 
 bool AFighterCharacter::IsToRightOfOpponent() {

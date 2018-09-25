@@ -326,7 +326,7 @@ void UFighterStateComponent::StartStun(float Duration, bool WasBlocked)
 		isMidMove = false;
 		Cast<AFighterCharacter>(MyFighter)->K2_BPEventsResetOnMoveConnect();
 		CurrentWindowStage = EWindowStage::WE_None;
-		//UE_LOG(LogAFighterCharacter, Warning, TEXT("duration %f"), Duration);
+		UE_LOG(LogAFighterCharacter, Warning, TEXT("duration %f"), Duration);
 		//GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Stun);
 		GetOwner()->GetWorldTimerManager().SetTimer(
 			TimerHandle_Stun,
@@ -633,9 +633,9 @@ void UFighterStateComponent::SkipWindupClose()
 			OnCurrentWindowWindupFinished();
 		}
 	}
-	UE_LOG(LogUInputParser, Error, TEXT("%s skipwindup (so end of beat window)"), *GetNameSafe(GetOwner()));
+	//UE_LOG(LogUInputParser, Error, TEXT("%s skipwindup (so end of beat window)"), *GetNameSafe(GetOwner()));
 	Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->StillOnBeat = false;
-	UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 2"));
+	//UE_LOG(LogBeatBoxers, Warning, TEXT("reset HasInputtedThisBeat 2"));
 	Cast<UInputParserComponent>(MyInputParser)->HasInputtedThisBeat = false;
 	Cast<UInputParserComponent>(MyInputParser)->ManualOffbeat = false;
 	Cast<UInputParserComponent>(MyInputParser)->SentInputThisBeat = false;

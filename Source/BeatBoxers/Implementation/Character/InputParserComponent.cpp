@@ -821,7 +821,7 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
 		TimerHandle_MotionTimer,
 		this,
 		&UInputParserComponent::OnMotionTimer,
-		.2,
+		.1,
 		false
 	);
 

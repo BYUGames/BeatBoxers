@@ -198,7 +198,10 @@ public:
 	virtual bool IsDead() const override;
 	virtual void Knockdown() override;
 	virtual FMusicBalanceParams GetMusicBalance() const override { return FighterData.MusicBalance; }
+
+	UFUNCTION(BlueprintCallable)
 	virtual void StartStun(float Duration, bool WasBlocked) override;
+
 	virtual float GetFighterCurrentWindowAccuracy() const override;
 	virtual FMoveHitbox GetFighterHitbox() const override;
 	virtual bool CanClash() const override;

@@ -180,6 +180,8 @@ public:
 	virtual void PlayerMissBeat(APlayerController* PlayerController) override;
 	virtual int OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
 	virtual bool CheckClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor> FighterB) override;
+
+	UFUNCTION(BlueprintCallable)
 	virtual float GetScaledTime(float time)  override;
 	/** End IFighterWorld implementation */
 

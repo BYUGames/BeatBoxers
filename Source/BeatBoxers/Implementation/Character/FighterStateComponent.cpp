@@ -390,24 +390,26 @@ void UFighterStateComponent::SetWantsToCharge(bool WantsToCharge)
 
 void UFighterStateComponent::ApplyMovement(FMovement Movement)
 {
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movementC1"), *GetNameSafe(this));
 	if (!Movement.IsValid())
 	{
-		UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent stopping movement."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent stopping movement."), *GetNameSafe(GetOwner()));
 		bIsBeingMoved = false;
 		TryDisableTick();
 		return;
 	}
 
-	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.ToString());
+	UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent at %s ApplyMovement(%s)"), *GetNameSafe(GetOwner()), *GetOwner()->GetActorLocation().ToString(), *Movement.ToString());
 
 	bIsBeingMoved = true;
 	CurrentMovement = Movement;
 	if (Movement.Delta.Y > 0.f)
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movementC2"), *GetNameSafe(this));
 		UCharacterMovementComponent *MovementComponent = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
 		if (MovementComponent != nullptr && MovementComponent->IsMovingOnGround())
 		{
-			UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent ApplyMovement set falling."), *GetNameSafe(GetOwner()));
+			UE_LOG(LogUFighterState, Error, TEXT("%s UFighterStateComponent ApplyMovement set falling."), *GetNameSafe(GetOwner()));
 			// This is actually redundant since the gamemode applies an effectively zero launch to the character prior to calling this.
 			// That call sets the move mode to falling.
 			MovementComponent->SetMovementMode(EMovementMode::MOVE_Falling);
@@ -415,11 +417,13 @@ void UFighterStateComponent::ApplyMovement(FMovement Movement)
 	}
 	if (Movement.Duration == 0)
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movementC3"), *GetNameSafe(this));
 		MovementStep(1.f);
 		bIsBeingMoved = false;
 	}
 	else
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movemenC4"), *GetNameSafe(this));
 		Cast<AFighterCharacter>(MyFighter)->AirMovementDirection = 0;
 		SetComponentTickEnabled(true);
 		GetOwner()->GetWorldTimerManager().SetTimer(

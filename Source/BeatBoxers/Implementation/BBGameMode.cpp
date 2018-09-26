@@ -256,9 +256,17 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 
 
 	FImpactData* ImpactData = (WasBlocked) ? &Block : &Hit;
+	if (WasBlocked) {
+		ImpactData->ImpartedMovement.Delta.X = 50;
+		ImpactData->ImpartedMovement.Delta.Y = 0;
+		ImpactData->ImpartedMovement.UsePhysicsLaunch = false;
+		ImpactData->ImpartedMovement.Duration = .1;
+	}
+
+
 	FImpactData ScaledImpact = GetScaledImpactData(AfterHitstopActor.Get(), *ImpactData, Accuracy);
 
-	if (Hit.StunLength > 0.000001f && !WasBlocked) {
+	if (Hit.StunLength > 0.000001f) {
 		if (ApplyImpact(AfterHitstopActor, ScaledImpact, WasBlocked, AfterHitstopSourceController, AfterHitstopSource) == 1
 			&& !ScaledImpact.ImpartedMovement.UsePhysicsLaunch && !Fighter->IsJumping())
 		{
@@ -285,7 +293,12 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 			Fighter->StopAnimMontage();
 		}
 		UE_LOG(LogABBGameMode, Error, TEXT("%sstun4"), *GetNameSafe(this));
-		Fighter->StartStun(GetScaledTime(Hit.StunLength), WasBlocked);
+		if (WasBlocked) {
+			Fighter->StartStun(GetScaledTime(.2), WasBlocked);
+		}
+		else {
+			Fighter->StartStun(GetScaledTime(Hit.StunLength), WasBlocked);
+		}
 	}
 }
 
@@ -473,31 +486,37 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ER
 
 int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
 {
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement1"), *GetNameSafe(this));
 	if (!Movement.IsValid() && !Cast<IFighter>(Target.Get())->IsJumping())
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement2"), *GetNameSafe(this));
 		//Invalid or no movement.
 		return -1;
 	}
 
 	if (!Target.IsValid())
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement3"), *GetNameSafe(this));
 		UE_LOG(LogABBGameMode, Warning, TEXT("ABBGameMode asked to apply movement to invalid actor."));
 		return -1;
 	}
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement4"), *GetNameSafe(this));
 	UE_LOG(LogABBGameMode, Verbose, TEXT("ABBGameMode asked to apply Movement(%s) to actor %s."), *Movement.ToString(), *GetNameSafe(Target.Get()));
 
 	FMovement NonrelativeMovement = Movement;
 	if (Movement.IsRelativeToAttackerFacing && Source.IsValid())
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement5"), *GetNameSafe(this));
 		IFighter *Fighter = Cast<IFighter>(Source.Get());
 		if (Fighter != nullptr)
 		{
+			UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement6"), *GetNameSafe(this));
 			NonrelativeMovement.Delta.X *= Fighter->GetFacing();
 			NonrelativeMovement.InAirLaunchDelta.X *= Fighter->GetFacing();
 			NonrelativeMovement.IsRelativeToAttackerFacing = false;
 		}
 	}
-
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement7"), *GetNameSafe(this));
 	FHitResult Result;
 	GetWorld()->LineTraceSingleByObjectType(
 		Result,
@@ -510,29 +529,36 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	IFighter *TargetFighter = Cast<IFighter>(Target.Get());
 	if (Character != nullptr)
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement8"), *GetNameSafe(this));
 		// If you pass a zero vector it doesn't do anything.
 		Character->LaunchCharacter(FVector(0.f,0.f,1.f), true, true);
 		TargetFighter->ApplyMovement(FMovement{});
 	}
 	if (!Movement.UsePhysicsLaunch && !TargetFighter->IsJumping())
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement9"), *GetNameSafe(this));
 		if (TargetFighter != nullptr)
 		{
+			UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement10"), *GetNameSafe(this));
 			TargetFighter->ApplyMovement(NonrelativeMovement);
 		}
 	}
 	else if (!Movement.UsePhysicsLaunch) //launches character using InAirLaunchDelta if they're in the air and physics launch isnt set to true
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement11"), *GetNameSafe(this));
 		if (Character != nullptr)
 		{
+			UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement12"), *GetNameSafe(this));
 			FVector Launch{ NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y };
 			Character->LaunchCharacter(Launch, true, true);
 		}
 	}
 	else
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movemen13t"), *GetNameSafe(this));
 		if (Character != nullptr)
 		{
+			UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movemen14t"), *GetNameSafe(this));
 			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
 			Character->LaunchCharacter(Launch, true, true);
 			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
@@ -1576,6 +1602,7 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
 {
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement"), *GetNameSafe(this));
 	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
 
 

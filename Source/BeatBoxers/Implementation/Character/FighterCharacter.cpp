@@ -369,9 +369,12 @@ float AFighterCharacter::GetOpponentDirection() const
 
 void AFighterCharacter::ApplyMovement(FMovement Movement)
 {
+	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movementB"), *GetNameSafe(this));
 	if (GetFighterState() != nullptr)
 	{
+		UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movementB2"), *GetNameSafe(this));
 		GetFighterState()->ApplyMovement(Movement);
+	
 	}
 }
 

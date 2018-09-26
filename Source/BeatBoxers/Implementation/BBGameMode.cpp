@@ -1613,7 +1613,7 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 			{
 				mBBPlayerState->TakeDamage(ImpactData.Damage * GlobalDamageScaling);
 				
-				if (Cast<ABBPlayerState>(SourceController.Get()->PlayerState) != nullptr)
+				if (SourceController.IsValid() && Cast<ABBPlayerState>(SourceController.Get()->PlayerState) != nullptr)
 				{
 					int OldCombo = Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->GetBeatCombo();
 					Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->SetBeatCombo(OldCombo + 1);

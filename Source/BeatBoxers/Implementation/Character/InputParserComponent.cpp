@@ -196,7 +196,7 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 		{
 
 			InputBuffer.isOnBeat = false;
-			//UE_LOG(LogBeatBoxers, Warning, TEXT("halt. hasinputted this beat"));
+			UE_LOG(LogBeatBoxers, Warning, TEXT("halt. hasinputted this beat"));
 			//bToken.isOnBeat = false;
 			//ManualOffbeat = true;
 			//SetInputBuffer(bToken);
@@ -209,12 +209,12 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			else {
 			//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isoffbeat"));
 			}
-
+			UE_LOG(LogBeatBoxers, Warning, TEXT("buffering"));
 			SetInputBuffer(bToken);
 		}
 		else if (MyMoveset != nullptr)//case 3- no problems, send the input
 		{
-			//UE_LOG(LogBeatBoxers, Warning, TEXT("everything's good, go forward"));
+			UE_LOG(LogBeatBoxers, Warning, TEXT("everything's good, go forward"));
 			InputBuffer.token = EInputToken::IE_None;
 
 			SentInputThisBeat = true;
@@ -227,9 +227,9 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToken)
 {
-
+	UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy"));
 	if (NewToken.isOnBeat) {
-		//UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isonbeat"));
+		UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isonbeat"));
 	}
 	else {
 	//	UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy-isoffbeat"));
@@ -239,13 +239,15 @@ void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToke
 
 	if (MyFighterState != nullptr)
 	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy1"));
 		if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || SentInputThisBeat)
 		{
-
+			UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy2"));
 
 		}
 		else if (MyMoveset != nullptr)
 		{
+			UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy3"));
 			SentInputThisBeat = true;
 			InputBuffer.token = EInputToken::IE_None;
 			HasInputtedThisBeat = true;
@@ -918,7 +920,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 		else
 			AdjustedAmount = 0;
 	}
-	UE_LOG(LogUMoveset, Error, TEXT("%s horizontal amount %d"), *GetNameSafe(GetOwner()), HorizontalMovement);
+	
 	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	if (AdjustedAmount == -1) {
 		if (Fighter->IsToRightOfOpponent()) {

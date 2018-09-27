@@ -497,6 +497,10 @@ void UFighterStateComponent::OnLand()
 
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
+	if (CurrentWindow.IgnoreCollisions)
+	{
+		MyFighter->SetFighterCollisions(false);
+	}
 	CurrentWindowStage = EWindowStage::WE_Windup;
 	PlayerAttackerEffects(CurrentWindow.WindupSFX);
 	ActorsToIgnore.Empty();
@@ -548,10 +552,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			}
 		}
 	}
-	if (CurrentWindow.IgnoreCollisions)
-	{
-		MyFighter->SetFighterCollisions(false);
-	}
+
 	if (CurrentWindow.Windup <= 0)
 	{
 		// No windup, proceed.

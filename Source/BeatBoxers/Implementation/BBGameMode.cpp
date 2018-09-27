@@ -537,17 +537,23 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	{
 		if (Character != nullptr)
 		{
-			FVector Launch{ NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y };
+			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
+			FVector Launch{ 0.01f, 0.01f, 0.01f };
 			Character->LaunchCharacter(Launch, true, true);
+			FVector Launch2{ NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y };
+			Character->LaunchCharacter(Launch2, true, true);
 		}
 	}
 	else
 	{
 		if (Character != nullptr)
 		{
-			FVector Launch{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
-			Character->LaunchCharacter(Launch, true, true);
 			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
+			FVector Launch{ 0.01f, 0.01f, 0.01f };
+			Character->LaunchCharacter(Launch, true, true);
+			FVector Launch2{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
+			Character->LaunchCharacter(Launch2, true, true);
+			
 		}
 	}
 

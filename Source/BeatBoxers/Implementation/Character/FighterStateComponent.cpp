@@ -270,6 +270,7 @@ bool UFighterStateComponent::IsMidMove() const
 	//if (CurrentWindowStage == EWindowStage::WE_Windup)UE_LOG(LogUFighterState, Warning, TEXT("windup"));
 //	if (CurrentWindowStage == EWindowStage::WE_Duration)UE_LOG(LogUFighterState, Warning, TEXT("current"));
 //	if (CurrentWindowStage == EWindowStage::WE_Winddown)UE_LOG(LogUFighterState, Warning, TEXT("winddown"));
+	//return Cast<UMovesetComponent>(MyMoveset)->CurrentState != Cast<UMovesetComponent>(MyMoveset)->DefaultState;
 	return isMidMove;
 	//return CurrentWindowStage != EWindowStage::WE_None;
 }
@@ -497,6 +498,8 @@ void UFighterStateComponent::OnLand()
 
 void UFighterStateComponent::StartCurrentWindowWindup()
 {
+	UE_LOG(LogUMoveset, Warning, TEXT("%s starting window"), *GetNameSafe(GetOwner()));
+
 	if (CurrentWindow.IgnoreCollisions)
 	{
 		MyFighter->SetFighterCollisions(false);
@@ -571,6 +574,14 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			if ((MyMoveset == nullptr || MyMoveset->GetCurrentWindowInMove() != 0)
 				|| MusicBox->GetTimeBetweenBeats() - AccInTime < CurrentWindow.Windup)
 			{
+				UE_LOG(LogUMoveset, Warning, TEXT("%s not skipping windup so instead starting windup timer at %f"), *GetNameSafe(GetOwner()), MyFighterWorld->GetScaledTime(CurrentWindow.Windup));
+				UE_LOG(LogUMoveset, Warning, TEXT("%scurrent time %f"), *GetNameSafe(GetOwner()), UGameplayStatics::GetRealTimeSeconds(GetWorld()));
+				if (GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Window))
+				{
+					UE_LOG(LogUMoveset, Warning, TEXT("%s timer had left %f"), *GetNameSafe(GetOwner()), GetOwner()->GetWorldTimerManager().GetTimerRemaining(TimerHandle_Window));
+				}
+
+				GetOwner()->GetWorldTimerManager().PauseTimer(TimerHandle_Window);
 				bSkipWindupOnBeat = false;
 				GetOwner()->GetWorldTimerManager().SetTimer(
 					TimerHandle_Window,
@@ -582,6 +593,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			}
 			else
 			{
+				UE_LOG(LogUMoveset, Warning, TEXT("%s skipping windup"), *GetNameSafe(GetOwner()));
 				bSkipWindupOnBeat = true;
 			}
 		}
@@ -590,6 +602,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 
 void UFighterStateComponent::OnCurrentWindowWindupFinished()
 {
+	UE_LOG(LogUMoveset, Warning, TEXT("%s windup finish time %f"), *GetNameSafe(GetOwner()), UGameplayStatics::GetRealTimeSeconds(GetWorld()));
 	StartCurrentWindowDuration();
 }
 
@@ -597,6 +610,7 @@ void UFighterStateComponent::SkipWindupOnBeat()
 {
 	if (bSkipWindupOnBeat)
 	{
+		UE_LOG(LogUMoveset, Warning, TEXT("%sbeat occurred windup skipped"), *GetNameSafe(GetOwner()));
 		bSkipWindupOnBeat = false;
 		SkipWindup();
 	}
@@ -614,6 +628,7 @@ void UFighterStateComponent::SkipWindup()
 			{
 				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
 			}
+			UE_LOG(LogUMoveset, Warning, TEXT("%sskipped windup 1"), *GetNameSafe(GetOwner()));
 			OnCurrentWindowWindupFinished();
 		}
 	}
@@ -631,6 +646,7 @@ void UFighterStateComponent::SkipWindupClose()
 			{
 				GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle_Window);
 			}
+			UE_LOG(LogUMoveset, Warning, TEXT("%sskipped windup 2"), *GetNameSafe(GetOwner()));
 			OnCurrentWindowWindupFinished();
 		}
 	}

@@ -666,6 +666,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 	//if (!Fighter->IsToRightOfOpponent())
 	//if (GetFighterFacing() > 0)
+	
 	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	if (AdjustedAmount == -1) {
 		if (Fighter->IsToRightOfOpponent()) {
@@ -700,6 +701,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 		}
 	}
 	else if (AdjustedAmount == 1) {
+		
 		//ok, so this is breaking the rules, making these directions non-relative... but we wont be adding any more motions, so it should be fine
 			if (FMath::Sign(-HorizontalMovement) == 1){
 				//upleft
@@ -773,6 +775,7 @@ void UInputParserComponent::InputAxisVertical(float Amount)
 	}
 }
 void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
+	//UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in -1 direction"), *GetNameSafe(GetOwner()));
 	//UE_LOG(LogUMoveset, Error, TEXT("%s holding %d"), *GetNameSafe(GetOwner()), NumpadDirection);
 	if (NumpadDirection != 1 && NumpadDirection != 2 && NumpadDirection != 3) {
 		Cast<AFighterCharacter>(MyFighter)->UnCrouch();
@@ -802,12 +805,15 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
 			if (NumpadDirection == 7) {
+			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in -1 direction"), *GetNameSafe(GetOwner()));
 				MyFighterState->Jump(-1);
 			}
 			else if (NumpadDirection == 8) {
+			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 0 direction"), *GetNameSafe(GetOwner()));
 				MyFighterState->Jump(0);
 			}
 			else if (NumpadDirection == 9) {
+			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 1 direction"), *GetNameSafe(GetOwner()));
 				MyFighterState->Jump(1);
 			}
 		}
@@ -912,7 +918,7 @@ void UInputParserComponent::InputAxisVerticalP2(float Amount)
 		else
 			AdjustedAmount = 0;
 	}
-
+	UE_LOG(LogUMoveset, Error, TEXT("%s horizontal amount %d"), *GetNameSafe(GetOwner()), HorizontalMovement);
 	AFighterCharacter *Fighter = Cast<AFighterCharacter>(GetOwner());
 	if (AdjustedAmount == -1) {
 		if (Fighter->IsToRightOfOpponent()) {
@@ -1062,6 +1068,7 @@ void UInputParserComponent::InputActionQCB(bool IsUp)
 
 void UInputParserComponent::InputActionLeft(bool IsUp)
 {
+	UE_LOG(LogUMoveset, Error, TEXT("%s pushed left."), *GetNameSafe(GetOwner()));
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionLeft(this);
@@ -1072,6 +1079,7 @@ void UInputParserComponent::InputActionLeft(bool IsUp)
 
 void UInputParserComponent::InputActionRight(bool IsUp)
 {
+	UE_LOG(LogUMoveset, Error, TEXT("%s pushed right."), *GetNameSafe(GetOwner()));
 	if (CurrentStateClass.Get() != nullptr)
 	{
 		CurrentStateClass.GetDefaultObject()->InputActionRight(this);
@@ -1383,7 +1391,7 @@ void UInputParserDefaultState::InputActionLeft(UInputParserComponent *Parser)
 
 void UInputParserDefaultState::InputActionRight(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UInputParserDefaultState::InputActionRight()"));
+	UE_LOG(LogUInputParser, Error, TEXT("UInputParserDefaultState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
 		ChangeState(Parser, UPreRightDashState::StaticClass());
@@ -1530,7 +1538,7 @@ bool UPreLeftDashState::IsComplex() { return true; }
 
 void UPreLeftDashState::InputActionLeft(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreLeftDashState::InputActionLeft()"));
+	UE_LOG(LogUInputParser, Error, TEXT("UPreLeftDashState::InputActionLeft()"));
 	if (Parser != nullptr)
 	{
 		Parser->PushInputToken(EInputToken::IE_DashLeft);
@@ -1686,7 +1694,7 @@ bool UPreRightDashState::IsComplex() { return true; }
 
 void UPreRightDashState::InputActionRight(UInputParserComponent *Parser)
 {
-	UE_LOG(LogUInputParser, Verbose, TEXT("UPreRightDashState::InputActionRight()"));
+	UE_LOG(LogUInputParser, Error, TEXT("UPreRightDashState::InputActionRight()"));
 	if (Parser != nullptr)
 	{
 		Parser->PushInputToken(EInputToken::IE_DashRight);

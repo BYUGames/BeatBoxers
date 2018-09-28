@@ -107,9 +107,9 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 		
 		bToken.isOnBeat = MyFighterWorld->IsOnBeat(false);
 		if (bToken.isOnBeat) {
-			//UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasonbeat"), *GetNameSafe(GetOwner()));
+			UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasonbeat"), *GetNameSafe(GetOwner()));
 		}
-		else{ //UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasoffbeat"), *GetNameSafe(GetOwner())); 
+		else{ UE_LOG(LogUInputParser, Error, TEXT("%s check if onbeat-wasoffbeat"), *GetNameSafe(GetOwner())); 
 		ManualOffbeat = true;
 
 		}
@@ -117,10 +117,10 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 
 
 	if (bToken.isOnBeat) {
-		//UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isonbeat"));
+		UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isonbeat"));
 	}
 	else {
-		//UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isoffbeat"));
+		UE_LOG(LogBeatBoxers, Warning, TEXT("checked and current token-isoffbeat"));
 	}
 
 
@@ -201,13 +201,17 @@ void UInputParserComponent::PushInputToken(EInputToken NewToken)
 			//ManualOffbeat = true;
 			//SetInputBuffer(bToken);
 		}
-		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned() || InputBuffer.token != EInputToken::IE_None )//case 2- youre in the middle of a move or stunned-buffer
+		else if (MyFighterState->IsInputBlocked() || MyFighterState->IsStunned())// || InputBuffer.token != EInputToken::IE_None )//case 2- youre in the middle of a move or stunned-buffer
 		{
+
+			if(MyFighterState->IsInputBlocked())UE_LOG(LogBeatBoxers, Warning, TEXT("input blocked"));
+			if (MyFighterState->IsStunned())UE_LOG(LogBeatBoxers, Warning, TEXT("stunned"));
+			//if (InputBuffer.token != EInputToken::IE_None)UE_LOG(LogBeatBoxers, Warning, TEXT("already buffering something"));
 			if (bToken.isOnBeat) {
-			//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isonbeat"));
+				UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isonbeat"));
 			}
 			else {
-			//	UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isoffbeat"));
+				UE_LOG(LogBeatBoxers, Warning, TEXT("buffering-isoffbeat"));
 			}
 			UE_LOG(LogBeatBoxers, Warning, TEXT("buffering"));
 			SetInputBuffer(bToken);
@@ -248,11 +252,14 @@ void UInputParserComponent::PushInputTokenWithAccuracy(FBufferInputToken NewToke
 		else if (MyMoveset != nullptr)
 		{
 			UE_LOG(LogBeatBoxers, Warning, TEXT("PushInputTokenWithAccuracy3"));
-			SentInputThisBeat = true;
-			InputBuffer.token = EInputToken::IE_None;
-			HasInputtedThisBeat = true;
+			if (!(bToken.isOnBeat && !MyFighterWorld->IsOnBeat(false))) {
+				SentInputThisBeat = true;
+				InputBuffer.token = EInputToken::IE_None;
+				HasInputtedThisBeat = true;
 
-			MyMoveset->ReceiveInputToken(NewToken);
+				MyMoveset->ReceiveInputToken(NewToken);
+
+			}
 		}
 	}
 }

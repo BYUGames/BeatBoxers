@@ -379,16 +379,26 @@ void ABBGameMode::EndRound()
 
 bool ABBGameMode::IsOnBeat(bool ManualOffbeat)
 {
+	UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("check isonbeat	"));
 	float AccInTime = -1;
 	IMusicBox* MusicBox = Cast<IMusicBox>(GetMusicBox());
-	if (ManualOffbeat) return false;
+	if (ManualOffbeat) {
+		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("manual offbeat."));
+		return false;
+	}
 	if (MusicBox != nullptr)
 	{
 		//AccInTime = (1.f - Accuracy) * MusicBox->GetTimeBetweenBeats();
 		//if (AccInTime <= AfterBeatAccuracyWindow  || AccInTime >= MusicBox->GetTimeBetweenBeats() - BeforeBeatAccuracyWindow || StillOnBeat)
 		if (!(GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowRightBeforeOpen) && !GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowClose)))
 		{
-			UE_LOG(LogBeatTiming, Verbose, TEXT("IsOnBeat() with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
+			if(GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowRightBeforeOpen))UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("TimerHandle_BeatWindowRightBeforeOpen active"));
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("time remaining %f"), GetWorldTimerManager().GetTimerRemaining(TimerHandle_BeatWindowRightBeforeOpen));
+
+			if (GetWorldTimerManager().IsTimerActive(TimerHandle_BeatWindowClose))UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("TimerHandle_BeatWindowClose active"));
+			UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("time remaining %f"), GetWorldTimerManager().GetTimerRemaining(TimerHandle_BeatWindowClose));
+
+			UE_LOG(LogBeatTiming, Error, TEXT("IsOnBeat() with BeforeBeatAccuracyWindow %f and AfterBeatAccuracyWindow %f? True, AccInTime +%f -%f.")
 				, BeforeBeatAccuracyWindow
 				, AfterBeatAccuracyWindow
 				, AccInTime
@@ -408,6 +418,7 @@ bool ABBGameMode::IsOnBeat(bool ManualOffbeat)
 	{
 		UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("ABBGameMode::IsOnBeat MusicBox nullptr."));
 	}
+	UE_LOG(LogBeatBoxersCriticalErrors, Error, TEXT("everything passed and nothing returned- fail"));
 	return false;
 }
 
@@ -1657,9 +1668,11 @@ int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactDat
 
 void ABBGameMode::OnBeat()
 {
+	UE_LOG(LogBeatBoxers, Warning, TEXT("ONBEAT"));
 	StillOnBeat = true;
 	if (AfterBeatAccuracyWindow > 0)
 	{
+		UE_LOG(LogBeatBoxers, Warning, TEXT("After beat accuracy window is > 0, so start beat window close with %f"), AfterBeatAccuracyWindow);
 		GetWorldTimerManager().SetTimer(
 			TimerHandle_BeatWindowClose
 			, this

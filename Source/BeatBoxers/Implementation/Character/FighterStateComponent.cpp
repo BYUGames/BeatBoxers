@@ -572,7 +572,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 			IMusicBox *MusicBox = Cast<IMusicBox>(MyFighterWorld->GetMusicBox());
 			float AccInTime = (1.f - MusicBox->GetBeatAccuracy()) * MusicBox->GetTimeBetweenBeats();
 			if ((MyMoveset == nullptr || MyMoveset->GetCurrentWindowInMove() != 0)
-				|| MusicBox->GetTimeBetweenBeats() - AccInTime < CurrentWindow.Windup)
+				|| (MusicBox->GetTimeBetweenBeats() - AccInTime < CurrentWindow.Windup || Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->GetWorldTimerManager().IsTimerActive(Cast<ABBGameMode>(UGameplayStatics::GetGameMode(GetWorld()))->TimerHandle_BeatWindowClose) ))
 			{
 				UE_LOG(LogUMoveset, Warning, TEXT("%s not skipping windup so instead starting windup timer at %f"), *GetNameSafe(GetOwner()), MyFighterWorld->GetScaledTime(CurrentWindow.Windup));
 				UE_LOG(LogUMoveset, Warning, TEXT("%scurrent time %f"), *GetNameSafe(GetOwner()), UGameplayStatics::GetRealTimeSeconds(GetWorld()));

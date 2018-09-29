@@ -1,0 +1,2 @@
+when packaging, go into the directory and rename "BeatBoxers.exe" to "Beat Boxers.exe"
+also, create a folder in that root directory named "Custom Songs"

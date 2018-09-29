@@ -84,5 +84,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool SecondControllerPluggedIn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int RoundsToWin;
+
 	virtual void Init() override;
 };

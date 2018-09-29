@@ -342,7 +342,7 @@ void ABBGameMode::EndRound()
 			{
 				++PlayerState->RoundsWon;
 				PushMusicBalance();
-				if (PlayerState->RoundsWon >= RoundsToWin)
+				if (PlayerState->RoundsWon >= GetWorld()->GetGameInstance<UBBGameInstance>()->RoundsToWin)
 				{
 					EndGame(Winner);
 

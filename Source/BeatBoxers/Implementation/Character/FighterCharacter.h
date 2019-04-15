@@ -26,8 +26,11 @@ class BEATBOXERS_API AFighterCharacter : public ACharacter, public IFighter
 
 public:
 	// Do not change these to const members, it will not be enforced because of the getters.
+	UPROPERTY(BlueprintReadWrite)
 	UFighterStateComponent *FighterState;
+	UPROPERTY(BlueprintReadWrite)
 	UMovesetComponent *Moveset;
+	UPROPERTY(BlueprintReadWrite)
 	UInputParserComponent *InputParser;
 	USoloTrackerComponent *SoloTracker;
 
@@ -316,8 +319,12 @@ public:
 	void detachFromOpponent();
 
 	bool IsToRightOfOpponent();
-
+	UPROPERTY(BlueprintReadWrite)
 	bool holdingAway;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool InParry;
+	
 
 	//UFUNCTION(BlueprintCallable)
 	//FString GetCurrentMoveName();

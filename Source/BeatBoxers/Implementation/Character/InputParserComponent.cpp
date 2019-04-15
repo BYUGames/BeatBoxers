@@ -813,17 +813,19 @@ void UInputParserComponent::ParseCurrentHeldDirection(int NumpadDirection) {
 	PreviousDirections.push(NumpadDirection);
 	if (CurrentHeldDirection != 7 && CurrentHeldDirection != 8 && CurrentHeldDirection != 9) {
 		if (NumpadDirection == 7 || NumpadDirection == 8 || NumpadDirection == 9) {
-			if (NumpadDirection == 7) {
-			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in -1 direction"), *GetNameSafe(GetOwner()));
-				MyFighterState->Jump(-1);
-			}
-			else if (NumpadDirection == 8) {
-			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 0 direction"), *GetNameSafe(GetOwner()));
-				MyFighterState->Jump(0);
-			}
-			else if (NumpadDirection == 9) {
-			//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 1 direction"), *GetNameSafe(GetOwner()));
-				MyFighterState->Jump(1);
+			if (!HoldingBlock) {
+				if (NumpadDirection == 7) {
+					//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in -1 direction"), *GetNameSafe(GetOwner()));
+					MyFighterState->Jump(-1);
+				}
+				else if (NumpadDirection == 8) {
+					//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 0 direction"), *GetNameSafe(GetOwner()));
+					MyFighterState->Jump(0);
+				}
+				else if (NumpadDirection == 9) {
+					//	UE_LOG(LogUMoveset, Error, TEXT("%s try to jump in 1 direction"), *GetNameSafe(GetOwner()));
+					MyFighterState->Jump(1);
+				}
 			}
 		}
 

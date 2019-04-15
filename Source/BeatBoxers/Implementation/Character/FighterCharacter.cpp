@@ -99,10 +99,13 @@ void AFighterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
 	if (!FighterState->bIsBlockButtonDown && (!(GetMovementComponent() != nullptr && InAir
 		|| FighterState != nullptr && (FighterState->IsMidMove() || FighterState->IsStunned() || bIsDead))))
 	{
-		UpdateFacing();
+		if (!GetCurrentMontage())
+			UpdateFacing();
 	}
 
 	if (InAir && !FighterState->IsStunned() && !FighterState->IsMidMove() && !HasUsedMoveAndHasYetToLand)
@@ -123,6 +126,8 @@ void AFighterCharacter::Tick(float DeltaTime)
 
 void AFighterCharacter::UpdateFacing()
 {
+//	if (PlayerIndex == 1)
+	//	UE_LOG(LogAFighterCharacter, Error, TEXT("update"));
 	if (MyOpponent != nullptr)
 	{
 		float NewFacing = FMath::Sign(MyOpponent->GetActorLocation().X - GetActorLocation().X);

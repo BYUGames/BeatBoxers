@@ -502,6 +502,10 @@ struct FMoveWindow
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint32 Grab : 1;
 
+	/** If true, the player will be take damage from attacks but ignore stun (not grabs or counters) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 HasSuperArmor : 1;
+
 	FMoveWindow()
 	{
 		Interruptible = true;

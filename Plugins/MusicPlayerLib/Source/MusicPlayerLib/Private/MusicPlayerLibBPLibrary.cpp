@@ -283,7 +283,7 @@ void UMusicPlayerLibBPLibrary::PlaySoundAtLocationFromFile(UObject* WorldContext
 class USoundWave* UMusicPlayerLibBPLibrary::GetSoundWaveFromFile(const FString& FilePath)
 {
 #if PLATFORM_PS4
-	UE_LOG(LogTemp, Error, TEXT("UMusicPlayerLibBPLibrary::GetSoundWaveFromFile ~ vorbis-method not supported on PS4. See UMusicPlayerLibBPLibrary::fillSoundWaveInfo"));
+	//UE_LOG(LogTemp, Error, TEXT("UMusicPlayerLibBPLibrary::GetSoundWaveFromFile ~ vorbis-method not supported on PS4. See UMusicPlayerLibBPLibrary::fillSoundWaveInfo"));
 	return nullptr;
 #endif
 	

@@ -104,6 +104,7 @@ public:
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) override;
 	virtual void RegisterSoloTracker(TWeakObjectPtr<UObject> SoloTracker) override;
 	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void ReceiveInputToken(FBufferInputToken Token) override;
 	virtual void OnWindowFinished(EWindowEnd WindowEnd) override;
 	virtual void OnSoloStart() override;

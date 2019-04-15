@@ -199,6 +199,47 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 
 	bool WasBlocked = DoesBlock(Fighter, DamageType, RPSType);
 
+	//super armor logic
+	if (OpponentFighter->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack && Cast<UFighterStateComponent>(Cast<AFighterCharacter>(Fighter)->GetFighterState())->HasSuperArmor())
+	{
+		// Logic for applying damage and giving special to opponent
+		APawn* mAPawn = Cast<APawn>(Actor.Get());
+		if (mAPawn != nullptr && mAPawn->Controller != nullptr)
+		{
+			APlayerController* mPlayerController = Cast<APlayerController>(mAPawn->Controller);
+			if (mPlayerController != nullptr && mPlayerController->PlayerState != nullptr)
+			{
+				ABBPlayerState* mBBPlayerState = Cast<ABBPlayerState>(mPlayerController->PlayerState);
+				//ABBPlayerState* sourceState = Cast<ABBPlayerState>(SourceController.Get()->PlayerState);
+				if (mBBPlayerState != nullptr)
+				{
+					mBBPlayerState->TakeDamage(Hit.Damage * GlobalDamageScaling);
+
+					if (SourceController.IsValid() && Cast<ABBPlayerState>(SourceController.Get()->PlayerState) != nullptr)
+					{
+						int OldCombo = Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->GetBeatCombo();
+						Cast<ABBPlayerState>(SourceController.Get()->PlayerState)->SetBeatCombo(OldCombo + 1);
+						if (PlayerBeatComboChangedEvent.IsBound())
+						{
+							PlayerBeatComboChangedEvent.Broadcast(Cast<APlayerController>(SourceController.Get()), OldCombo + 1);
+						}
+					}
+
+
+					AddSpecial(mBBPlayerState, (Hit.SpecialGenerated*.8) / 4);
+					if (mBBPlayerState->GetHealth() == 0)
+					{
+						UE_LOG(LogBeatBoxers, Log, TEXT("A player has died."));
+						EndRound();
+					}
+				}
+			}
+		}
+
+		return EHitResponse::HE_Hit;
+	}
+
+
 	if (Hit.HitstopAmount > 0) {
 		if (Fighter != nullptr)
 		{
@@ -211,7 +252,8 @@ EHitResponse ABBGameMode::HitActor(TWeakObjectPtr<AActor> Actor, EFighterDamageT
 	}
 	if (grab)
 	{
-		Fighter->Grabbed(Hit.StunLength);
+		//if (!Fighter->K2_IsStunned())
+			Fighter->Grabbed(Hit.StunLength);
 	}
 	Fighter->WasHitBPEvents();
 	HitstopEvents(DamageType, Hit, Block, Accuracy, Hit.HitstopAmount, Fighter->GetIndex(), RPSType, WasBlocked);
@@ -240,6 +282,8 @@ void ABBGameMode::ParryHitstop_Implementation(int WinnerIndex, AFighterCharacter
 
 void ABBGameMode::EventsAfterParry(AFighterCharacter* winner)
 {
+//	winner->InParry = false;
+//	Cast<AFighterCharacter>(winner->MyOpponent.Get())->InParry = false;
 	winner->Moveset->Parry();
 }
 
@@ -281,7 +325,10 @@ void ABBGameMode::EventsAfterHitstop(EFighterDamageType DamageType, FImpactData 
 				MovementToAttacker.Delta.Y = 0;
 				MovementToAttacker.InAirLaunchDelta.X = -100;
 				MovementToAttacker.InAirLaunchDelta.Y = 0;
-				ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker);
+				if (WasBlocked)
+					ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker, true);
+				else
+					ApplyMovementToActor(AfterHitstopSource, AfterHitstopSource, AfterHitstopSourceController, MovementToAttacker, false);
 			}
 		}
 	}
@@ -495,7 +542,7 @@ bool ABBGameMode::DoesBlock(IFighter *Fighter, EFighterDamageType DamageType, ER
 	*/
 }
 
-int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement)
+int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObjectPtr<AActor> Source, TWeakObjectPtr<AController> SourceController, FMovement Movement, bool ignoreY)
 {
 	if (!Movement.IsValid() && !Cast<IFighter>(Target.Get())->IsJumping())
 	{
@@ -534,7 +581,11 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 	if (Character != nullptr)
 	{
 		// If you pass a zero vector it doesn't do anything.
-		Character->LaunchCharacter(FVector(0.f,0.f,1.f), true, true);
+		if (ignoreY)
+			Character->LaunchCharacter(FVector(0.f, 0.f, 1.f), true, false);
+		else
+			Character->LaunchCharacter(FVector(0.f,0.f,1.f), true, true);
+
 		TargetFighter->ApplyMovement(FMovement{});
 	}
 	if (!Movement.UsePhysicsLaunch && !TargetFighter->IsJumping())
@@ -550,9 +601,17 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		{
 			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
 			FVector Launch{ 0.01f, 0.01f, 0.01f };
-			Character->LaunchCharacter(Launch, true, true);
+			if (ignoreY)
+				Character->LaunchCharacter(Launch, true, false);
+			else
+				Character->LaunchCharacter(Launch, true, true);
+			
 			FVector Launch2{ NonrelativeMovement.InAirLaunchDelta.X, 0.f, NonrelativeMovement.InAirLaunchDelta.Y };
-			Character->LaunchCharacter(Launch2, true, true);
+
+			if (ignoreY)
+				Character->LaunchCharacter(Launch2, true, false);
+			else
+				Character->LaunchCharacter(Launch2, true, true);
 		}
 	}
 	else
@@ -561,9 +620,18 @@ int ABBGameMode::ApplyMovementToActor(TWeakObjectPtr<AActor> Target, TWeakObject
 		{
 			Cast<AFighterCharacter>(Character)->SetFighterCollisions(false);
 			FVector Launch{ 0.01f, 0.01f, 0.01f };
-			Character->LaunchCharacter(Launch, true, true);
+
+			if (ignoreY)
+				Character->LaunchCharacter(Launch, true, false);
+			else
+				Character->LaunchCharacter(Launch, true, true);
+
 			FVector Launch2{ NonrelativeMovement.Delta.X, 0.f, NonrelativeMovement.Delta.Y };
-			Character->LaunchCharacter(Launch2, true, true);
+
+			if (ignoreY)
+				Character->LaunchCharacter(Launch2, true, false);
+			else
+				Character->LaunchCharacter(Launch2, true, true);
 			
 		}
 	}
@@ -1520,8 +1588,10 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 		{
 			if (mFighterA->GetFighterHitbox().RPSCategory == ERPSType::RPS_Attack)
 			{
-				ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
-				ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
+				//ApplyImpact(FighterA, GetClashImpact(mFighterA == winner), false, nullptr, FighterA);
+				//ApplyImpact(FighterB, GetClashImpact(mFighterB == winner), false, nullptr, FighterB);
+				ApplyMovementToActor(FighterA, FighterA, nullptr, GetClashImpact(mFighterA == winner).ImpartedMovement, false);
+				ApplyMovementToActor(FighterB, FighterB, nullptr, GetClashImpact(mFighterB == winner).ImpartedMovement, false);
 				mFighterA->Clash();
 				mFighterB->Clash();
 
@@ -1549,9 +1619,14 @@ int ABBGameMode::OnClash(TWeakObjectPtr<AActor> FighterA, TWeakObjectPtr<AActor>
 						RelativeTransform.GetRotation().Rotator()
 					);
 				}
+
+
 			}
 		}
 		else if (winner->GetFighterHitbox().RPSCategory == ERPSType::RPS_Block){
+			mFighterA->InParry = true;
+			mFighterB->InParry = true;
+
 			ParryHitstop(winner->GetIndex(), Cast<AFighterCharacter>(winner));//EventsAfterparry
 			if (ParryClashImpact.SFX.SoundCue != nullptr)
 			{
@@ -1599,6 +1674,14 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 	case 2:
 		return FighterB;
 	default:
+		if (Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterA)->GetFighterState())->HasSuperArmor() && !Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterB)->GetFighterState())->HasSuperArmor())
+			return FighterA;
+		if (Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterB)->GetFighterState())->HasSuperArmor() && !Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterA)->GetFighterState())->HasSuperArmor())
+			return FighterB;
+		if (Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterA)->GetFighterState())->CurrentWindowAccuracy >Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterB)->GetFighterState())->CurrentWindowAccuracy)
+			return FighterA;
+		if (Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterB)->GetFighterState())->CurrentWindowAccuracy >Cast<UFighterStateComponent>(Cast<AFighterCharacter>(FighterA)->GetFighterState())->CurrentWindowAccuracy)
+			return FighterB;
 		return nullptr;
 	}
 }
@@ -1606,7 +1689,7 @@ IFighter* ABBGameMode::DetermineClashWinner(IFighter* FighterA, IFighter* Fighte
 int ABBGameMode::ApplyImpact(TWeakObjectPtr<AActor> Actor, FImpactData ImpactData, bool WasBlocked, TWeakObjectPtr<AController> SourceController, TWeakObjectPtr<AActor> Source)
 {
 	UE_LOG(LogAFighterCharacter, Error, TEXT("%strying to apply movement"), *GetNameSafe(this));
-	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement);
+	int toRet = ApplyMovementToActor(Actor, Source, SourceController, ImpactData.ImpartedMovement, false);
 
 
 	IFighter* Fighter = Cast<IFighter>(Actor.Get());

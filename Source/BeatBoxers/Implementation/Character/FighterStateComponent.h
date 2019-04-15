@@ -52,7 +52,7 @@ protected:
 	float MoveDirection;
 	float VerticalDirection;
 	float HorizontalDirection;
-	float CurrentWindowAccuracy;
+
 	int TimesHitThisKnockdown;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -126,6 +126,7 @@ public:
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void RegisterInputParser(TWeakObjectPtr<UObject> InputParser) override;
 	virtual void RegisterFighterPlayerState(TWeakObjectPtr<UObject> FighterPlayerState) override;
+	UFUNCTION(BlueprintCallable)
 	virtual bool IsInputBlocked() const override;
 	virtual bool IsBlocking() const override;
 	virtual bool IsCharging() const override;
@@ -133,6 +134,7 @@ public:
 	virtual bool IsBlockStunned() const override;
 	virtual bool IsKnockedDown() const override;
 	virtual bool IsInvulnerable() const override;
+	bool HasSuperArmor() const;
 	virtual bool IsMidMove() const override;
 	virtual void StartMoveWindow(FMoveWindow& Window, bool isOnbeat) override;
 	virtual void StartStun(float Duration, bool WasBlocked) override;
@@ -174,6 +176,8 @@ public:
 	virtual bool IsGrabbed() const override;
 	/** End IFighterState implmementation */
 
+	float CurrentWindowAccuracy;
+
 	AController* GetOwnerController() const;
 
 	UFUNCTION()
@@ -202,7 +206,9 @@ public:
 	uint32 bIsKnockedDown : 1;
 	bool usedAirJump;
 	void EndCombo();
+	UPROPERTY(BlueprintReadWrite)
 	bool isMidMove;
 	uint32 bSkipWindupOnBeat : 1;
+	UPROPERTY(BlueprintReadWrite)
 	uint32 bIsBlockButtonDown : 1;
 };

@@ -77,6 +77,7 @@ void UMovesetComponent::SetState(FDataTableRowHandle State)
 
 void UMovesetComponent::GotoState(FDataTableRowHandle NewState)
 {
+	UE_LOG(LogAFighterCharacter, Error, TEXT("GO TO STATE"));
 	Cast<AFighterCharacter>(MyFighter)->HasUsedMoveAndHasYetToLand = true;
 
 	//UE_LOG(LogUMoveset, Error, TEXT("goes to state"));
@@ -154,7 +155,7 @@ void UMovesetComponent::StartNextWindow(bool LastWindowHit)
 			{
 				if (MyFighter->GetStance() != EStance::SE_Jumping)
 				{
-					MyFighter->UpdateFacing();
+				//	MyFighter->UpdateFacing();
 				}
 			}
 			return MyInputParser->OnControlReturned();
@@ -367,7 +368,8 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 				{
 					PossibleMove = PreviousState.GetRow<FMoveData>(cs)->PossibleTransitions[i];
 				}
-				
+//				if (Cast<AFighterCharacter>(MyFighter)->GetActorLocation().X >Cast<AFighterCharacter>(MyFighter)->MyOpponent->GetActorLocation().X ){
+				MyFighter->UpdateFacing();
 				if (!(Cast<AFighterCharacter>(MyFighter)->InputParser->GetFighterFacing() > 0)) {
 					if (Token == EInputToken::IE_DashLeft)Token = EInputToken::IE_DashForward;
 					else if (Token == EInputToken::IE_DashRight)Token = EInputToken::IE_DashBackward;
@@ -375,10 +377,14 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 					else if (Token == EInputToken::IE_DashCancelRight)Token = EInputToken::IE_DashCancelBackward;
 				}
 				else {
-					if (Token == EInputToken::IE_DashLeft)Token = EInputToken::IE_DashBackward;
-					else if (Token == EInputToken::IE_DashRight)Token = EInputToken::IE_DashForward;
-					else if (Token == EInputToken::IE_DashCancelLeft)Token = EInputToken::IE_DashCancelBackward;
-					else if (Token == EInputToken::IE_DashCancelRight)Token = EInputToken::IE_DashCancelForward;
+					if (Token == EInputToken::IE_DashLeft)
+						Token = EInputToken::IE_DashBackward;
+					else if (Token == EInputToken::IE_DashRight)
+						Token = EInputToken::IE_DashForward;
+					else if (Token == EInputToken::IE_DashCancelLeft)
+						Token = EInputToken::IE_DashCancelBackward;
+					else if (Token == EInputToken::IE_DashCancelRight)
+						Token = EInputToken::IE_DashCancelForward;
 				}
 				
 				if (PossibleMove.GetRow<FMoveData>(cs) == nullptr)
@@ -393,6 +399,7 @@ void UMovesetComponent::ProcessInputToken(EInputToken Token, bool Accuracy)
 						{
 							if (MyFighterState->UseSpecial(PossibleMove.GetRow<FMoveData>(cs)->SpecialCost))
 							{
+
 								// Found a state that we can enter.
 								UE_LOG(LogUMoveset, Verbose, TEXT("%s UMovesetComponent transitioning from state %s to state %s on input %s."),
 									*GetNameSafe(GetOwner()),

@@ -196,11 +196,13 @@ void UFighterStateComponent::RegisterFighterPlayerState(TWeakObjectPtr<UObject> 
 
 bool UFighterStateComponent::IsInputBlocked() const
 {
-	return IsMidMove() || IsStunned() || bIsFrozenForSolo || bGrabbed;
+	return IsMidMove() || IsStunned() || bIsFrozenForSolo || bGrabbed || Cast<AFighterCharacter>(MyFighter)->InParry;
 }
 
 bool UFighterStateComponent::IsBlocking() const
 {
+	if (IsInputBlocked())
+		return false;
 	float ToOpponent = (MyFighter != nullptr) ? MyFighter->GetOpponentDirection() : 0.f;
 	UE_LOG(LogUFighterState, Verbose, TEXT("%s UFighterStateComponent IsBlocking %d, %d, %d, %d, %f, %s, %s, %f"),
 		*GetNameSafe(GetOwner()),
@@ -263,6 +265,11 @@ bool UFighterStateComponent::IsKnockedDown() const
 bool UFighterStateComponent::IsInvulnerable() const
 {
 	return GetOwner()->GetWorldTimerManager().IsTimerActive(TimerHandle_Invulnerable) || (CurrentWindow.Invincibility && IsMidMove());
+}
+
+bool UFighterStateComponent::HasSuperArmor() const
+{
+	return (CurrentWindow.HasSuperArmor && IsMidMove());
 }
 
 bool UFighterStateComponent::IsMidMove() const
@@ -513,7 +520,7 @@ void UFighterStateComponent::StartCurrentWindowWindup()
 	{
 		if (MyFighterWorld != nullptr)
 		{
-			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement);
+			MyFighterWorld->ApplyMovementToActor(GetOwner(), GetOwner(), GetOwnerController(), CurrentWindow.AttackerMovement, false);
 		}
 	}
 	if (MyFighter != nullptr && !CurrentWindow.AnimName.IsNone())

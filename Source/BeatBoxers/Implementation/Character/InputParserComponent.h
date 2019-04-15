@@ -183,32 +183,56 @@ public:
 	virtual void RegisterMoveset(TWeakObjectPtr<UObject> Moveset) override;
 	virtual void RegisterMusicBox(TWeakObjectPtr<UObject> MusicBox) override;
 	virtual void OnControlReturned() override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputAxisHorizontal(float Amount) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputAxisHorizontalP2(float Amount) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputAxisVertical(float Amount) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputAxisVerticalP2(float Amount) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionLeft(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionRight(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionDown(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionUp(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionLight(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionMedium(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionHeavy(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionSpecial1(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionSpecial2(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionSpecial3(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionDodge(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionDashLeft(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionDashRight(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionSuper(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionBlock(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionStopBlock(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionQCF(bool IsUp) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void InputActionQCB(bool IsUp) override;
 
 	/** End IInputParser implementation */
 
+	UFUNCTION(BlueprintCallable)
 	void PushInputToken(EInputToken NewToken);
+	UFUNCTION(BlueprintCallable)
 	void PushInputTokenWithAccuracy(FBufferInputToken NewToken);
 	void StartComboTimer();
 
